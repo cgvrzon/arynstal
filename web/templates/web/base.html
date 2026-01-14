@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>
+        {% block title %}Arynstal{% endblock %}
+    </title>
+
+    {% block head %}{% endblock %}
+
+    <link rel="stylesheet" href="{% static 'dist/assets/index-4RbZCXm0.css' %}">
+</head>
+
+<body class="bg-gris-claro">
+
+    <!-- HEADER GLOBAL -->
+    <header class="page-header">
+        <div class="logo-box">
+            <img src="{% static 'dist/logotipo.jpg' %}" alt="Logotipo Arynstal SL">
+        </div>
+        <nav class="navBar">
+            <a href="{% url 'home' %}" class="nav-link">INICIO</a>
+            <a href="{% url 'services' %}" class="nav-link">SERVICIOS</a>
+            <a href="{% url 'projects' %}" class="nav-link">PROYECTOS</a>
+            <a href="{% url 'about_us' %}" class="nav-link">SOBRE NOSOTROS</a>
+        </nav>
+    </header>
+
+
+    {% block content %}{% endblock %}
+
+    <!-- FOOTER GLOBAL -->
+    <footer class="site-footer">
+        <div class="footer-box text-center">
+            <p><strong>Arynstal SL</strong></p>
+            <p>Tel: +34 912 345 678</p>
+            <p>Email: contacto@arynstal.com</p>
+            <p>Dirección: C/ Naranjo 123, Hospitalet de Llobregat</p>
+        </div>
+    </footer>
+
+
+    <script type="module" src="{% static 'dist/assets/index-Cz6qP6vT.js' %}"></script>
+</body>
+</html>
