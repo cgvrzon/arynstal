@@ -33,3 +33,7 @@ urlpatterns = [
 # Servir archivos media en desarrollo
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# Handlers para páginas de error personalizadas
+handler404 = 'apps.web.views.handler404'
+handler500 = 'apps.web.views.handler500'
