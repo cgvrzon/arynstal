@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 from datetime import datetime
+from .validators import validate_image_file, validate_pdf_file
 
 
 def lead_image_path(instance, filename):
@@ -203,7 +204,9 @@ class LeadImage(models.Model):
     )
     image = models.ImageField(
         upload_to=lead_image_path,
-        verbose_name='Imagen'
+        verbose_name='Imagen',
+        validators=[validate_image_file],
+        help_text='Máximo 5MB. Formatos: JPG, PNG, WEBP'
     )
     uploaded_at = models.DateTimeField(
         auto_now_add=True,
@@ -271,7 +274,8 @@ class Budget(models.Model):
         upload_to=budget_file_path,
         blank=True,
         verbose_name='Archivo PDF',
-        help_text='Presupuesto en PDF'
+        validators=[validate_pdf_file],
+        help_text='Presupuesto en PDF. Máximo 10MB'
     )
     created_at = models.DateTimeField(
         auto_now_add=True,

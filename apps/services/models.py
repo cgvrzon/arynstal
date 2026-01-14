@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils.text import slugify
+from apps.leads.validators import validate_image_file
 
 
 class Service(models.Model):
@@ -35,7 +36,9 @@ class Service(models.Model):
         upload_to='services/',
         blank=True,
         null=True,
-        verbose_name='Imagen representativa'
+        verbose_name='Imagen representativa',
+        validators=[validate_image_file],
+        help_text='Máximo 5MB. Formatos: JPG, PNG, WEBP'
     )
     is_active = models.BooleanField(
         default=True,

@@ -26,7 +26,8 @@ admin.site.index_title = "Panel de control"
 
 urlpatterns = [
     path('', include('apps.web.urls')),
-    path('admin/', admin.site.urls),
+    # URL del admin ofuscada por seguridad (en lugar del /admin/ predeterminado)
+    path('gestion-interna/', admin.site.urls),
 ]
 
 # Servir archivos media en desarrollo
