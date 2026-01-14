@@ -1,146 +1,194 @@
-{% extends 'web/base.html' %}
 {% load static %}
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Arynstal SL - Instalaciones eléctricas y domótica KNX. Reformas y proyectos con experiencia y compromiso." />
+    <title>Arynstal SL</title>
+    <script type="module" crossorigin src="{% static 'assets/index-B7vlPUZ6.js' %}"></script>
+    <link rel="stylesheet" crossorigin href="{% static 'assets/index-BnlAnuup.css' %}">
+  </head>
 
-{% block title %}Arynstal SL{% endblock %}
+  <body class="bg-gris-claro">
+    <!-- Header -->
+    <header class="w-full bg-gradient-to-r from-[#E0E8F2] via-[#5A7D9A] to-[#0D3B66] px-4 py-3 flex items-center justify-between shadow-sm relative z-50">
+      <!-- LOGO -->
+      <div class="w-36">
+        <img src="{% static 'img/services/logotipo.png' %}" alt="Logotipo Arynstal SL" class="w-full h-auto">
+      </div>
 
-{% block content %}
+      <!-- BOTÓN HAMBURGUESA -->
+      <button id="menuToggle" aria-label="Abrir menú"
+        class="lg:hidden text-3xl text-white transition-all duration-300 ease-in-out px-2 py-1 rounded-md">
+        ☰
+      </button>
+
+      <!-- MENÚ DESPLEGABLE -->
+      <nav id="mobileMenu"
+        class="hidden lg:flex flex-col lg:flex-row gap-4 lg:gap-10 text-white font-semibold absolute top-full left-0 w-full bg-[#0D3B66] px-6 py-4 lg:static lg:bg-transparent lg:px-0 lg:py-0 lg:w-auto z-40">
+        <a href="{% url 'home' %}" class="menu-link">INICIO</a>
+        <a href="{% url 'services' %}" class="menu-link">SERVICIOS</a>
+        <a href="{% url 'projects' %}" class="menu-link">PROYECTOS</a>
+        <a href="{% url 'about_us' %}" class="menu-link">SOBRE NOSOTROS</a>
+        <a href="{% url 'contact_us' %}" class="menu-link">CONTÁCTANOS</a>
+      </nav>
+    </header>
+
     <!-- Hero / Carrusel -->
-    <section class="slider  z-10 relative w-full h-[70vh] overflow-hidden shadow-s">
+    <section class="slider z-10 relative w-full h-[50vh] sm:h-[60vh] lg:h-[70vh] overflow-hidden shadow-lg">
       <div class="slides flex h-full transition-transform duration-700">
+
         <!-- Slide 1 -->
         <figure class="slides w-full flex-shrink-0 relative">
-            <img src="{% static 'dist/img/imgSlide3.avif' %}" class="w-full h-full object-cover" alt="Subestación eléctrica.">          <figcaption class="absolute top-16 left-36 text-white py-2 max-w-6xl">
-            <h1 class="text-5xl font-bold text-white drop-shadow-[2px_2px_6px_rgba(0,0,0,0.7)] text-center">
-              Reformamos tu hogar o negocio<br/>con detalle y compromiso
-            </h1>
+          <img src="{% static 'img/imgSlide3.avif' %}" class="w-full h-full object-cover" alt="Subestación eléctrica.">
+          <figcaption class="absolute inset-0 flex items-center justify-center text-white px-4 sm:px-6">
+            <h2 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold drop-shadow-[2px_2px_6px_rgba(0,0,0,0.7)] text-center leading-tight">
+              REFORMAMOS TU HOGAR O NEGOCIO<br/>CON DETALLE Y COMPROMISO
+            </h2>
           </figcaption>
         </figure>
 
         <!-- Slide 2 -->
         <figure class="slides w-full flex-shrink-0 relative">
-          <img src="{% static 'dist/img/knxImgSlide2M.avif' %}"
-            class="w-full h-full object-cover"
-            alt="KNX Partners. Construye el futuro en tu hogar.">
-          <figcaption class="absolute top-20 right-36 text-white py-2 max-w-6xl">
-            <h2 class="text-7xl font-bold text-white drop-shadow-[2px_2px_6px_rgba(0,0,0,0.7)] text-center">
-              KNX <br/> PARTNERS
+          <img src="{% static 'img/knxImgSlide2M.avif' %}" class="w-full h-full object-cover" alt="KNX Partners. Construye el futuro en tu hogar.">
+          <figcaption class="absolute inset-0 flex flex-col items-center justify-center text-white px-4 sm:px-6">
+            <h2 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold drop-shadow-[2px_2px_6px_rgba(0,0,0,0.7)] text-center leading-tight">
+              KNX PARTNERS
             </h2>
+            <p class="mt-4 sm:mt-6 text-base sm:text-lg md:text-xl font-bold text-white text-center drop-shadow-[1px_1px_4px_rgba(0,0,0,0.6)]">
+              ESPACIOS QUE RESPONDEN A TI
+            </p>
           </figcaption>
         </figure>
 
         <!-- Slide 3 -->
         <figure class="slides w-full flex-shrink-0 relative">
-          <img src="{% static 'dist/img/imgSlide1.avif' %}" 
-          class="w-full h-full object-cover object-bottom" 
-          alt="Estación eléctrica. Proyecto realizado junto con Elecnor SL.">
-          <figcaption class="absolute bottom-80 left-1/4 text-white max-w-6xl">
-            <h2 class="text-5xl font-bold text-white drop-shadow-[2px_2px_6px_rgba(0,0,0,0.7)] text-center">
-              Años de experiencia de la mano de los mejores
+          <img src="{% static 'img/imgSlide1.avif' %}" class="w-full h-full object-cover object-bottom" alt="Estación eléctrica. Proyecto realizado junto con Elecnor SL.">
+          <figcaption class="absolute inset-0 flex items-center justify-center text-white px-4 sm:px-6">
+            <h2 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold drop-shadow-[2px_2px_6px_rgba(0,0,0,0.7)] text-center leading-tight">
+              AÑOS DE EXPERIENCIA <br/> DE LA MANO DE LOS MEJORES
             </h2>
           </figcaption>
         </figure>
+
       </div>
 
       <!-- Botones -->
-      <button id="btnPrev" class="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center bg-white/50 hover:bg-white/80 rounded-full text-2xl z-20">&#10094;</button>
-      <button id="btnNext" class="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center bg-white/50 hover:bg-white/80 rounded-full text-2xl z-20">&#10095;</button>
+      <button id="btnPrev" class="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-white/50 hover:bg-white/80 rounded-full text-xl sm:text-2xl z-20">&#10094;</button>
+      <button id="btnNext" class="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-white/50 hover:bg-white/80 rounded-full text-xl sm:text-2xl z-20">&#10095;</button>
 
       <!-- Dots -->
-      <div class="nav-dots absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-3 z-20">
-        <button class="dot w-4 h-4 rounded-full bg-white/50"></button>
-        <button class="dot w-4 h-4 rounded-full bg-white/50"></button>
-        <button class="dot w-4 h-4 rounded-full bg-white/50"></button>
+      <div class="nav-dots absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 flex gap-2 sm:gap-3 z-20">
+        <button class="dot w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-white/50"></button>
+        <button class="dot w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-white/50"></button>
+        <button class="dot w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-white/50"></button>
       </div>
     </section>
 
-    <!-- Seccion de introducción -->
-    <section class="relative z-0 bg-[rgba(242,242,242,0.8)] backdrop-blur-sm text-center py-16 px-6 -mt-5">
-      <h2 class="text-4xl font-bold text-azul-oscuro mb-4">Soluciones técnicas para espacios inteligentes</h2>
-      <p class="text-lg text-gris-oscuro max-w-3xl mx-auto">
+    <!-- Sección de introducción -->
+    <section class="relative z-0 bg-[rgba(242,242,242,0.8)] backdrop-blur-sm text-center py-12 sm:py-16 px-4 sm:px-6 -mt-5">
+      <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-azul-oscuro mb-3 sm:mb-4">
+        Soluciones técnicas para espacios inteligentes
+      </h2>
+      <p class="text-base sm:text-lg text-gris-oscuro max-w-3xl mx-auto">
         En Arynstal SL combinamos experiencia en instalaciones eléctricas con innovación en domótica KNX. Descubre cómo transformamos hogares, oficinas y espacios industriales con eficiencia, seguridad y diseño.
       </p>
     </section>
 
-    <!---- Sección informacion empresa ---->
-    <section class="relative z-10 bg-white shadow-[0_-10px_20px_rgba(0,0,0,0.1)] -mt-10 py-16 px-6">
+    <!-- Sección información empresa -->
+    <section class="relative z-10 bg-white shadow-[0_-10px_20px_rgba(0,0,0,0.1)] -mt-10 py-12 sm:py-16 px-4 sm:px-6">
 
-      <!-- Article instalaciones elctricas -->
-      <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-64 py-10 px-6 lg:px-12">
-        <img src="{% static 'dist/img/services/instalacion_electrica.jpg' %}"
+      <!-- Article instalaciones eléctricas -->
+      <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-8 lg:gap-16 xl:gap-24 py-8 sm:py-10">
+        <img src="{% static 'img/services/instalacion_electrica.jpg' %}"
             alt="Instalaciones eléctricas"
-            class="w-full lg:w-[55%] rounded-lg object-cover max-h-[250px] md:max-h-[350px] lg:max-h-[450px]">
+            class="w-full lg:w-[55%] rounded-lg object-cover aspect-video lg:aspect-[4/3]">
         <div class="lg:w-[45%]">
-          <h2 class="text-3xl font-bold text-azul-oscuro mb-4">Instalaciones eléctricas</h2>
-          <p class="text-gris-oscuro mb-6">
+          <h2 class="text-2xl sm:text-3xl font-bold text-azul-oscuro mb-3 sm:mb-4">Instalaciones eléctricas</h2>
+          <p class="text-sm sm:text-base text-gris-oscuro mb-4 sm:mb-6">
             Realizamos instalaciones seguras y eficientes en todo tipo de espacios. Cumplimos normativa y garantizamos durabilidad.
           </p>
-          <a href="/src/pages/services.html" class="text-acento font-semibold hover:underline">Ver más sobre nuestros servicios</a>
+          <a href="{% url 'services' %}" class="text-acento font-semibold hover:underline text-sm sm:text-base">Ver más sobre nuestros servicios</a>
         </div>
       </div>
 
       <!-- Article domótica KNX -->
-      <div class="max-w-7xl mx-auto flex flex-col lg:flex-row-reverse items-center gap-64 py-10 px-6 lg:px-12">
-        <img src="{% static 'dist/img/services/domotica_knx.jpg' %}"
+      <div class="max-w-7xl mx-auto flex flex-col lg:flex-row-reverse items-center gap-8 lg:gap-16 xl:gap-24 py-8 sm:py-10">
+        <img src="{% static 'img/services/domotica_knx.jpg' %}"
          alt="Domótica KNX"
-         class="w-full lg:w-[55%] rounded-lg object-cover max-h-[250px] md:max-h-[350px] lg:max-h-[450px]">
-        <div class="lg:w-1/2">
-          <h2 class="text-3xl font-bold text-azul-oscuro mb-4">Domótica KNX</h2>
-          <p class="text-gris-oscuro mb-6">
+         class="w-full lg:w-[55%] rounded-lg object-cover aspect-video lg:aspect-[4/3]">
+        <div class="lg:w-[45%]">
+          <h2 class="text-2xl sm:text-3xl font-bold text-azul-oscuro mb-3 sm:mb-4">Domótica KNX</h2>
+          <p class="text-sm sm:text-base text-gris-oscuro mb-4 sm:mb-6">
             Automatiza tu hogar o negocio con tecnología KNX. Controla iluminación, climatización y seguridad desde un solo sistema.
           </p>
-          <a href="/src/pages/services.html" class="text-acento font-semibold hover:underline">Ver más sobre nuestros servicios</a>
+          <a href="{% url 'services' %}" class="text-acento font-semibold hover:underline text-sm sm:text-base">Ver más sobre nuestros servicios</a>
         </div>
       </div>
 
       <!-- Article reformas integrales -->
-      <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-64 py-10 px-6 lg:px-12">
-        <img src="{% static 'dist/img/services/reformas_integrales.jpg' %}"
+      <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-8 lg:gap-16 xl:gap-24 py-8 sm:py-10">
+        <img src="{% static 'img/services/reformas_integrales.jpg' %}"
          alt="Reformas integrales"
-         class="w-full lg:w-[55%] rounded-lg object-cover max-h-[250px] md:max-h-[350px] lg:max-h-[450px]">
-        <div class="lg:w-1/2">
-          <h2 class="text-3xl font-bold text-azul-oscuro mb-4">Reformas integrales.</h2>
-          <p class="text-gris-oscuro mb-6">
+         class="w-full lg:w-[55%] rounded-lg object-cover aspect-video lg:aspect-[4/3]">
+        <div class="lg:w-[45%]">
+          <h2 class="text-2xl sm:text-3xl font-bold text-azul-oscuro mb-3 sm:mb-4">Reformas integrales</h2>
+          <p class="text-sm sm:text-base text-gris-oscuro mb-4 sm:mb-6">
             Reforma tu hogar o negocio.
-            </br> 
+            <br/>
             Reformamos tu espacio a medida y al detalle, siempre con los mejores precios y materiales del mercado.
           </p>
-          <a href="/src/pages/services.html" class="text-acento font-semibold hover:underline">Ver más sobre nuestros servicios</a>
+          <a href="{% url 'services' %}" class="text-acento font-semibold hover:underline text-sm sm:text-base">Ver más sobre nuestros servicios</a>
         </div>
       </div>
 
       <!-- Article proyectos realizados -->
-      <div class="max-w-7xl mx-auto flex flex-col lg:flex-row-reverse items-center gap-64 py-10 px-6 lg:px-12">
-        <img src="{% static 'dist/img/proyectos/experiencia_calidad.jpg' %}"
+      <div class="max-w-7xl mx-auto flex flex-col lg:flex-row-reverse items-center gap-8 lg:gap-16 xl:gap-24 py-8 sm:py-10">
+        <img src="{% static 'img/services/handhshake.jpg' %}"
             alt="Experiencia y calidad"
-            class="w-full lg:w-[55%] rounded-lg object-cover max-h-[250px] md:max-h-[350px] lg:max-h-[450px]">
-        <div class="lg:w-1/2">
-          <h2 class="text-3xl font-bold text-azul-oscuro mb-4">Experiencia demostrable. Calidad garantizada</h2>
-          <p class="text-gris-oscuro mb-6">
+            class="w-full lg:w-[55%] rounded-lg object-cover aspect-video lg:aspect-[4/3]">
+        <div class="lg:w-[45%]">
+          <h2 class="text-2xl sm:text-3xl font-bold text-azul-oscuro mb-3 sm:mb-4">Experiencia demostrable. Calidad garantizada</h2>
+          <p class="text-sm sm:text-base text-gris-oscuro mb-4 sm:mb-6">
             Años de experiencia trabajando con los mejores del sector, ofreciendo resultados fiables y duraderos en cada proyecto.
           </p>
-          <a href="/src/pages/projects.html" class="text-acento font-semibold hover:underline">Ver nuestros proyectos</a>
+          <a href="{% url 'projects' %}" class="text-acento font-semibold hover:underline text-sm sm:text-base">Ver nuestros proyectos</a>
         </div>
       </div>
 
       <!-- Article sobre nosotros -->
-      <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-64 py-10 px-6 lg:px-12">
-        <img src="{% static 'dist/img/about/nosotros.jpg' %}"
+      <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-8 lg:gap-16 xl:gap-24 py-8 sm:py-10">
+        <img src="{% static 'img/services/logotipo.png' %}"
             alt="Sobre nosotros"
-            class="w-full lg:w-[55%] rounded-lg object-cover max-h-[250px] md:max-h-[350px] lg:max-h-[450px]">
-        <div class="lg:w-1/2">
-          <h2 class="text-3xl font-bold text-azul-oscuro mb-4">Sobre nosotros</h2>
-          <p class="text-gris-oscuro mb-6">
+            class="w-full lg:w-[55%] rounded-lg object-cover aspect-video lg:aspect-[4/3]">
+        <div class="lg:w-[45%]">
+          <h2 class="text-2xl sm:text-3xl font-bold text-azul-oscuro mb-3 sm:mb-4">Sobre nosotros</h2>
+          <p class="text-sm sm:text-base text-gris-oscuro mb-3 sm:mb-4">
             Desde nuestros inicios hemos evolucionado gracias a la confianza de grandes empresas del sector.
             Durante años, Arynstal SL ha trabajado como empresa subcontratada de <strong>Elecnor</strong>,
             consolidando nuestra reputación como un socio fiable y comprometido en proyectos de alta exigencia.
           </p>
-          <p class="text-gris-oscuro mb-6">
+          <p class="text-sm sm:text-base text-gris-oscuro mb-4 sm:mb-6">
             Esta experiencia nos ha permitido crecer, ampliar nuestro equipo y ofrecer soluciones técnicas cada vez más innovadoras,
             siempre con la calidad garantizada que nos caracteriza.
           </p>
-          <a href="/src/pages/about_us.html" class="text-acento font-semibold hover:underline">Conoce nuestra historia</a>
+          <a href="{% url 'about_us' %}" class="text-acento font-semibold hover:underline text-sm sm:text-base">Conoce nuestra historia</a>
         </div>
       </div>
 
     </section>
-{% endblock %}
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <div class="footer-box text-center">
+        <p><strong>Arynstal SL</strong></p>
+        <p class="text-sm sm:text-base">Tel: +34 912 345 678</p>
+        <p class="text-sm sm:text-base">Email: contacto@arynstal.com</p>
+        <p class="text-sm sm:text-base">Dirección: C/ Naranjo 123, Hospitalet de Llobregat</p>
+      </div>
+    </footer>
+
+  </body>
+
+</html>

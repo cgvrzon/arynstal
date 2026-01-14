@@ -6,7 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Arynstal SL - Solicita tu presupuesto sin compromiso. Especialistas en electricidad y domótica KNX." />
     <title>Contacto - Solicitar Presupuesto | Arynstal SL</title>
-    <link rel="stylesheet" href="{% static 'dist/assets/index-4RbZCXm0.css' %}" />
+    <script type="module" crossorigin src="{% static 'assets/index-B7vlPUZ6.js' %}"></script>
+    <link rel="stylesheet" crossorigin href="{% static 'assets/index-BnlAnuup.css' %}">
   </head>
 
   <body class="flex flex-col min-h-screen bg-gray-50">
@@ -14,7 +15,7 @@
     <header class="w-full bg-gradient-to-r from-[#E0E8F2] via-[#5A7D9A] to-[#0D3B66] px-4 py-3 flex items-center justify-between shadow-sm relative z-50 flex-shrink-0">
       <!-- LOGO -->
       <div class="w-24 sm:w-28 md:w-36">
-        <img src="{% static 'dist/logotipo.jpg' %}" alt="Logotipo Arynstal SL" class="w-full h-auto">
+        <img src="{% static 'img/services/logotipo.png" alt="Logotipo Arynstal SL" class="w-full h-auto">
       </div>
 
       <!-- BOTÓN HAMBURGUESA -->
@@ -37,7 +38,7 @@
     <!-- Main Content -->
     <main class="flex-1 py-8 sm:py-12 lg:py-16">
       <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
-
+        
         <!-- Header del formulario -->
         <div class="text-center mb-8 sm:mb-10 lg:mb-12">
           <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#0D3B66] mb-3 sm:mb-4">
@@ -48,27 +49,16 @@
           </p>
         </div>
 
-        <!-- Mensajes de Django -->
-        {% if messages %}
-          <div class="mb-6">
-            {% for message in messages %}
-              <div class="{% if message.tags == 'success' %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %} p-4 rounded-lg text-sm sm:text-base mb-4">
-                {{ message }}
-              </div>
-            {% endfor %}
-          </div>
-        {% endif %}
-
         <!-- Contenedor principal: Grid 2 columnas en desktop -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
-
+          
           <!-- Columna izquierda: Información de contacto -->
           <aside class="lg:col-span-1 order-2 lg:order-1">
             <div class="bg-gradient-to-br from-[#0D3B66] to-[#1a5080] text-white rounded-lg p-6 sm:p-8 lg:sticky lg:top-8">
               <h2 class="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">
                 Información de contacto
               </h2>
-
+              
               <!-- Teléfono -->
               <div class="flex items-start gap-4 mb-6">
                 <div class="flex-shrink-0 w-10 h-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
@@ -126,9 +116,9 @@
 
           <!-- Columna derecha: Formulario -->
           <div class="lg:col-span-2 order-1 lg:order-2">
-            <form id="contact-form" method="post" enctype="multipart/form-data" class="bg-white rounded-lg shadow-md p-6 sm:p-8 lg:p-10" novalidate>
+            <form id="contact-form" method="POST" action="{% url 'contact_us' %}" class="bg-white rounded-lg shadow-md p-6 sm:p-8 lg:p-10" novalidate>
               {% csrf_token %}
-
+              
               <!-- Datos personales -->
               <div class="mb-8">
                 <h3 class="text-lg sm:text-xl font-bold text-[#0D3B66] mb-4 sm:mb-6">
@@ -138,31 +128,53 @@
                 <div class="space-y-4 sm:space-y-5">
                   <!-- Nombre -->
                   <div>
-                    {{ form.nombre.label_tag }}
-                    {{ form.nombre }}
-                    {% if form.nombre.errors %}
-                      <p class="error-message text-red-600 text-xs mt-1">{{ form.nombre.errors.0 }}</p>
-                    {% endif %}
+                    <label for="nombre" class="block text-sm font-semibold text-gray-700 mb-2">
+                      Nombre completo *
+                    </label>
+                    <input 
+                      type="text" 
+                      id="nombre" 
+                      name="nombre" 
+                      required
+                      class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0D3B66] focus:border-transparent transition-all duration-300 text-sm sm:text-base"
+                      placeholder="Ej: Juan Pérez García"
+                    />
+                    <p class="error-message hidden text-red-600 text-xs mt-1"></p>
                   </div>
 
                   <!-- Teléfono y Email en grid en desktop -->
                   <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
                     <!-- Teléfono -->
                     <div>
-                      {{ form.telefono.label_tag }}
-                      {{ form.telefono }}
-                      {% if form.telefono.errors %}
-                        <p class="error-message text-red-600 text-xs mt-1">{{ form.telefono.errors.0 }}</p>
-                      {% endif %}
+                      <label for="telefono" class="block text-sm font-semibold text-gray-700 mb-2">
+                        Teléfono *
+                      </label>
+                      <input 
+                        type="tel" 
+                        id="telefono" 
+                        name="telefono" 
+                        required
+                        pattern="[0-9]{9,15}"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0D3B66] focus:border-transparent transition-all duration-300 text-sm sm:text-base"
+                        placeholder="Ej: 612345678"
+                      />
+                      <p class="error-message hidden text-red-600 text-xs mt-1"></p>
                     </div>
 
                     <!-- Email -->
                     <div>
-                      {{ form.email.label_tag }}
-                      {{ form.email }}
-                      {% if form.email.errors %}
-                        <p class="error-message text-red-600 text-xs mt-1">{{ form.email.errors.0 }}</p>
-                      {% endif %}
+                      <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">
+                        Email *
+                      </label>
+                      <input 
+                        type="email" 
+                        id="email" 
+                        name="email" 
+                        required
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0D3B66] focus:border-transparent transition-all duration-300 text-sm sm:text-base"
+                        placeholder="Ej: juan@email.com"
+                      />
+                      <p class="error-message hidden text-red-600 text-xs mt-1"></p>
                     </div>
                   </div>
                 </div>
@@ -175,13 +187,20 @@
                 </h3>
 
                 <div>
-                  {{ form.descripcion.label_tag }}
-                  {{ form.descripcion }}
-                  {% if form.descripcion.errors %}
-                    <p class="error-message text-red-600 text-xs mt-1">{{ form.descripcion.errors.0 }}</p>
-                  {% endif %}
+                  <label for="descripcion" class="block text-sm font-semibold text-gray-700 mb-2">
+                    Descripción del proyecto *
+                  </label>
+                  <textarea 
+                    id="descripcion" 
+                    name="descripcion" 
+                    required
+                    rows="6"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0D3B66] focus:border-transparent transition-all duration-300 resize-y text-sm sm:text-base"
+                    placeholder="Describe tu proyecto: tipo de instalación, estado actual, necesidades específicas..."
+                  ></textarea>
+                  <p class="error-message hidden text-red-600 text-xs mt-1"></p>
                   <p class="text-xs text-gray-500 mt-2">
-                    {{ form.descripcion.help_text }}
+                    Mínimo 20 caracteres. Sé lo más específico posible.
                   </p>
                 </div>
               </div>
@@ -193,15 +212,19 @@
                 </h3>
 
                 <div class="space-y-4">
-                  <!-- Input de archivos -->
-                  {{ form.images }}
-                  {% if form.images.errors %}
-                    <p class="error-message text-red-600 text-xs mt-1">{{ form.images.errors.0 }}</p>
-                  {% endif %}
+                  <!-- Input de archivos oculto -->
+                  <input 
+                    type="file" 
+                    id="fotos" 
+                    name="fotos" 
+                    accept="image/jpeg,image/png,image/jpg,image/webp"
+                    multiple
+                    class="hidden"
+                  />
 
                   <!-- Área de drop/click -->
-                  <div
-                    id="drop-area"
+                  <div 
+                    id="drop-area" 
                     class="border-2 border-dashed border-gray-300 rounded-lg p-6 sm:p-8 text-center cursor-pointer hover:border-[#0D3B66] hover:bg-gray-50 transition-all duration-300"
                   >
                     <svg class="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -211,7 +234,7 @@
                       <span class="font-semibold text-[#0D3B66]">Haz clic para seleccionar</span> o arrastra las fotos aquí
                     </p>
                     <p class="text-xs sm:text-sm text-gray-500">
-                      {{ form.images.help_text }}
+                      Máximo 5 fotos • JPG, PNG o WEBP • Máx. 5MB cada una
                     </p>
                   </div>
 
@@ -230,19 +253,23 @@
               <!-- Política de privacidad -->
               <div class="mb-6">
                 <label class="flex items-start gap-3 cursor-pointer group">
-                  {{ form.privacidad }}
+                  <input 
+                    type="checkbox" 
+                    id="privacidad" 
+                    name="privacidad" 
+                    required
+                    class="mt-1 w-4 h-4 text-[#0D3B66] border-gray-300 rounded focus:ring-2 focus:ring-[#0D3B66]"
+                  />
                   <span class="text-xs sm:text-sm text-gray-600 group-hover:text-gray-900 transition-colors">
                     Acepto la <a href="#" class="text-[#0D3B66] font-semibold hover:underline">política de privacidad</a> y el tratamiento de mis datos personales *
                   </span>
                 </label>
-                {% if form.privacidad.errors %}
-                  <p class="error-message text-red-600 text-xs mt-1 ml-7">{{ form.privacidad.errors.0 }}</p>
-                {% endif %}
+                <p class="error-message hidden text-red-600 text-xs mt-1 ml-7"></p>
               </div>
 
               <!-- Botón de envío -->
-              <button
-                type="submit"
+              <button 
+                type="submit" 
                 id="submit-button"
                 class="w-full bg-[#0D3B66] text-white font-bold py-3 sm:py-4 px-6 rounded-lg hover:bg-[#1a5080] transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl text-sm sm:text-base"
               >
@@ -255,6 +282,9 @@
                   Enviando...
                 </span>
               </button>
+
+              <!-- Mensaje de éxito/error -->
+              <div id="form-message" class="hidden mt-4 p-4 rounded-lg text-sm sm:text-base"></div>
 
             </form>
           </div>
@@ -274,6 +304,6 @@
       </div>
     </footer>
 
-    <script type="module" src="{% static 'dist/assets/index-Cz6qP6vT.js' %}"></script>
+    
   </body>
 </html>

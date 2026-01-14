@@ -1,23 +1,93 @@
-{% extends 'web/base.html' %}
 {% load static %}
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Arynstal SL - Servicios de construcción, reformas e instalaciones eléctricas." />
+    <title>Servicios - Arynstal SL</title>
+    <script type="module" crossorigin src="{% static 'assets/index-B7vlPUZ6.js' %}"></script>
+    <link rel="stylesheet" crossorigin href="{% static 'assets/index-BnlAnuup.css' %}">
+  </head>
 
-{% block title %}Servicios - Arynstal SL{% endblock %}
+  <body class="flex flex-col min-h-screen bg-gris-claro">
+    <!-- Header con menú hamburguesa -->
+    <header class="w-full bg-gradient-to-r from-[#E0E8F2] via-[#5A7D9A] to-[#0D3B66] px-4 py-3 flex items-center justify-between shadow-sm relative z-50 flex-shrink-0">
+      <!-- LOGO -->
+      <div class="w-28 sm:w-36">
+        <img src="{% static 'img/services/logotipo.png' %}" alt="Logotipo Arynstal SL" class="w-full h-auto">
+      </div>
 
-{% block content %}
+      <!-- BOTÓN HAMBURGUESA -->
+      <button id="menuToggle" aria-label="Abrir menú"
+        class="lg:hidden text-2xl sm:text-3xl text-white transition-all duration-300 ease-in-out px-2 py-1 rounded-md">
+        ☰
+      </button>
 
-<section class="bg-white box-border py-5">
-  <h1 class="text-4xl font-bold text-center text-azul-oscuro mb-8">
-    NUESTRAS ÁREAS DE SERVICIO
-  </h1>
+      <!-- MENÚ DESPLEGABLE -->
+      <nav id="mobileMenu"
+        class="hidden lg:flex flex-col lg:flex-row gap-4 lg:gap-10 text-white font-semibold absolute top-full left-0 w-full bg-[#0D3B66] px-6 py-4 lg:static lg:bg-transparent lg:px-0 lg:py-0 lg:w-auto z-40">
+        <a href="{% url 'home' %}" class="menu-link">INICIO</a>
+        <a href="{% url 'services' %}" class="menu-link">SERVICIOS</a>
+        <a href="{% url 'projects' %}" class="menu-link">PROYECTOS</a>
+        <a href="{% url 'about_us' %}" class="menu-link">SOBRE NOSOTROS</a>
+        <a href="{% url 'contact_us' %}" class="menu-link">CONTÁCTANOS</a>
+      </nav>
+    </header>
 
-  <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 px-6 justify-items-center mb-10">
-    <div class="bg-gris-claro rounded-xl p-6 shadow-md text-center w-full max-w-sm">Servicio 1</div>
-    <div class="bg-gris-claro rounded-xl p-6 shadow-md text-center w-full max-w-sm">Servicio 2</div>
-    <div class="bg-gris-claro rounded-xl p-6 shadow-md text-center w-full max-w-sm">Servicio 3</div>
-    <div class="bg-gris-claro rounded-xl p-6 shadow-md text-center w-full max-w-sm">Servicio 4</div>
-    <div class="bg-gris-claro rounded-xl p-6 shadow-md text-center w-full max-w-sm">Servicio 5</div>
-    <div class="bg-gris-claro rounded-xl p-6 shadow-md text-center w-full max-w-sm">Servicio 6</div>
-  </section>
-</section>
+    <!-- Sección Principal -->
+    <section class="bg-white box-border py-8 sm:py-12 lg:py-16 flex-1">
+      <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-center text-azul-oscuro mb-6 sm:mb-8 lg:mb-10 px-4 sm:px-6">
+        NUESTRAS ÁREAS DE SERVICIO
+      </h1>
 
-{% endblock %}
+      <!-- Primera fila de servicios -->
+      <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 max-w-7xl mx-auto mb-8 sm:mb-10 px-4 sm:px-6">
+        <article class="service-card bg-gris-claro rounded-xl p-4 sm:p-6 shadow-md text-center w-full min-h-[100px] sm:min-h-[120px] flex items-center justify-center transition-all duration-300 hover:-translate-y-2 hover:shadow-xl cursor-pointer" data-service="1">
+          <span class="text-base sm:text-lg font-semibold text-gris-oscuro">Servicio 1</span>
+        </article>
+
+        <article class="service-card bg-gris-claro rounded-xl p-4 sm:p-6 shadow-md text-center w-full min-h-[100px] sm:min-h-[120px] flex items-center justify-center transition-all duration-300 hover:-translate-y-2 hover:shadow-xl cursor-pointer" data-service="2">
+          <span class="text-base sm:text-lg font-semibold text-gris-oscuro">Servicio 2</span>
+        </article>
+
+        <article class="service-card bg-gris-claro rounded-xl p-4 sm:p-6 shadow-md text-center w-full min-h-[100px] sm:min-h-[120px] flex items-center justify-center transition-all duration-300 hover:-translate-y-2 hover:shadow-xl cursor-pointer" data-service="3">
+          <span class="text-base sm:text-lg font-semibold text-gris-oscuro">Servicio 3</span>
+        </article>
+      </section>
+
+      <!-- PANEL EXPANDIBLE DESKTOP -->
+      <div id="expanded-panel" class="hidden transition-all duration-700 ease-in-out w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] lg:block" style="opacity: 0;">
+        <!-- El contenido se insertará aquí dinámicamente en DESKTOP -->
+      </div>
+
+      <!-- Segunda fila de servicios -->
+      <div id="bottom-curtain">
+        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 max-w-7xl mx-auto mb-8 sm:mb-10 mt-8 sm:mt-10 px-4 sm:px-6">
+          <article class="service-card bg-gris-claro rounded-xl p-4 sm:p-6 shadow-md text-center w-full min-h-[100px] sm:min-h-[120px] flex items-center justify-center transition-all duration-300 hover:-translate-y-2 hover:shadow-xl cursor-pointer" data-service="4">
+            <span class="text-base sm:text-lg font-semibold text-gris-oscuro">Servicio 4</span>
+          </article>
+
+          <article class="service-card bg-gris-claro rounded-xl p-4 sm:p-6 shadow-md text-center w-full min-h-[100px] sm:min-h-[120px] flex items-center justify-center transition-all duration-300 hover:-translate-y-2 hover:shadow-xl cursor-pointer" data-service="5">
+            <span class="text-base sm:text-lg font-semibold text-gris-oscuro">Servicio 5</span>
+          </article>
+
+          <article class="service-card bg-gris-claro rounded-xl p-4 sm:p-6 shadow-md text-center w-full min-h-[100px] sm:min-h-[120px] flex items-center justify-center transition-all duration-300 hover:-translate-y-2 hover:shadow-xl cursor-pointer" data-service="6">
+            <span class="text-base sm:text-lg font-semibold text-gris-oscuro">Servicio 6</span>
+          </article>
+        </section>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="site-footer flex-shrink-0">
+      <div class="footer-box">
+        <p><strong>Arynstal SL</strong></p>
+        <p class="text-sm sm:text-base">Tel: +34 912 345 678</p>
+        <p class="text-sm sm:text-base">Email: contacto@arynstal.com</p>
+        <p class="text-sm sm:text-base">Dirección: C/ Naranjo 123, Hospitalet de Llobregat</p>
+      </div>
+    </footer>
+
+  </body>
+</html>
