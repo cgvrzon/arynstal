@@ -20,11 +20,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # Apps del proyecto
-    'leads.apps.LeadsConfig',
-    'services.apps.ServicesConfig',
-    'users.apps.UsersConfig',
-    'contact.apps.ContactConfig',
-    'web',
+    'apps.leads.apps.LeadsConfig',
+    'apps.services.apps.ServicesConfig',
+    'apps.users.apps.UsersConfig',
+    'apps.contact.apps.ContactConfig',
+    'apps.web.apps.WebConfig',
 ]
 
 MIDDLEWARE = [
@@ -42,7 +42,7 @@ ROOT_URLCONF = 'arynstal.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'web/templates'],
+        'DIRS': [BASE_DIR / 'apps/web/templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -95,7 +95,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
-    BASE_DIR / 'web/static',
+    BASE_DIR / 'apps/web/static',
 ]
 
 STATIC_ROOT = BASE_DIR / 'staticfiles'

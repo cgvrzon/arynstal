@@ -25,7 +25,7 @@ admin.site.site_title = "Arynstal Admin"
 admin.site.index_title = "Panel de control"
 
 urlpatterns = [
-    path('', include('web.urls')),
+    path('', include('apps.web.urls')),
     path('admin/', admin.site.urls),
 ]
 
