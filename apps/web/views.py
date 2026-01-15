@@ -3,6 +3,7 @@ Vistas públicas de la aplicación web (frontend).
 
 FASE 7: Formulario de contacto conectado a modelo Lead.
 FASE 8: Seguridad anti-spam (rate limiting + honeypot).
+FASE 9: Notificaciones por email (admin + cliente).
 """
 
 from django.shortcuts import render, redirect
@@ -12,6 +13,7 @@ from django_ratelimit.decorators import ratelimit
 from django_ratelimit.exceptions import Ratelimited
 from apps.leads.forms import LeadForm
 from apps.leads.models import Lead, LeadImage
+from apps.leads.notifications import notify_new_lead
 
 
 def home(request):
@@ -130,6 +132,9 @@ def contact_us(request):
                     lead=lead,
                     image=image
                 )
+
+            # Enviar notificaciones por email (no bloquea si falla)
+            notify_new_lead(lead)
 
             # Mensaje de éxito
             messages.success(

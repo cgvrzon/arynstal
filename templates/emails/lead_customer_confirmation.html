@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hemos recibido tu solicitud</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            border-bottom: 3px solid #2563eb;
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+        }
+        .header h1 {
+            color: #2563eb;
+            margin: 0 0 10px 0;
+            font-size: 28px;
+        }
+        .check-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        .greeting {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        .content {
+            background-color: #f8fafc;
+            border-radius: 6px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .summary {
+            margin: 25px 0;
+        }
+        .summary-item {
+            display: flex;
+            padding: 8px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .summary-label {
+            font-weight: 600;
+            color: #666;
+            width: 120px;
+            flex-shrink: 0;
+        }
+        .summary-value {
+            color: #333;
+        }
+        .highlight-box {
+            background-color: #ecfdf5;
+            border: 1px solid #a7f3d0;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .highlight-box p {
+            margin: 0;
+            color: #065f46;
+            font-weight: 500;
+        }
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+        }
+        .footer a {
+            color: #2563eb;
+            text-decoration: none;
+        }
+        .social {
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="check-icon">&#10003;</div>
+            <h1>¡Solicitud recibida!</h1>
+        </div>
+
+        <p class="greeting">Hola {{ lead.name }},</p>
+
+        <p>Gracias por ponerte en contacto con <strong>Arynstal</strong>. Hemos recibido tu solicitud correctamente.</p>
+
+        <div class="highlight-box">
+            <p>Nos pondremos en contacto contigo en menos de 24 horas.</p>
+        </div>
+
+        <div class="content">
+            <h3 style="margin-top: 0;">Resumen de tu solicitud:</h3>
+
+            <div class="summary">
+                <div class="summary-item">
+                    <span class="summary-label">Nombre:</span>
+                    <span class="summary-value">{{ lead.name }}</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Email:</span>
+                    <span class="summary-value">{{ lead.email }}</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Teléfono:</span>
+                    <span class="summary-value">{{ lead.phone }}</span>
+                </div>
+                {% if lead.service_type %}
+                <div class="summary-item">
+                    <span class="summary-label">Servicio:</span>
+                    <span class="summary-value">{{ lead.get_service_type_display }}</span>
+                </div>
+                {% endif %}
+            </div>
+
+            <p style="margin-bottom: 0;"><strong>Tu mensaje:</strong></p>
+            <p style="background: #fff; padding: 10px; border-radius: 4px; margin-top: 8px;">{{ lead.message }}</p>
+
+            {% if lead.images.exists %}
+            <p><em>Has adjuntado {{ lead.images.count }} imagen(es) a tu solicitud.</em></p>
+            {% endif %}
+        </div>
+
+        <p>Si tienes alguna pregunta urgente, puedes contactarnos directamente:</p>
+        <ul>
+            <li>Email: info@arynstal.es</li>
+            <li>Teléfono: 600 000 000</li>
+        </ul>
+
+        <div class="footer">
+            <p><strong>Arynstal</strong> - Instalaciones y reformas</p>
+            <p>Este es un mensaje automático. Por favor, no respondas directamente a este email.</p>
+            <p><a href="https://arynstal.es/privacy/">Política de privacidad</a></p>
+        </div>
+    </div>
+</body>
+</html>

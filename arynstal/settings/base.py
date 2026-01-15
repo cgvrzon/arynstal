@@ -156,3 +156,25 @@ FORM_SECURITY = {
     #     'MIN_FILL_TIME_SECONDS': 3,  # Mínimo tiempo para llenar formulario
     # },
 }
+
+
+# =============================================================================
+# CONFIGURACIÓN DE NOTIFICACIONES
+# =============================================================================
+# Sistema de notificaciones por email para eventos del sistema.
+
+NOTIFICATIONS = {
+    # Notificaciones de nuevos leads
+    'LEAD': {
+        'ENABLED': True,
+        # Email(s) que reciben notificación de nuevo lead (admin/comercial)
+        'ADMIN_EMAIL': 'info@arynstal.es',
+        # Enviar confirmación al cliente
+        'SEND_CUSTOMER_CONFIRMATION': True,
+    },
+    # Preparado para futuras notificaciones:
+    # 'BUDGET_REQUEST': {
+    #     'ENABLED': True,
+    #     'ADMIN_EMAIL': 'presupuestos@arynstal.es',
+    # },
+}

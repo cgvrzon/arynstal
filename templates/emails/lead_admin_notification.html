@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nuevo contacto recibido</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header {
+            border-bottom: 3px solid #2563eb;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+        .header h1 {
+            color: #2563eb;
+            margin: 0;
+            font-size: 24px;
+        }
+        .label {
+            font-weight: 600;
+            color: #666;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+        .value {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #f8fafc;
+            border-radius: 4px;
+            border-left: 3px solid #2563eb;
+        }
+        .message-box {
+            background-color: #f0f9ff;
+            border: 1px solid #bae6fd;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .message-box p {
+            margin: 0;
+            white-space: pre-wrap;
+        }
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+        }
+        .btn {
+            display: inline-block;
+            background-color: #2563eb;
+            color: #ffffff !important;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: 600;
+            margin-top: 20px;
+        }
+        .meta {
+            font-size: 11px;
+            color: #999;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Nuevo contacto recibido</h1>
+        </div>
+
+        <p>Se ha recibido una nueva solicitud de contacto a través del formulario web.</p>
+
+        <div class="label">Nombre</div>
+        <div class="value">{{ lead.name }}</div>
+
+        <div class="label">Email</div>
+        <div class="value">{{ lead.email }}</div>
+
+        <div class="label">Teléfono</div>
+        <div class="value">{{ lead.phone }}</div>
+
+        {% if lead.service_type %}
+        <div class="label">Tipo de servicio</div>
+        <div class="value">{{ lead.get_service_type_display }}</div>
+        {% endif %}
+
+        <div class="label">Mensaje</div>
+        <div class="message-box">
+            <p>{{ lead.message }}</p>
+        </div>
+
+        {% if lead.images.exists %}
+        <div class="label">Imágenes adjuntas</div>
+        <div class="value">{{ lead.images.count }} imagen(es) adjunta(s)</div>
+        {% endif %}
+
+        <a href="{{ lead_url }}" class="btn">Ver en panel de administración</a>
+
+        <div class="meta">
+            <p>Fecha: {{ lead.created_at|date:"d/m/Y H:i" }}</p>
+            <p>IP: {{ lead.ip_address|default:"No disponible" }}</p>
+        </div>
+
+        <div class="footer">
+            <p>Este es un mensaje automático del sistema de Arynstal.</p>
+            <p>Por favor, responde directamente al cliente usando su email.</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -50,6 +50,15 @@ EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'info@arynstal.es')
 
+# Email de administración para notificaciones (override desde env)
+NOTIFICATIONS = {
+    'LEAD': {
+        'ENABLED': True,
+        'ADMIN_EMAIL': os.environ.get('LEAD_NOTIFICATION_EMAIL', 'info@arynstal.es'),
+        'SEND_CUSTOMER_CONFIRMATION': True,
+    },
+}
+
 
 # Security settings
 # https://docs.djangoproject.com/en/6.0/ref/settings/#security

@@ -8,7 +8,7 @@ Batería completa de pruebas que cubre:
 - Edge cases y situaciones de error
 """
 
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.utils import timezone
@@ -516,3 +516,226 @@ class LeadConcurrencyTest(TestCase):
             LeadImage.objects.create(lead=lead, image=image)
 
         self.assertEqual(lead.get_images_count(), 5)
+
+
+# =============================================================================
+# TESTS DE NOTIFICACIONES POR EMAIL
+# =============================================================================
+
+from unittest.mock import patch, MagicMock
+from apps.leads.notifications import (
+    notify_new_lead,
+    send_admin_notification,
+    send_customer_confirmation,
+    get_notification_config,
+)
+
+
+class NotificationConfigTest(TestCase):
+    """Tests para la configuración de notificaciones."""
+
+    def test_get_notification_config(self):
+        """Test: Obtener configuración de notificaciones."""
+        config = get_notification_config()
+        self.assertIsInstance(config, dict)
+
+    @override_settings(NOTIFICATIONS={'LEAD': {'ENABLED': True, 'ADMIN_EMAIL': 'test@test.com'}})
+    def test_config_returns_correct_values(self):
+        """Test: Configuración retorna valores correctos."""
+        config = get_notification_config()
+        self.assertTrue(config.get('ENABLED'))
+        self.assertEqual(config.get('ADMIN_EMAIL'), 'test@test.com')
+
+
+class AdminNotificationTest(TestCase):
+    """Tests para notificaciones al administrador."""
+
+    def setUp(self):
+        self.lead = Lead.objects.create(
+            name='Test User',
+            email='customer@example.com',
+            phone='666777888',
+            message='Mensaje de prueba con más de veinte caracteres.',
+            source='web',
+        )
+
+    @override_settings(
+        NOTIFICATIONS={'LEAD': {'ENABLED': True, 'ADMIN_EMAIL': 'admin@test.com'}},
+        DEFAULT_FROM_EMAIL='noreply@test.com',
+    )
+    @patch('apps.leads.notifications.EmailMultiAlternatives')
+    def test_send_admin_notification_success(self, mock_email_class):
+        """Test: Envío exitoso de notificación al admin."""
+        mock_email = MagicMock()
+        mock_email_class.return_value = mock_email
+
+        result = send_admin_notification(self.lead)
+
+        self.assertTrue(result)
+        mock_email_class.assert_called_once()
+        mock_email.attach_alternative.assert_called_once()
+        mock_email.send.assert_called_once_with(fail_silently=False)
+
+    @override_settings(
+        NOTIFICATIONS={'LEAD': {'ENABLED': True, 'ADMIN_EMAIL': 'admin@test.com'}},
+    )
+    @patch('apps.leads.notifications.EmailMultiAlternatives')
+    def test_admin_notification_contains_lead_data(self, mock_email_class):
+        """Test: Notificación contiene datos del lead."""
+        mock_email = MagicMock()
+        mock_email_class.return_value = mock_email
+
+        send_admin_notification(self.lead)
+
+        call_kwargs = mock_email_class.call_args.kwargs
+        self.assertIn('Test User', call_kwargs['subject'])
+        self.assertEqual(call_kwargs['to'], ['admin@test.com'])
+
+    @override_settings(NOTIFICATIONS={'LEAD': {'ENABLED': False}})
+    def test_admin_notification_disabled(self):
+        """Test: Notificación deshabilitada no envía email."""
+        result = send_admin_notification(self.lead)
+        self.assertFalse(result)
+
+    @override_settings(
+        NOTIFICATIONS={'LEAD': {'ENABLED': True, 'ADMIN_EMAIL': 'admin@test.com'}},
+    )
+    @patch('apps.leads.notifications.EmailMultiAlternatives')
+    def test_admin_notification_handles_error(self, mock_email_class):
+        """Test: Error en envío no lanza excepción."""
+        mock_email = MagicMock()
+        mock_email.send.side_effect = Exception('SMTP Error')
+        mock_email_class.return_value = mock_email
+
+        result = send_admin_notification(self.lead)
+
+        self.assertFalse(result)
+
+
+class CustomerConfirmationTest(TestCase):
+    """Tests para confirmación al cliente."""
+
+    def setUp(self):
+        self.lead = Lead.objects.create(
+            name='Test User',
+            email='customer@example.com',
+            phone='666777888',
+            message='Mensaje de prueba con más de veinte caracteres.',
+            source='web',
+        )
+
+    @override_settings(
+        NOTIFICATIONS={'LEAD': {'ENABLED': True, 'SEND_CUSTOMER_CONFIRMATION': True}},
+        DEFAULT_FROM_EMAIL='noreply@test.com',
+    )
+    @patch('apps.leads.notifications.EmailMultiAlternatives')
+    def test_send_customer_confirmation_success(self, mock_email_class):
+        """Test: Envío exitoso de confirmación al cliente."""
+        mock_email = MagicMock()
+        mock_email_class.return_value = mock_email
+
+        result = send_customer_confirmation(self.lead)
+
+        self.assertTrue(result)
+        mock_email.send.assert_called_once()
+
+    @override_settings(
+        NOTIFICATIONS={'LEAD': {'ENABLED': True, 'SEND_CUSTOMER_CONFIRMATION': True}},
+    )
+    @patch('apps.leads.notifications.EmailMultiAlternatives')
+    def test_customer_confirmation_sent_to_correct_email(self, mock_email_class):
+        """Test: Confirmación se envía al email del cliente."""
+        mock_email = MagicMock()
+        mock_email_class.return_value = mock_email
+
+        send_customer_confirmation(self.lead)
+
+        call_kwargs = mock_email_class.call_args.kwargs
+        self.assertEqual(call_kwargs['to'], ['customer@example.com'])
+
+    @override_settings(NOTIFICATIONS={'LEAD': {'ENABLED': True, 'SEND_CUSTOMER_CONFIRMATION': False}})
+    def test_customer_confirmation_disabled(self):
+        """Test: Confirmación deshabilitada no envía email."""
+        result = send_customer_confirmation(self.lead)
+        self.assertFalse(result)
+
+    @override_settings(NOTIFICATIONS={'LEAD': {'ENABLED': False}})
+    def test_customer_confirmation_when_notifications_disabled(self):
+        """Test: Confirmación no se envía si notificaciones están deshabilitadas."""
+        result = send_customer_confirmation(self.lead)
+        self.assertFalse(result)
+
+    @override_settings(
+        NOTIFICATIONS={'LEAD': {'ENABLED': True, 'SEND_CUSTOMER_CONFIRMATION': True}},
+    )
+    @patch('apps.leads.notifications.EmailMultiAlternatives')
+    def test_customer_confirmation_handles_error(self, mock_email_class):
+        """Test: Error en envío no lanza excepción."""
+        mock_email = MagicMock()
+        mock_email.send.side_effect = Exception('SMTP Error')
+        mock_email_class.return_value = mock_email
+
+        result = send_customer_confirmation(self.lead)
+
+        self.assertFalse(result)
+
+
+class NotifyNewLeadTest(TestCase):
+    """Tests para la función principal de notificación."""
+
+    def setUp(self):
+        self.lead = Lead.objects.create(
+            name='Test User',
+            email='customer@example.com',
+            phone='666777888',
+            message='Mensaje de prueba con más de veinte caracteres.',
+            source='web',
+        )
+
+    @override_settings(
+        NOTIFICATIONS={'LEAD': {
+            'ENABLED': True,
+            'ADMIN_EMAIL': 'admin@test.com',
+            'SEND_CUSTOMER_CONFIRMATION': True,
+        }},
+        DEFAULT_FROM_EMAIL='noreply@test.com',
+    )
+    @patch('apps.leads.notifications.EmailMultiAlternatives')
+    def test_notify_new_lead_sends_both(self, mock_email_class):
+        """Test: notify_new_lead envía ambas notificaciones."""
+        mock_email = MagicMock()
+        mock_email_class.return_value = mock_email
+
+        results = notify_new_lead(self.lead)
+
+        self.assertTrue(results['admin_notified'])
+        self.assertTrue(results['customer_confirmed'])
+        # Se llama dos veces: una para admin, otra para cliente
+        self.assertEqual(mock_email.send.call_count, 2)
+
+    @override_settings(
+        NOTIFICATIONS={'LEAD': {
+            'ENABLED': True,
+            'ADMIN_EMAIL': 'admin@test.com',
+            'SEND_CUSTOMER_CONFIRMATION': False,
+        }},
+    )
+    @patch('apps.leads.notifications.EmailMultiAlternatives')
+    def test_notify_new_lead_admin_only(self, mock_email_class):
+        """Test: notify_new_lead solo envía a admin si confirmación deshabilitada."""
+        mock_email = MagicMock()
+        mock_email_class.return_value = mock_email
+
+        results = notify_new_lead(self.lead)
+
+        self.assertTrue(results['admin_notified'])
+        self.assertFalse(results['customer_confirmed'])
+        self.assertEqual(mock_email.send.call_count, 1)
+
+    @override_settings(NOTIFICATIONS={'LEAD': {'ENABLED': False}})
+    def test_notify_new_lead_all_disabled(self):
+        """Test: notify_new_lead no envía nada si está deshabilitado."""
+        results = notify_new_lead(self.lead)
+
+        self.assertFalse(results['admin_notified'])
+        self.assertFalse(results['customer_confirmed'])
