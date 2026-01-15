@@ -8,6 +8,8 @@
     <title>Contacto - Solicitar Presupuesto | Arynstal SL</title>
     <script type="module" crossorigin src="{% static 'assets/index-BsthKayq.js' %}"></script>
     <link rel="stylesheet" crossorigin href="{% static 'assets/index-BnlAnuup.css' %}">
+    <!-- Honeypot CSS - oculta el campo trampa de forma que los bots no lo detecten -->
+    <style>.ohnohoney{opacity:0;position:absolute;top:0;left:0;height:0;width:0;z-index:-1;overflow:hidden;}</style>
   </head>
 
   <body class="flex flex-col min-h-screen bg-gray-50">
@@ -118,6 +120,12 @@
           <div class="lg:col-span-2 order-1 lg:order-2">
             <form id="contact-form" method="POST" action="{% url 'contact_us' %}" enctype="multipart/form-data" class="bg-white rounded-lg shadow-md p-6 sm:p-8 lg:p-10" novalidate>
               {% csrf_token %}
+
+              <!-- Honeypot anti-spam: campo oculto que los bots llenan -->
+              <div class="ohnohoney" aria-hidden="true">
+                <label for="website_url">Website URL</label>
+                <input type="text" name="website_url" id="website_url" autocomplete="off" tabindex="-1">
+              </div>
 
               <!-- Mensajes de Django -->
               {% if messages %}

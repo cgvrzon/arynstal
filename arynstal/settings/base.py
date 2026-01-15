@@ -117,3 +117,42 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024  # 10MB máximo por archivo
 # https://docs.djangoproject.com/en/6.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# =============================================================================
+# CONFIGURACIÓN DE SEGURIDAD - FORMULARIOS PÚBLICOS
+# =============================================================================
+# Configuración centralizada para medidas anti-spam.
+# Escalable: añadir nuevas configuraciones aquí para futuras medidas.
+
+FORM_SECURITY = {
+    # Rate Limiting - Límites de envío por IP
+    'RATE_LIMIT': {
+        'CONTACT_FORM': {
+            'rate': '5/h',  # 5 envíos por hora por IP
+            'block': True,  # Bloquear si excede (vs solo avisar)
+        },
+        # Preparado para futuros formularios:
+        # 'NEWSLETTER': {'rate': '3/d', 'block': True},
+        # 'COMMENTS': {'rate': '10/h', 'block': False},
+    },
+
+    # Honeypot - Campos trampa para bots
+    'HONEYPOT': {
+        'FIELD_NAME': 'website_url',  # Nombre del campo trampa
+        'CSS_CLASS': 'ohnohoney',  # Clase CSS para ocultar
+        'ENABLED': True,
+    },
+
+    # Preparado para futuras medidas:
+    # 'CAPTCHA': {
+    #     'ENABLED': False,
+    #     'PROVIDER': 'recaptcha',  # 'recaptcha', 'hcaptcha', 'turnstile'
+    #     'SITE_KEY': '',
+    #     'SECRET_KEY': '',
+    # },
+    # 'BEHAVIOR_ANALYSIS': {
+    #     'ENABLED': False,
+    #     'MIN_FILL_TIME_SECONDS': 3,  # Mínimo tiempo para llenar formulario
+    # },
+}
