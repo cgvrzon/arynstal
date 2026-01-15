@@ -1,10 +1,27 @@
+"""
+App contact - DEPRECADA
+
+Esta app ha sido reemplazada por la app 'leads'.
+Se mantiene por compatibilidad con datos existentes.
+NO usar para nuevo desarrollo.
+
+Para gestionar contactos, usar apps.leads.models.Lead
+"""
+import warnings
 from django.db import models
 
 
 class ContactMessage(models.Model):
     """
+    DEPRECADO: Usar Lead en su lugar.
+
     Mensajes genéricos del formulario de contacto.
     Para consultas que no son solicitudes de presupuesto.
+
+    .. deprecated::
+        Esta clase está obsoleta. Usar `apps.leads.models.Lead` para
+        nuevos contactos. Esta clase se mantiene solo para acceder
+        a datos históricos.
     """
     name = models.CharField(
         max_length=100,

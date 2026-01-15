@@ -1,0 +1,17 @@
+# =============================================================================
+# ROBOTS.TXT - Arynstal
+# =============================================================================
+# Indica a los motores de búsqueda qué páginas pueden indexar.
+
+User-agent: *
+Allow: /
+
+# Bloquear acceso al panel de administración
+Disallow: /gestion-interna/
+
+# Bloquear archivos de media privados
+Disallow: /media/leads/
+Disallow: /media/budgets/
+
+# Sitemap
+Sitemap: https://arynstal.es/sitemap.xml

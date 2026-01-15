@@ -1,3 +1,9 @@
+"""
+Admin de Contact - DEPRECADO
+
+Esta app ha sido reemplazada por 'leads'.
+Se mantiene solo para acceder a datos históricos.
+"""
 from django.contrib import admin
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
@@ -7,7 +13,9 @@ from .models import ContactMessage
 @admin.register(ContactMessage)
 class ContactMessageAdmin(admin.ModelAdmin):
     """
-    Configuración del panel de administración para mensajes de contacto.
+    DEPRECADO: Los nuevos contactos se gestionan en Leads.
+
+    Configuración del panel de administración para mensajes de contacto históricos.
     """
     list_display = (
         'id',

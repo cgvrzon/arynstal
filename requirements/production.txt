@@ -1,0 +1,17 @@
+# =============================================================================
+# DEPENDENCIAS DE PRODUCCIÓN
+# =============================================================================
+
+-r base.txt
+
+# Base de datos PostgreSQL
+psycopg2-binary>=2.9
+
+# Servidor WSGI
+gunicorn>=21.0
+
+# Archivos estáticos en producción (opcional, si no usas Nginx para static)
+# whitenoise>=6.6
+
+# Variables de entorno (opcional)
+# python-dotenv>=1.0

@@ -178,3 +178,19 @@ NOTIFICATIONS = {
     #     'ADMIN_EMAIL': 'presupuestos@arynstal.es',
     # },
 }
+
+
+# =============================================================================
+# INFORMACIÓN DE LA EMPRESA
+# =============================================================================
+# Datos de contacto y empresa para usar en templates y emails.
+
+COMPANY_INFO = {
+    'NAME': 'Arynstal',
+    'LEGAL_NAME': 'Arynstal S.L.',
+    'EMAIL': 'info@arynstal.es',
+    'PHONE': '600 000 000',  # TODO: Actualizar con teléfono real
+    'ADDRESS': 'Barcelona, España',
+    'WEBSITE': 'https://arynstal.es',
+    'DESCRIPTION': 'Instalaciones y reformas',
+}

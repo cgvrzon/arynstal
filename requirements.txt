@@ -1,0 +1,8 @@
+# Archivo principal de requirements
+# Por defecto instala dependencias de desarrollo
+#
+# Uso:
+#   Desarrollo: pip install -r requirements.txt
+#   Producción: pip install -r requirements/production.txt
+
+-r requirements/development.txt
