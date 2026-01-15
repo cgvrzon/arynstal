@@ -168,7 +168,7 @@ NOTIFICATIONS = {
     'LEAD': {
         'ENABLED': True,
         # Email(s) que reciben notificación de nuevo lead (admin/comercial)
-        'ADMIN_EMAIL': 'info@arynstal.es',
+        'ADMIN_EMAIL': 'garzoncl01@gmail.com',
         # Enviar confirmación al cliente
         'SEND_CUSTOMER_CONFIRMATION': True,
     },

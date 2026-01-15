@@ -54,7 +54,7 @@ DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'info@arynstal.es')
 NOTIFICATIONS = {
     'LEAD': {
         'ENABLED': True,
-        'ADMIN_EMAIL': os.environ.get('LEAD_NOTIFICATION_EMAIL', 'info@arynstal.es'),
+        'ADMIN_EMAIL': os.environ.get('LEAD_NOTIFICATION_EMAIL', 'garzoncl01@gmail.com'),
         'SEND_CUSTOMER_CONFIRMATION': True,
     },
 }
