@@ -11,10 +11,9 @@ Uso:
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
 from django.db import transaction
-from services.models import Service
-from leads.models import Lead, Budget
-from contact.models import ContactMessage
-from users.models import UserProfile
+from apps.services.models import Service
+from apps.leads.models import Lead, Budget
+from apps.users.models import UserProfile
 
 
 class Command(BaseCommand):
@@ -41,21 +40,15 @@ class Command(BaseCommand):
             action='store_true',
             help='Solo crea usuarios',
         )
-        parser.add_argument(
-            '--only-contacts',
-            action='store_true',
-            help='Solo crea mensajes de contacto',
-        )
 
     def handle(self, *args, **options):
         clear = options['clear']
         only_services = options['only_services']
         only_leads = options['only_leads']
         only_users = options['only_users']
-        only_contacts = options['only_contacts']
 
         # Si no se especifica ningún --only, crear todos
-        create_all = not any([only_services, only_leads, only_users, only_contacts])
+        create_all = not any([only_services, only_leads, only_users])
 
         self.stdout.write(self.style.SUCCESS('=' * 70))
         self.stdout.write(self.style.SUCCESS('  SEED DATABASE - ARYNSTAL SL'))
@@ -65,9 +58,6 @@ class Command(BaseCommand):
             # Limpiar datos si se solicita
             if clear:
                 self.stdout.write(self.style.WARNING('\n🗑️  Limpiando datos existentes...'))
-                if create_all or only_contacts:
-                    ContactMessage.objects.all().delete()
-                    self.stdout.write('  ✓ Mensajes de contacto eliminados')
                 if create_all or only_leads:
                     Budget.objects.all().delete()
                     Lead.objects.all().delete()
@@ -94,11 +84,6 @@ class Command(BaseCommand):
             if create_all or only_leads:
                 self.stdout.write(self.style.SUCCESS('\n📋 Creando leads...'))
                 self._create_leads()
-
-            # Crear mensajes de contacto
-            if create_all or only_contacts:
-                self.stdout.write(self.style.SUCCESS('\n✉️  Creando mensajes de contacto...'))
-                self._create_contact_messages()
 
         self.stdout.write(self.style.SUCCESS('\n' + '=' * 70))
         self.stdout.write(self.style.SUCCESS('✅ Base de datos poblada correctamente'))
@@ -322,44 +307,3 @@ class Command(BaseCommand):
                     self.stdout.write(f'  💰 Presupuesto creado: {budget.reference} - {budget.amount}€')
 
         self.stdout.write(self.style.SUCCESS(f'  Total: {count} leads creados'))
-
-    def _create_contact_messages(self):
-        """Crea mensajes de contacto de ejemplo"""
-        messages_data = [
-            {
-                "name": "Roberto Sánchez",
-                "email": "roberto@email.com",
-                "subject": "Consulta sobre servicios",
-                "message": "¿Trabajáis en la zona de Tarragona? Necesitaría un presupuesto para aerotermia.",
-                "is_read": False
-            },
-            {
-                "name": "Laura Jiménez",
-                "email": "laura.j@empresa.com",
-                "subject": "Horario de atención",
-                "message": "¿Cuál es vuestro horario de atención telefónica?",
-                "is_read": True
-            },
-            {
-                "name": "Miguel Torres",
-                "email": "miguel.torres@gmail.com",
-                "subject": "Certificados",
-                "message": "¿Disponéis de certificación para instalaciones eléctricas de baja tensión?",
-                "is_read": False
-            },
-        ]
-
-        count = 0
-        for data in messages_data:
-            msg, created = ContactMessage.objects.get_or_create(
-                email=data["email"],
-                defaults=data
-            )
-            if created:
-                count += 1
-                read_emoji = '✅' if msg.is_read else '📧'
-                self.stdout.write(f'  {read_emoji} {msg.name} - {msg.subject}')
-            else:
-                self.stdout.write(f'  ⚠ {data["name"]} (ya existía)')
-
-        self.stdout.write(self.style.SUCCESS(f'  Total: {count} mensajes creados'))

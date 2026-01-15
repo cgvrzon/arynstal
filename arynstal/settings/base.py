@@ -23,7 +23,6 @@ INSTALLED_APPS = [
     'apps.leads.apps.LeadsConfig',
     'apps.services.apps.ServicesConfig',
     'apps.users.apps.UsersConfig',
-    'apps.contact.apps.ContactConfig',
     'apps.web.apps.WebConfig',
 ]
 
