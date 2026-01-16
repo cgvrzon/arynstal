@@ -1,0 +1,71 @@
+# =============================================================================
+# CONFIGURACIÓN DE FLAKE8 (Linting)
+# PROYECTO: Arynstal - Sistema CRM
+# =============================================================================
+#
+# Ejecutar: flake8 apps/ arynstal/
+# Ver errores específicos: flake8 --select=E501 apps/
+#
+# NOTA: Esta configuración está adaptada al estilo de documentación propio
+# del proyecto que usa headers extensos en cada archivo.
+#
+# =============================================================================
+
+[flake8]
+# Longitud máxima de línea
+max-line-length = 130
+
+# Excluir directorios que no necesitan linting
+exclude =
+    .git,
+    __pycache__,
+    venv,
+    env,
+    .venv,
+    migrations,
+    staticfiles,
+    static,
+    node_modules,
+    .tox,
+    build,
+    dist,
+    *.egg-info,
+    scripts
+
+# Ignorar errores de estilo que no aplican a nuestro proyecto
+ignore =
+    # Estilo de docstrings (usamos formato propio)
+    D100,D101,D102,D103,D104,D105,D106,D107,
+    D200,D201,D202,D203,D204,D205,D206,D207,D208,D209,
+    D210,D211,D212,D213,D214,D215,
+    D300,D301,D302,
+    D400,D401,D402,D403,D404,D405,D406,D407,D408,D409,
+    D410,D411,D412,D413,D414,D415,D416,D417,D418,D419,
+    # Star imports en settings (patrón estándar de Django)
+    F403,
+    F405,
+    # Line break before binary operator (preferencia de estilo)
+    W503,
+    # Whitespace before ':' (conflicto con black)
+    E203,
+
+# Complejidad máxima de McCabe
+max-complexity = 15
+
+# Mostrar el código fuente
+show-source = True
+
+# Estadísticas al final
+statistics = True
+
+# Por archivo, ignorar errores específicos
+per-file-ignores =
+    # Tests: variables no usadas son comunes
+    */tests.py: F841,E501
+    **/tests/*.py: F841,E501
+    # Settings: imports especiales
+    */settings/*.py: E501
+    # Commands de management
+    */management/commands/*.py: E501,C901
+    # conftest.py
+    conftest.py: F401

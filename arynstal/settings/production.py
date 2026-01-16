@@ -247,3 +247,163 @@ LOGGING = {
 # NOTA: Crear directorio logs/ con:
 #   mkdir -p /ruta/al/proyecto/logs
 #   chown www-data:www-data /ruta/al/proyecto/logs
+
+
+# =============================================================================
+# SENTRY - Monitoreo de errores
+# =============================================================================
+# Sentry captura errores en producción y los envía a un dashboard centralizado.
+# Configurar SENTRY_DSN en las variables de entorno.
+#
+# Para obtener el DSN:
+#   1. Crear cuenta en https://sentry.io
+#   2. Crear proyecto Django
+#   3. Copiar el DSN del proyecto
+#
+# El DSN tiene formato: https://xxx@yyy.ingest.sentry.io/zzz
+
+SENTRY_DSN = os.environ.get('SENTRY_DSN')
+
+if SENTRY_DSN:
+    import sentry_sdk
+    from sentry_sdk.integrations.django import DjangoIntegration
+    from sentry_sdk.integrations.logging import LoggingIntegration
+
+    sentry_sdk.init(
+        dsn=SENTRY_DSN,
+
+        # Integraciones
+        integrations=[
+            DjangoIntegration(
+                # Capturar todas las transacciones
+                transaction_style="url",
+                # Middleware para medir performance
+                middleware_spans=True,
+            ),
+            LoggingIntegration(
+                # Capturar logs de nivel WARNING y superior
+                level=None,
+                event_level=None,
+            ),
+        ],
+
+        # Porcentaje de transacciones para performance monitoring (0.0 a 1.0)
+        # 0.1 = 10% de las peticiones se monitorizan para performance
+        traces_sample_rate=float(os.environ.get('SENTRY_TRACES_SAMPLE_RATE', '0.1')),
+
+        # Porcentaje de sesiones para monitorear (crash-free sessions)
+        profiles_sample_rate=float(os.environ.get('SENTRY_PROFILES_SAMPLE_RATE', '0.1')),
+
+        # Enviar datos de usuario (IP, email) con los errores
+        # Útil para debugging, pero considerar privacidad
+        send_default_pii=False,
+
+        # Entorno (production, staging, etc.)
+        environment=os.environ.get('SENTRY_ENVIRONMENT', 'production'),
+
+        # Release/versión para tracking de deploys
+        # release=os.environ.get('SENTRY_RELEASE', 'arynstal@1.0.0'),
+    )
+
+
+# =============================================================================
+# WHITENOISE - Archivos estáticos sin Nginx
+# =============================================================================
+# Whitenoise sirve archivos estáticos directamente desde Django.
+# Útil para deployments simples sin configurar Nginx para static.
+#
+# Para habilitar:
+#   1. Añadir al MIDDLEWARE después de SecurityMiddleware
+#   2. Ejecutar collectstatic
+
+# Descomentar si quieres usar Whitenoise en lugar de Nginx para static:
+# MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
+# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+
+# =============================================================================
+# CSP - Content Security Policy
+# =============================================================================
+# CSP previene ataques XSS controlando qué recursos puede cargar la página.
+# Cada directiva especifica qué orígenes están permitidos para ese tipo de recurso.
+#
+# Documentación: https://django-csp.readthedocs.io/
+# Referencia CSP: https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP
+
+# Añadir middleware de CSP
+MIDDLEWARE += ['csp.middleware.CSPMiddleware']
+
+# -------------------------------------------------------------------------
+# Directivas CSP
+# -------------------------------------------------------------------------
+
+# default-src: Fallback para directivas no especificadas
+CSP_DEFAULT_SRC = ("'self'",)
+
+# script-src: Scripts JavaScript
+CSP_SCRIPT_SRC = (
+    "'self'",
+    "'unsafe-inline'",  # Necesario para scripts inline en templates
+    # Añadir CDNs si los usas:
+    # "https://cdn.jsdelivr.net",
+    # "https://cdnjs.cloudflare.com",
+)
+
+# style-src: Hojas de estilo CSS
+CSP_STYLE_SRC = (
+    "'self'",
+    "'unsafe-inline'",  # Necesario para Tailwind inline styles
+    # Añadir fuentes de Google si las usas:
+    # "https://fonts.googleapis.com",
+)
+
+# img-src: Imágenes
+CSP_IMG_SRC = (
+    "'self'",
+    "data:",  # Para imágenes base64
+    "blob:",  # Para previews de imágenes
+)
+
+# font-src: Fuentes
+CSP_FONT_SRC = (
+    "'self'",
+    # "https://fonts.gstatic.com",  # Google Fonts
+)
+
+# connect-src: Conexiones (fetch, WebSocket, etc.)
+CSP_CONNECT_SRC = (
+    "'self'",
+    # Añadir Sentry si lo usas:
+    # "https://*.ingest.sentry.io",
+)
+
+# frame-src: Iframes
+CSP_FRAME_SRC = (
+    "'none'",  # No permitir iframes
+)
+
+# object-src: Plugins (Flash, Java, etc.)
+CSP_OBJECT_SRC = ("'none'",)
+
+# base-uri: Restricción de <base> tag
+CSP_BASE_URI = ("'self'",)
+
+# form-action: Destinos de formularios
+CSP_FORM_ACTION = ("'self'",)
+
+# frame-ancestors: Quién puede embeber esta página en iframe
+CSP_FRAME_ANCESTORS = ("'none'",)
+
+# -------------------------------------------------------------------------
+# Opciones adicionales
+# -------------------------------------------------------------------------
+
+# Reportar violaciones CSP (útil para debugging)
+# CSP_REPORT_URI = "/csp-report/"
+
+# Usar Report-Only para testear sin bloquear
+# Cambiar a False cuando estés seguro de que funciona
+CSP_REPORT_ONLY = os.environ.get('CSP_REPORT_ONLY', 'False').lower() == 'true'
+
+# Incluir header Upgrade-Insecure-Requests
+CSP_UPGRADE_INSECURE_REQUESTS = True

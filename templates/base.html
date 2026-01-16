@@ -5,12 +5,50 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>
-        {% block title %}Arynstal{% endblock %}
-    </title>
+    <!-- SEO: Título de la página -->
+    <title>{% block title %}Arynstal - Instalaciones y Reformas en Barcelona{% endblock %}</title>
 
+    <!-- SEO: Meta descripción -->
+    <meta name="description" content="{% block meta_description %}Arynstal SL - Empresa especializada en instalaciones de aerotermia, aire acondicionado, domótica KNX y reformas integrales en Barcelona y alrededores.{% endblock %}">
+
+    <!-- SEO: Keywords (menos importante hoy, pero no daña) -->
+    <meta name="keywords" content="{% block meta_keywords %}instalaciones, reformas, aerotermia, aire acondicionado, domótica, KNX, Barcelona, Hospitalet{% endblock %}">
+
+    <!-- SEO: Autor -->
+    <meta name="author" content="Arynstal SL">
+
+    <!-- SEO: Robots -->
+    <meta name="robots" content="{% block meta_robots %}index, follow{% endblock %}">
+
+    <!-- SEO: Canonical URL -->
+    {% block canonical %}<link rel="canonical" href="{{ request.build_absolute_uri }}">{% endblock %}
+
+    <!-- Open Graph (Facebook, LinkedIn) -->
+    <meta property="og:title" content="{% block og_title %}Arynstal - Instalaciones y Reformas{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Especialistas en aerotermia, aire acondicionado, domótica KNX y reformas integrales en Barcelona.{% endblock %}">
+    <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    <meta property="og:image" content="{% block og_image %}{% static 'img/og-image.jpg' %}{% endblock %}">
+    <meta property="og:locale" content="es_ES">
+    <meta property="og:site_name" content="Arynstal">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{% block twitter_title %}Arynstal - Instalaciones y Reformas{% endblock %}">
+    <meta name="twitter:description" content="{% block twitter_description %}Especialistas en aerotermia, aire acondicionado, domótica KNX y reformas integrales en Barcelona.{% endblock %}">
+    <meta name="twitter:image" content="{% block twitter_image %}{% static 'img/og-image.jpg' %}{% endblock %}">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="{% static 'img/favicon.ico' %}">
+    <link rel="apple-touch-icon" href="{% static 'img/apple-touch-icon.png' %}">
+
+    <!-- Tema de color para móviles -->
+    <meta name="theme-color" content="#1e3a5f">
+
+    <!-- Bloque para CSS/JS adicional de páginas específicas -->
     {% block head %}{% endblock %}
 
+    <!-- CSS principal -->
     <link rel="stylesheet" href="{% static 'dist/assets/index-4RbZCXm0.css' %}">
 </head>
 
@@ -19,9 +57,9 @@
     <!-- HEADER GLOBAL -->
     <header class="page-header">
         <div class="logo-box">
-            <img src="{% static 'dist/logotipo.jpg' %}" alt="Logotipo Arynstal SL">
+            <img src="{% static 'dist/logotipo.jpg' %}" alt="Logotipo Arynstal SL - Instalaciones y Reformas">
         </div>
-        <nav class="navBar">
+        <nav class="navBar" aria-label="Navegación principal">
             <a href="{% url 'home' %}" class="nav-link">INICIO</a>
             <a href="{% url 'services' %}" class="nav-link">SERVICIOS</a>
             <a href="{% url 'projects' %}" class="nav-link">PROYECTOS</a>
@@ -29,20 +67,41 @@
         </nav>
     </header>
 
+    <!-- Mensajes flash de Django -->
+    {% if messages %}
+    <div class="messages-container" role="alert">
+        {% for message in messages %}
+        <div class="message message-{{ message.tags }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
 
-    {% block content %}{% endblock %}
+    <!-- CONTENIDO PRINCIPAL -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
 
     <!-- FOOTER GLOBAL -->
     <footer class="site-footer">
         <div class="footer-box text-center">
             <p><strong>Arynstal SL</strong></p>
-            <p>Tel: +34 912 345 678</p>
-            <p>Email: contacto@arynstal.com</p>
+            <p>Tel: <a href="tel:+34912345678">+34 912 345 678</a></p>
+            <p>Email: <a href="mailto:contacto@arynstal.com">contacto@arynstal.com</a></p>
             <p>Dirección: C/ Naranjo 123, Hospitalet de Llobregat</p>
+            <nav class="footer-nav" aria-label="Enlaces legales">
+                <a href="{% url 'privacy' %}">Privacidad</a> |
+                <a href="{% url 'legal_notice' %}">Aviso Legal</a> |
+                <a href="{% url 'cookies' %}">Cookies</a>
+            </nav>
         </div>
     </footer>
 
-
+    <!-- JavaScript principal -->
     <script type="module" src="{% static 'dist/assets/index-Cz6qP6vT.js' %}"></script>
+
+    <!-- Bloque para JS adicional de páginas específicas -->
+    {% block extra_js %}{% endblock %}
 </body>
 </html>

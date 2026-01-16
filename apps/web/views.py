@@ -499,3 +499,74 @@ def handler500(request):
         para no mostrar información sensible al usuario.
     """
     return render(request, 'errors/500.html', status=500)
+
+
+# =============================================================================
+# HEALTH CHECK - MONITOREO
+# =============================================================================
+
+def health_check(request):
+    """
+    Endpoint de health check para monitoreo de disponibilidad.
+
+    PROPÓSITO:
+        Permite a servicios externos verificar que la aplicación está
+        funcionando correctamente. Usado por:
+        - UptimeRobot, Better Uptime, Pingdom
+        - Load balancers
+        - Kubernetes liveness probes
+        - Sistemas de alertas
+
+    URL: /health/
+
+    MÉTODO HTTP:
+        GET
+
+    RETORNA:
+        JsonResponse con:
+        - status: "healthy" o "unhealthy"
+        - timestamp: Hora actual del servidor
+        - database: Estado de la conexión a BD
+        - version: Versión de la aplicación
+
+    CÓDIGOS HTTP:
+        200: Todo funciona correctamente
+        503: Algún componente está fallando
+
+    EJEMPLO DE RESPUESTA:
+        {
+            "status": "healthy",
+            "timestamp": "2024-01-15T10:30:00Z",
+            "database": "connected",
+            "version": "1.0.0"
+        }
+
+    NOTA:
+        Este endpoint NO requiere autenticación para que los servicios
+        de monitoreo externos puedan acceder sin credenciales.
+    """
+    from django.http import JsonResponse
+    from django.db import connection
+    from django.utils import timezone
+
+    # Verificar conexión a la base de datos
+    db_status = "connected"
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT 1")
+    except Exception:
+        db_status = "disconnected"
+
+    # Determinar estado general
+    is_healthy = db_status == "connected"
+
+    response_data = {
+        "status": "healthy" if is_healthy else "unhealthy",
+        "timestamp": timezone.now().isoformat(),
+        "database": db_status,
+        "version": "1.0.0",
+    }
+
+    status_code = 200 if is_healthy else 503
+
+    return JsonResponse(response_data, status=status_code)

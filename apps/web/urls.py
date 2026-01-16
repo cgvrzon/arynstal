@@ -132,4 +132,16 @@ urlpatterns = [
     # Vista: cookies()
     # Template: legal/cookies.html
     # Propósito: Política de cookies
+
+    # -------------------------------------------------------------------------
+    # HEALTH CHECK - MONITOREO
+    # -------------------------------------------------------------------------
+    # Endpoint para verificar que la aplicación está funcionando.
+    # Usado por servicios de monitoreo (UptimeRobot, Better Uptime, etc.)
+
+    path('health/', views.health_check, name='health_check'),
+    # URL: /health/
+    # Vista: health_check()
+    # Retorna: JSON con estado de la aplicación
+    # Propósito: Monitoreo de disponibilidad
 ]

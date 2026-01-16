@@ -7,6 +7,22 @@
 # Debug y desarrollo
 ipython>=8.0
 
-# Herramientas de testing (opcional)
-# coverage>=7.0
-# pytest-django>=4.5
+# =============================================================================
+# TESTING Y CALIDAD DE CÓDIGO
+# =============================================================================
+
+# Testing
+pytest>=8.0
+pytest-django>=4.5
+pytest-cov>=4.0
+
+# Coverage
+coverage>=7.0
+
+# Linting
+flake8>=7.0
+flake8-docstrings>=1.7
+
+# Formateo de código (opcional pero recomendado)
+black>=24.0
+isort>=5.13

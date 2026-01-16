@@ -1,0 +1,179 @@
+# =============================================================================
+# GITHUB ACTIONS - CI/CD Pipeline
+# PROYECTO: Arynstal - Sistema CRM
+# =============================================================================
+#
+# Este workflow se ejecuta en cada push y pull request.
+# Realiza las siguientes verificaciones:
+#   1. Linting con flake8 (calidad de código)
+#   2. Tests con pytest (funcionalidad)
+#   3. Coverage report (cobertura de tests)
+#   4. Verificación de migraciones (integridad de BD)
+#
+# =============================================================================
+
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+env:
+  PYTHON_VERSION: '3.12'
+  DJANGO_SETTINGS_MODULE: 'arynstal.settings.development'
+
+jobs:
+  # ===========================================================================
+  # JOB 1: LINTING - Verificación de calidad de código
+  # ===========================================================================
+  lint:
+    name: 🔍 Linting
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout código
+        uses: actions/checkout@v4
+
+      - name: 🐍 Configurar Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: 📦 Cache de dependencias
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-lint-${{ hashFiles('requirements/development.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-lint-
+
+      - name: 📚 Instalar dependencias de linting
+        run: |
+          python -m pip install --upgrade pip
+          pip install flake8 flake8-docstrings
+
+      - name: 🔍 Ejecutar flake8
+        run: |
+          # Ejecutar flake8 con configuración del proyecto
+          # --exit-zero: No fallar el build por errores de linting (fase inicial)
+          # Esto permite ver los errores sin bloquear el pipeline
+          flake8 apps/ arynstal/ --count --statistics --exit-zero
+
+  # ===========================================================================
+  # JOB 2: TESTS - Ejecución de tests unitarios e integración
+  # ===========================================================================
+  test:
+    name: 🧪 Tests
+    runs-on: ubuntu-latest
+    needs: lint  # Solo ejecutar si pasa el linting
+
+    steps:
+      - name: 📥 Checkout código
+        uses: actions/checkout@v4
+
+      - name: 🐍 Configurar Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: 📦 Cache de dependencias
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-test-${{ hashFiles('requirements/development.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-test-
+
+      - name: 📚 Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements/development.txt
+
+      - name: 🗃️ Verificar migraciones
+        run: |
+          python manage.py makemigrations --check --dry-run
+        env:
+          SECRET_KEY: 'test-secret-key-for-ci-only'
+
+      - name: 🧪 Ejecutar tests con coverage
+        run: |
+          pytest --cov=apps --cov-report=xml --cov-report=term-missing -v
+        env:
+          SECRET_KEY: 'test-secret-key-for-ci-only'
+
+      - name: 📊 Upload coverage a Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./coverage.xml
+          fail_ci_if_error: false  # No fallar si Codecov no está configurado
+          verbose: true
+        continue-on-error: true
+
+  # ===========================================================================
+  # JOB 3: SECURITY - Verificación de seguridad básica
+  # ===========================================================================
+  security:
+    name: 🔒 Security Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout código
+        uses: actions/checkout@v4
+
+      - name: 🐍 Configurar Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: 📚 Instalar pip-audit
+        run: |
+          python -m pip install --upgrade pip
+          pip install pip-audit
+
+      - name: 📚 Instalar dependencias del proyecto
+        run: |
+          pip install -r requirements/base.txt
+
+      - name: 🔒 Verificar vulnerabilidades en dependencias
+        run: |
+          pip-audit --strict --progress-spinner=off || true
+        # || true para no fallar el build, solo reportar
+
+  # ===========================================================================
+  # JOB 4: BUILD CHECK - Verificar que la app arranca correctamente
+  # ===========================================================================
+  build:
+    name: 🏗️ Build Check
+    runs-on: ubuntu-latest
+    needs: [lint, test]
+
+    steps:
+      - name: 📥 Checkout código
+        uses: actions/checkout@v4
+
+      - name: 🐍 Configurar Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: 📚 Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements/base.txt
+
+      - name: ✅ Verificar configuración Django
+        run: |
+          python manage.py check --deploy
+        env:
+          SECRET_KEY: 'test-secret-key-for-ci-only'
+          DEBUG: 'False'
+          ALLOWED_HOSTS: 'localhost'
+        continue-on-error: true  # Algunos checks fallarán sin HTTPS
+
+      - name: 📦 Collect static files
+        run: |
+          python manage.py collectstatic --noinput
+        env:
+          SECRET_KEY: 'test-secret-key-for-ci-only'
