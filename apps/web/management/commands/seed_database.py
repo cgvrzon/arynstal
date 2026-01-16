@@ -1,11 +1,63 @@
 """
-Management command para poblar la base de datos con datos de prueba.
+===============================================================================
+ARCHIVO: apps/web/management/commands/seed_database.py
+PROYECTO: Arynstal - Sistema CRM para gestión de instalaciones y reformas
+AUTOR: @cgvrzon
+===============================================================================
 
-Uso:
-    python manage.py seed_database                 # Crea todos los datos
-    python manage.py seed_database --clear         # Limpia primero y luego crea
-    python manage.py seed_database --only-services # Solo servicios
-    python manage.py seed_database --only-leads    # Solo leads
+DESCRIPCIÓN:
+    Management command para poblar la base de datos con datos de prueba.
+    Facilita el desarrollo y testing creando datos realistas automáticamente.
+
+USO:
+    # Crear todos los datos de prueba
+    python manage.py seed_database
+
+    # Limpiar datos existentes antes de crear nuevos
+    python manage.py seed_database --clear
+
+    # Solo crear servicios
+    python manage.py seed_database --only-services
+
+    # Solo crear leads
+    python manage.py seed_database --only-leads
+
+    # Solo crear usuarios
+    python manage.py seed_database --only-users
+
+DATOS QUE CREA:
+    SERVICIOS (5):
+    - Aerotermia
+    - Aire Acondicionado
+    - Domótica KNX
+    - Instalaciones Eléctricas
+    - Reformas Integrales
+
+    USUARIOS (3):
+    - maria_oficina (rol: office) - Personal de oficina
+    - carlos_tecnico (rol: field) - Técnico de campo
+    - jorge_tecnico (rol: field) - Técnico de campo
+
+    LEADS (5):
+    - Varios estados: nuevo, contactado, presupuestado, cerrado
+    - Varios orígenes: web, teléfono, recomendación
+    - Con asignaciones y presupuesto de ejemplo
+
+FLUJO DE EJECUCIÓN:
+    1. Parsear argumentos (--clear, --only-*)
+    2. Si --clear: eliminar datos existentes
+    3. Crear servicios (si aplica)
+    4. Crear usuarios (si aplica)
+    5. Crear leads con relaciones (si aplica)
+    6. Mostrar resumen de operaciones
+
+NOTAS:
+    - Usa transaction.atomic() para rollback si algo falla
+    - get_or_create evita duplicados al ejecutar múltiples veces
+    - El superusuario NUNCA se elimina (protección con --clear)
+    - Los UserProfile se crean automáticamente via signal
+
+===============================================================================
 """
 
 from django.core.management.base import BaseCommand
@@ -17,9 +69,45 @@ from apps.users.models import UserProfile
 
 
 class Command(BaseCommand):
+    """
+    Management command para poblar la base de datos con datos de prueba.
+
+    HERENCIA:
+        Extiende BaseCommand de Django para integrarse con manage.py.
+
+    ATRIBUTOS:
+        help: Descripción que aparece en 'python manage.py help seed_database'
+
+    MÉTODOS PRINCIPALES:
+        add_arguments: Define los argumentos CLI disponibles
+        handle: Lógica principal del comando
+        _create_services: Crea servicios de ejemplo
+        _create_users: Crea usuarios con perfiles
+        _create_leads: Crea leads con relaciones
+    """
+
     help = 'Pobla la base de datos con datos de prueba para desarrollo'
 
     def add_arguments(self, parser):
+        """
+        Define los argumentos de línea de comandos.
+
+        ARGUMENTOS:
+            --clear: Elimina datos existentes antes de crear nuevos.
+                    Útil para resetear la base de datos a un estado conocido.
+
+            --only-services: Solo crea servicios, ignora usuarios y leads.
+                           Útil cuando solo se necesita el catálogo.
+
+            --only-leads: Solo crea leads (requiere usuarios existentes).
+                         Útil para probar el CRM con más datos.
+
+            --only-users: Solo crea usuarios, ignora servicios y leads.
+                         Útil para probar permisos y roles.
+
+        PARÁMETROS:
+            parser: ArgumentParser de Django para registrar argumentos.
+        """
         parser.add_argument(
             '--clear',
             action='store_true',
@@ -42,6 +130,27 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
+        """
+        Punto de entrada principal del comando.
+
+        FLUJO:
+            1. Extraer opciones de la línea de comandos
+            2. Determinar qué crear (todo o específico)
+            3. Dentro de transacción atómica:
+               a. Limpiar datos si --clear
+               b. Crear servicios si aplica
+               c. Crear usuarios si aplica
+               d. Crear leads si aplica
+            4. Mostrar mensaje de éxito
+
+        PARÁMETROS:
+            *args: Argumentos posicionales (no usados)
+            **options: Diccionario con valores de los argumentos definidos
+
+        NOTA:
+            transaction.atomic() asegura que si algo falla,
+            todos los cambios se revierten (rollback).
+        """
         clear = options['clear']
         only_services = options['only_services']
         only_leads = options['only_leads']
@@ -55,7 +164,9 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS('=' * 70))
 
         with transaction.atomic():
-            # Limpiar datos si se solicita
+            # -----------------------------------------------------------------
+            # Paso 1: Limpiar datos si se solicita
+            # -----------------------------------------------------------------
             if clear:
                 self.stdout.write(self.style.WARNING('\n🗑️  Limpiando datos existentes...'))
                 if create_all or only_leads:
@@ -66,21 +177,27 @@ class Command(BaseCommand):
                     Service.objects.all().delete()
                     self.stdout.write('  ✓ Servicios eliminados')
                 if create_all or only_users:
-                    # No eliminar el superusuario
+                    # IMPORTANTE: No eliminar el superusuario
                     User.objects.filter(is_superuser=False).delete()
                     self.stdout.write('  ✓ Usuarios no-admin eliminados')
 
-            # Crear servicios
+            # -----------------------------------------------------------------
+            # Paso 2: Crear servicios
+            # -----------------------------------------------------------------
             if create_all or only_services:
                 self.stdout.write(self.style.SUCCESS('\n📦 Creando servicios...'))
                 self._create_services()
 
-            # Crear usuarios
+            # -----------------------------------------------------------------
+            # Paso 3: Crear usuarios
+            # -----------------------------------------------------------------
             if create_all or only_users:
                 self.stdout.write(self.style.SUCCESS('\n👥 Creando usuarios...'))
                 self._create_users()
 
-            # Crear leads
+            # -----------------------------------------------------------------
+            # Paso 4: Crear leads
+            # -----------------------------------------------------------------
             if create_all or only_leads:
                 self.stdout.write(self.style.SUCCESS('\n📋 Creando leads...'))
                 self._create_leads()
@@ -90,7 +207,21 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS('=' * 70))
 
     def _create_services(self):
-        """Crea servicios de ejemplo"""
+        """
+        Crea servicios de ejemplo para el catálogo.
+
+        SERVICIOS CREADOS:
+            1. Aerotermia - Climatización eficiente
+            2. Aire Acondicionado - Instalación y mantenimiento
+            3. Domótica KNX - Control inteligente del hogar
+            4. Instalaciones Eléctricas - Certificaciones
+            5. Reformas Integrales - Llave en mano
+
+        COMPORTAMIENTO:
+            - Usa get_or_create para evitar duplicados
+            - Muestra ✓ si creó, ⚠ si ya existía
+            - Informa del total creado al final
+        """
         services_data = [
             {
                 "name": "Aerotermia",
@@ -149,7 +280,29 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS(f'  Total: {count} servicios creados'))
 
     def _create_users(self):
-        """Crea usuarios de ejemplo"""
+        """
+        Crea usuarios de ejemplo con diferentes roles.
+
+        USUARIOS CREADOS:
+            1. maria_oficina (office) - Personal de oficina
+               - Puede gestionar leads y crear presupuestos
+
+            2. carlos_tecnico (field) - Técnico de campo
+               - Acceso limitado, ve sus leads asignados
+
+            3. jorge_tecnico (field) - Técnico de campo
+               - Acceso limitado, ve sus leads asignados
+
+        FLUJO:
+            1. Crear User con get_or_create
+            2. Si es nuevo, establecer contraseña con set_password()
+            3. El signal crea UserProfile automáticamente
+            4. Actualizar rol y teléfono del perfil
+
+        NOTA SOBRE CONTRASEÑAS:
+            Las contraseñas son simples (ej: "maria123") solo para pruebas.
+            NUNCA usar contraseñas así en producción.
+        """
         users_data = [
             {
                 "username": "maria_oficina",
@@ -191,9 +344,11 @@ class Command(BaseCommand):
                 }
             )
             if created:
+                # Establecer contraseña (se hashea automáticamente)
                 user.set_password(data["password"])
                 user.save()
-                # El signal crea automáticamente el UserProfile
+                # El signal post_save ya creó el UserProfile
+                # Solo necesitamos actualizar rol y teléfono
                 user.profile.role = data["role"]
                 user.profile.phone = data["phone"]
                 user.profile.save()
@@ -205,8 +360,28 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS(f'  Total: {count} usuarios creados'))
 
     def _create_leads(self):
-        """Crea leads de ejemplo"""
-        # Obtener servicios y usuarios
+        """
+        Crea leads de ejemplo con diferentes estados y relaciones.
+
+        LEADS CREADOS:
+            1. Juan Pérez - Nuevo (web) - Aerotermia
+            2. María González - Contactado (web) - Aire Acondicionado
+            3. Pedro Martínez - Presupuestado (teléfono) - Domótica KNX
+            4. Ana Rodríguez - Nuevo (recomendación) - Sin servicio específico
+            5. Luis Fernández - Cerrado (teléfono) - Aire Acondicionado
+
+        RELACIONES:
+            - Algunos leads tienen servicio asignado
+            - Algunos leads tienen usuario asignado (maria_oficina)
+            - El lead "presupuestado" tiene un Budget asociado
+
+        PROPÓSITO:
+            Proporciona datos variados para probar:
+            - Filtros del admin (por estado, urgencia, origen)
+            - Asignación de leads a usuarios
+            - Flujo completo: nuevo → contactado → presupuestado → cerrado
+        """
+        # Obtener servicios y usuarios existentes
         aerotermia = Service.objects.filter(name="Aerotermia").first()
         aire = Service.objects.filter(name="Aire Acondicionado").first()
         domotica = Service.objects.filter(name="Domótica KNX").first()
@@ -285,12 +460,26 @@ class Command(BaseCommand):
             )
             if created:
                 count += 1
-                status_emoji = {'nuevo': '🆕', 'contactado': '📞', 'presupuestado': '💰', 'cerrado': '✅', 'descartado': '❌'}
-                self.stdout.write(f'  {status_emoji.get(lead.status, "·")} {lead.name} - {lead.get_status_display()}')
+                status_emoji = {
+                    'nuevo': '🆕',
+                    'contactado': '📞',
+                    'presupuestado': '💰',
+                    'cerrado': '✅',
+                    'descartado': '❌'
+                }
+                self.stdout.write(
+                    f'  {status_emoji.get(lead.status, "·")} '
+                    f'{lead.name} - {lead.get_status_display()}'
+                )
             else:
                 self.stdout.write(f'  ⚠ {data["name"]} (ya existía)')
 
-        # Crear un presupuesto de ejemplo
+        # -----------------------------------------------------------------
+        # Crear presupuesto de ejemplo
+        # -----------------------------------------------------------------
+        # Para demostrar el flujo completo, creamos un presupuesto
+        # asociado al lead que está en estado "presupuestado"
+
         if count > 0:
             lead_presupuestado = Lead.objects.filter(status='presupuestado').first()
             if lead_presupuestado:
@@ -304,6 +493,8 @@ class Command(BaseCommand):
                     }
                 )
                 if created:
-                    self.stdout.write(f'  💰 Presupuesto creado: {budget.reference} - {budget.amount}€')
+                    self.stdout.write(
+                        f'  💰 Presupuesto creado: {budget.reference} - {budget.amount}€'
+                    )
 
         self.stdout.write(self.style.SUCCESS(f'  Total: {count} leads creados'))
