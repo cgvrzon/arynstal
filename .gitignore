@@ -100,3 +100,7 @@ yarn-error.log
 .claude/
 CLAUDE.md
 tmpclaude-*
+
+# Lighthouse temporary folders #
+C:*
+lighthouse.*

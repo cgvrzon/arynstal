@@ -69,7 +69,7 @@
 ### 7. Defense in Depth (Seguridad en capas)
 **Qué es**: Múltiples capas de seguridad, no depender de una sola.
 
-**Capas actuales en Arynstal**:
+**Capas implementadas en Arynstal**:
 ```
 Capa 1: Rate Limiting (django-ratelimit) ✅
 Capa 2: Honeypot (campo oculto) ✅
@@ -77,17 +77,19 @@ Capa 3: CSRF Token (Django) ✅
 Capa 4: Validación de archivos (magic bytes) ✅
 Capa 5: Validación de formulario ✅
 Capa 6: Validación de modelo ✅
+Capa 7: CSP Headers (django-csp) ✅
+Capa 8: Security Headers (production.py) ✅
+Capa 9: Admin URL ofuscada (/gestion-interna/) ✅
 ```
 
-**Capas faltantes**:
+**Capas futuras (no críticas para MVP)**:
 ```
-Capa 7: CSP Headers ❌
-Capa 8: WAF (Web Application Firewall) ❌
-Capa 9: 2FA para admin ❌
-Capa 10: Audit logging completo ❌
+Capa 10: WAF (Web Application Firewall) 🟢 Futuro
+Capa 11: 2FA para admin 🟡 Post-lanzamiento
+Capa 12: Audit logging completo ✅ (LeadLog via signals)
 ```
 
-**Prioridad**: ALTA - Añadir CSP y 2FA antes de producción.
+**Estado**: ✅ Listo para producción
 
 ---
 
@@ -210,16 +212,16 @@ Settings    → Configuración
 
 | Elemento | Estado | Acción |
 |----------|--------|--------|
-| robots.txt | ✅ Presente | Ninguna |
-| sitemap.xml | ✅ Presente | Verificar URLs |
-| Meta title | ⚠️ Falta | Añadir dinámico |
-| Meta description | ⚠️ Falta | Añadir dinámico |
-| Open Graph | ❌ Falta | Añadir para redes |
-| Structured Data | ❌ Falta | JSON-LD para empresa |
-| Canonical URLs | ⚠️ Falta | Añadir |
-| Heading hierarchy | ⚠️ Revisar | H1 único por página |
+| robots.txt | ✅ Implementado | Ninguna |
+| sitemap.xml | ✅ Implementado | Ninguna |
+| Meta title | ✅ Implementado | Dinámico en base.html |
+| Meta description | ✅ Implementado | Dinámico en base.html |
+| Open Graph | ✅ Implementado | og:title, og:description, og:image |
+| Structured Data | ⚠️ Pendiente | JSON-LD para empresa (opcional) |
+| Canonical URLs | ⚠️ Pendiente | Añadir (opcional) |
+| Heading hierarchy | ✅ Implementado | H1 único por página |
 
-**Prioridad**: ALTA para visibilidad.
+**Estado**: ✅ SEO básico completo. Structured Data opcional para mejora.
 
 ---
 
@@ -261,23 +263,22 @@ Image optimization: WebP, lazy loading
 **Qué es**: Automatizar deployment desde Git.
 
 **Estado actual**:
-- ❌ Sin GitHub Actions
-- ❌ Sin tests automáticos
-- ❌ Sin deploy automático
+- ✅ GitHub Actions configurado (.github/workflows/ci.yml)
+- ✅ Tests automáticos (pytest)
+- ✅ Linting automático (flake8)
+- ✅ Coverage report
+- ⚠️ Deploy automático pendiente (se hará manual primero)
 
-**Pipeline recomendado**:
+**Pipeline implementado**:
 ```yaml
 on push to main:
-  1. Run linting (black, flake8)
-  2. Run tests (pytest)
-  3. Check coverage (>80%)
-  4. Build static files
-  5. Deploy to staging
-  6. Manual approval
-  7. Deploy to production
+  1. ✅ Run linting (flake8)
+  2. ✅ Run tests (pytest)
+  3. ✅ Check coverage
+  4. 🟡 Deploy to production (manual por ahora)
 ```
 
-**Prioridad**: ALTA
+**Estado**: ✅ CI completo. CD se implementará post-lanzamiento.
 
 ---
 
@@ -285,18 +286,21 @@ on push to main:
 **Qué es**: Poder entender el estado del sistema en cualquier momento.
 
 **Tres pilares**:
-| Pilar | Estado | Herramienta recomendada |
-|-------|--------|------------------------|
-| Logs | ⚠️ Básico | Sentry, ELK Stack |
-| Metrics | ❌ Falta | Prometheus + Grafana |
-| Traces | ❌ Falta | Jaeger, Sentry Performance |
+| Pilar | Estado | Herramienta |
+|-------|--------|-------------|
+| Logs | ✅ Configurado | Django logging + Sentry (preparado) |
+| Health | ✅ Implementado | /health/ endpoint |
+| Errors | ⚠️ Preparado | Sentry (solo falta DSN en .env) |
+| Metrics | 🟢 Futuro | Prometheus + Grafana |
+| Traces | 🟢 Futuro | Sentry Performance |
 
-**Mínimo viable**:
-- Sentry para errores
-- Health check endpoint
-- Uptime monitoring (UptimeRobot, Better Uptime)
+**Mínimo viable implementado**:
+- ✅ Health check endpoint (/health/)
+- ✅ Logging configurado
+- ⚠️ Sentry: código listo, solo configurar DSN en producción
+- 🟡 Uptime monitoring: configurar post-lanzamiento
 
-**Prioridad**: ALTA
+**Estado**: ✅ Listo para producción (Sentry se activa con DSN)
 
 ---
 
@@ -319,25 +323,28 @@ on push to main:
 
 ---
 
-## RESUMEN: Filosofías por prioridad
+## RESUMEN: Estado Actual del Proyecto
 
-### 🔴 CRÍTICAS (Antes de producción)
-1. **Defense in Depth** - Añadir CSP headers
-2. **Observability** - Integrar Sentry
-3. **GitOps** - Implementar CI/CD
-4. **SEO** - Añadir meta tags
+### ✅ COMPLETADO (Listo para producción)
+1. **Defense in Depth** - CSP headers, rate limiting, honeypot, validaciones ✅
+2. **GitOps/CI** - GitHub Actions con tests y linting ✅
+3. **SEO** - Meta tags, Open Graph, robots.txt, sitemap.xml ✅
+4. **GDPR** - Políticas legales, consentimiento, minimización ✅
+5. **Observability** - Health check, logging, Sentry preparado ✅
+6. **Twelve-Factor** - Configuración en .env, stateless, logs ✅
 
-### 🟡 IMPORTANTES (Primera semana)
-5. **Twelve-Factor** - Completar logging
-6. **Accessibility** - Revisar WCAG básico
-7. **Performance Budget** - Medir con Lighthouse
-8. **GDPR** - Implementar exportación de datos
+### ⚠️ VERIFICAR ANTES DE DESPLIEGUE
+1. **Sentry** - Crear cuenta y configurar DSN
+2. **Performance** - Ejecutar Lighthouse audit
+3. **Responsive** - Probar en dispositivos móviles reales
+4. **Accessibility** - Verificar contraste y navegación por teclado
 
-### 🟢 RECOMENDADAS (Segundo sprint)
-9. **Infrastructure as Code** - Dockerizar
-10. **Convention over Configuration** - Añadir linting
-11. **Progressive Enhancement** - Validación JS
-12. **Mobile First** - Testing en dispositivos
+### 🟢 POST-LANZAMIENTO (Mejoras futuras)
+1. **2FA para admin** - Seguridad adicional
+2. **Docker** - Containerización
+3. **CD automático** - Deploy desde GitHub
+4. **Structured Data** - JSON-LD para SEO avanzado
+5. **ARIA labels** - Accesibilidad avanzada
 
 ---
 
@@ -376,44 +383,45 @@ on push to main:
 
 ---
 
-## PRÓXIMOS PASOS RECOMENDADOS
+## PRÓXIMOS PASOS: PLAN DE DESPLIEGUE
 
-### Semana 1: MVP Producción
+### Fase 1: Verificación Pre-Despliegue (Actual)
 ```
-Día 1-2: CI/CD
-  - [ ] GitHub Actions con tests
-  - [ ] Linting con black/flake8
-  - [ ] Coverage report
-
-Día 3: Seguridad
-  - [ ] CSP headers (django-csp)
-  - [ ] Revisar headers en production.py
-
-Día 4: Observabilidad
-  - [ ] Sentry integration
-  - [ ] Health check endpoint
-  - [ ] Uptime monitoring
-
-Día 5: SEO/UX
-  - [ ] Meta tags dinámicos
-  - [ ] Open Graph tags
-  - [ ] Lighthouse audit
+  - [x] CI/CD con GitHub Actions
+  - [x] CSP headers configurados
+  - [x] SEO básico (meta tags, Open Graph)
+  - [x] Health check endpoint
+  - [x] Logging configurado
+  - [ ] Ejecutar Lighthouse audit
+  - [ ] Probar responsive en móviles
+  - [ ] Verificar formulario de contacto
 ```
 
-### Semana 2: Hardening
+### Fase 2: Contratación de Servicios
 ```
-  - [ ] 2FA en admin
-  - [ ] Audit logging completo
-  - [ ] Tests de integración
-  - [ ] Accesibilidad básica
-  - [ ] Performance optimization
+  - [ ] Contratar VPS Hetzner CX22 (~4€/mes)
+  - [ ] Registrar dominio arynstal.es (~9€/año)
+  - [ ] Crear cuenta Cloudflare (gratis)
+  - [ ] Crear cuenta Brevo SMTP (gratis)
+  - [ ] Crear cuenta Sentry (gratis)
 ```
 
-### Semana 3-4: Escalabilidad
+### Fase 3: Despliegue
 ```
-  - [ ] Docker/docker-compose
-  - [ ] Redis cache
-  - [ ] CDN para static
-  - [ ] Backup automatizado
-  - [ ] Disaster recovery plan
+  - [ ] Seguir DEPLOY_GUIDE.md paso a paso
+  - [ ] Configurar DNS en Cloudflare
+  - [ ] Instalar y configurar servidor
+  - [ ] Desplegar aplicación
+  - [ ] Configurar SSL
+  - [ ] Configurar backups
+  - [ ] Verificar emails funcionando
+```
+
+### Fase 4: Post-Lanzamiento
+```
+  - [ ] Configurar uptime monitoring
+  - [ ] Monitorear logs primeros días
+  - [ ] Ajustar según feedback
+  - [ ] 2FA para admin (opcional)
+  - [ ] Optimizaciones de rendimiento
 ```
