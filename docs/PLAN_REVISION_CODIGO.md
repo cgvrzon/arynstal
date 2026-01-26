@@ -18,7 +18,7 @@
 | `validators.py` | ✅ | Eliminado import no usado `FileExtensionValidator`. Pendiente: `validate_spanish_phone` y `validate_min_images_size` no usados; WEBP solo comprueba `RIFF`. |
 | `signals.py` | ✅ | Logs creación y cambios. Variable global `_lead_previous_state` documentada. |
 | `notifications.py` | ✅ | **Corregido:** `lead_url` vía `reverse('admin:leads_lead_change', ...)` y URL absoluta con `COMPANY_INFO['WEBSITE']`. |
-| `admin.py` | ⚠️ | **Logs duplicados:** al guardar desde admin, tanto `save_model` como los signals crean LeadLog. Pendiente unificar. |
+| `admin.py` | ✅ | **Logs duplicados corregidos:** en updates, se marca `_logging_handled_in_admin`; los signals no crean logs (solo save_model, con user). |
 | `views.py` | ✅ | Solo `from django.shortcuts import render` (leads no expone vistas propias). |
 | `management/commands/migrate_contacts_to_leads.py` | ✅ | **Obsoleto:** ya no importa web/leads; devuelve mensaje claro y sale. |
 
@@ -78,7 +78,7 @@
 
 ### Importantes (recomendable arreglar)
 
-5. **Logs duplicados en admin:** Al guardar un lead desde admin, se crean logs tanto en `save_model` como en signals. Unificar criterio (p. ej. solo signals o solo admin) para evitar duplicados.
+5. ~~**Logs duplicados en admin**~~ ✅ Corregido: flag `_logging_handled_in_admin` en updates; signals no crean logs cuando se guarda desde admin.
 6. **Validador WEBP:** Comprobar también la firma `WEBP` en el contenedor RIFF, no solo `RIFF`, para no aceptar otros formatos RIFF.
 
 ### Deuda técnica / limpieza
@@ -98,7 +98,7 @@
 1. ~~**Corregir notificaciones y template email**~~ ✅ Hecho.
 2. ~~**Validar imágenes en `contact_us`**~~ ✅ Hecho.
 3. ~~**Decidir sobre `migrate_contacts_to_leads`**~~ ✅ Marcado obsoleto.
-4. **Evitar logs duplicados:** Unificar creación de LeadLog en admin vs signals (pendiente).
+4. ~~**Evitar logs duplicados**~~ ✅ Hecho: admin marca lead en updates; signals no registran en ese caso.
 5. **Limpieza en `validators`:** Valorar eliminar `validate_spanish_phone` y `validate_min_images_size` si no se usan; afinar WEBP (pendiente).
 
 ---

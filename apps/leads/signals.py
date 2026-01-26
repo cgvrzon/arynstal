@@ -129,7 +129,14 @@ def store_lead_previous_state(sender, instance, **kwargs):
         2. Cargar el estado actual desde la BD
         3. Guardar en _lead_previous_state[pk]
         4. post_save usará estos datos y limpiará el dict
+
+    NOTA - GUARDADO DESDE ADMIN:
+        Si el save proviene del admin (._logging_handled_in_admin),
+        no almacenamos estado: el admin ya crea los LeadLog en
+        save_model con request.user. Así evitamos logs duplicados.
     """
+    if getattr(instance, '_logging_handled_in_admin', False):
+        return
     if instance.pk:
         try:
             # Obtener el estado actual desde la BD (antes del cambio)

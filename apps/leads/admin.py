@@ -493,10 +493,14 @@ class LeadAdmin(admin.ModelAdmin):
             5. Guardar el modelo
 
         NOTA:
-            Los signals también crean logs, pero aquí tenemos acceso
-            al request.user para registrar quién hizo el cambio.
+            Los signals (log_lead_changes) también detectan cambios, pero
+            al guardar desde admin usamos _logging_handled_in_admin para
+            que no creen logs: solo los creamos aquí (con request.user).
+            Así evitamos duplicados.
         """
         if change:
+            # Marcar que los logs se crean aquí (evitar duplicados en signals)
+            obj._logging_handled_in_admin = True
             # Obtener estado anterior para comparar
             old_obj = Lead.objects.get(pk=obj.pk)
 
@@ -529,6 +533,9 @@ class LeadAdmin(admin.ModelAdmin):
             )
 
         super().save_model(request, obj, form, change)
+        if change:
+            if getattr(obj, '_logging_handled_in_admin', False):
+                delattr(obj, '_logging_handled_in_admin')
 
 
 # =============================================================================
