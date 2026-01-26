@@ -100,9 +100,9 @@
         <div class="label">Teléfono</div>
         <div class="value">{{ lead.phone }}</div>
 
-        {% if lead.service_type %}
-        <div class="label">Tipo de servicio</div>
-        <div class="value">{{ lead.get_service_type_display }}</div>
+        {% if lead.service %}
+        <div class="label">Servicio de interés</div>
+        <div class="value">{{ lead.service.name }}</div>
         {% endif %}
 
         <div class="label">Mensaje</div>
@@ -112,7 +112,7 @@
 
         {% if lead.images.exists %}
         <div class="label">Imágenes adjuntas</div>
-        <div class="value">{{ lead.images.count }} imagen(es) adjunta(s)</div>
+        <div class="value">{{ lead.images.count }} imagen(es) adjunta(s).</div>
         {% endif %}
 
         <a href="{{ lead_url }}" class="btn">Ver en panel de administración</a>

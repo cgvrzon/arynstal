@@ -45,9 +45,9 @@ RELACIÓN CON OTROS ARCHIVOS:
 ===============================================================================
 """
 
-from django.core.exceptions import ValidationError
-from django.core.validators import FileExtensionValidator
 import os
+
+from django.core.exceptions import ValidationError
 
 
 # =============================================================================

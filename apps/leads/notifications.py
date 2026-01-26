@@ -45,9 +45,11 @@ PRINCIPIOS DE DISEÑO:
 """
 
 import logging
+
 from django.conf import settings
-from django.core.mail import send_mail, EmailMultiAlternatives
+from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
+from django.urls import reverse
 from django.utils.html import strip_tags
 
 # Logger para registrar eventos de notificaciones
@@ -139,9 +141,15 @@ def send_admin_notification(lead) -> bool:
     # -------------------------------------------------------------------------
     # Preparar contexto para el template
     # -------------------------------------------------------------------------
+    # URL absoluta al admin (emails requieren enlaces absolutos).
+    # El admin está en /gestion-interna/, no /admin/.
+    path = reverse('admin:leads_lead_change', args=[lead.id])
+    base = getattr(settings, 'COMPANY_INFO', {}).get('WEBSITE', '').rstrip('/')
+    lead_url = f'{base}{path}' if base else path
+
     context = {
         'lead': lead,
-        'lead_url': f'/admin/leads/lead/{lead.id}/change/',
+        'lead_url': lead_url,
     }
 
     try:

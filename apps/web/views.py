@@ -57,14 +57,17 @@ PATRÓN POST-REDIRECT-GET:
 ===============================================================================
 """
 
-from django.shortcuts import render, redirect
 from django.contrib import messages
+from django.core.exceptions import ValidationError
+from django.shortcuts import render, redirect
+
 from django.conf import settings
 from django_ratelimit.decorators import ratelimit
-from django_ratelimit.exceptions import Ratelimited
+
 from apps.leads.forms import LeadForm
-from apps.leads.models import Lead, LeadImage
+from apps.leads.models import LeadImage
 from apps.leads.notifications import notify_new_lead
+from apps.leads.validators import validate_image_file
 
 
 # =============================================================================
@@ -217,7 +220,7 @@ def check_honeypot(request) -> bool:
 # Cargamos la configuración aquí para usarla en el decorador.
 
 _rate_config = settings.FORM_SECURITY.get('RATE_LIMIT', {}).get('CONTACT_FORM', {})
-_rate = _rate_config.get('rate', '5/h')  # 5 envíos por hora por defecto
+_rate = _rate_config.get('rate', '3/h')  # 3 envíos por hora por defecto
 
 
 # =============================================================================
@@ -345,7 +348,7 @@ def contact_us(request):
         if form.is_valid():
 
             # -----------------------------------------------------------------
-            # PASO 2.5: Validar imágenes
+            # PASO 2.5: Validar imágenes (magic bytes, tamaño, extensión)
             # -----------------------------------------------------------------
             images = request.FILES.getlist('fotos')
 
@@ -355,6 +358,18 @@ def contact_us(request):
                     'Solo puedes subir un máximo de 5 fotos.'
                 )
                 return render(request, 'pages/contact.html', {'form': form})
+
+            for i, image in enumerate(images):
+                try:
+                    validate_image_file(image)
+                except ValidationError as e:
+                    messages.error(
+                        request,
+                        f'Imagen {i + 1} ({getattr(image, "name", "?")}): {str(e)}'
+                    )
+                    return render(
+                        request, 'pages/contact.html', {'form': form}
+                    )
 
             # -----------------------------------------------------------------
             # PASO 2.6: Crear Lead
