@@ -87,7 +87,10 @@ arynstal/
 ├── static/             # CSS, JS, imágenes
 ├── docs/               # Documentación
 │   ├── DEPLOY_GUIDE.md
-│   └── INFRAESTRUCTURA.md
+│   ├── INFRAESTRUCTURA.md
+│   ├── ANALISIS_FILOSOFIAS_WEB.md
+│   ├── HISTORIAL_AUDITORIAS_LIGHTHOUSE.md
+│   └── PLAN_REVISION_CODIGO.md
 └── requirements/       # Dependencias por entorno
 ```
 
@@ -162,6 +165,9 @@ open htmlcov/index.html
 |-----------|-------------|
 | [DEPLOY_GUIDE.md](docs/DEPLOY_GUIDE.md) | Guía paso a paso para despliegue |
 | [INFRAESTRUCTURA.md](docs/INFRAESTRUCTURA.md) | Análisis de opciones de hosting |
+| [ANALISIS_FILOSOFIAS_WEB.md](docs/ANALISIS_FILOSOFIAS_WEB.md) | Filosofías y mejores prácticas implementadas |
+| [HISTORIAL_AUDITORIAS_LIGHTHOUSE.md](docs/HISTORIAL_AUDITORIAS_LIGHTHOUSE.md) | Auditorías de rendimiento |
+| [PLAN_REVISION_CODIGO.md](docs/PLAN_REVISION_CODIGO.md) | Checklist de revisión pre-producción |
 | [.env.example](.env.example) | Variables de entorno |
 
 ## Contribuir

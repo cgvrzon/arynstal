@@ -785,4 +785,13 @@ cat /var/www/arynstal/app/.env | grep EMAIL
 
 ---
 
+## Historial de Revisiones
+
+| Versión | Fecha | Cambios |
+|---------|-------|---------|
+| 1.0 | 2026-01-15 | Documento inicial |
+| 1.1 | 2026-01-26 | Añadida sección de historial |
+
+---
+
 *Documento complementario a `INFRAESTRUCTURA.md`*

@@ -238,11 +238,17 @@ Image optimization: WebP, lazy loading
 ```
 
 **Estado actual**:
-- ⚠️ Sin medición
+- ✅ Auditoría Lighthouse ejecutada (22/01/2026)
 - ⚠️ Sin optimización de imágenes
 - ⚠️ Sin lazy loading
 
-**Acción**: Medir con Lighthouse antes de lanzar.
+**Resultados**: Ver [HISTORIAL_AUDITORIAS_LIGHTHOUSE.md](./HISTORIAL_AUDITORIAS_LIGHTHOUSE.md)
+
+**Resumen auditoría**:
+- Performance: 75/100 (LCP alto por servidor dev)
+- Accessibility: 95/100
+- Best Practices: 96/100
+- SEO: 98/100
 
 ---
 
@@ -335,9 +341,9 @@ on push to main:
 
 ### ⚠️ VERIFICAR ANTES DE DESPLIEGUE
 1. **Sentry** - Crear cuenta y configurar DSN
-2. **Performance** - Ejecutar Lighthouse audit
+2. ~~**Performance** - Ejecutar Lighthouse audit~~ ✅ Completado (22/01/2026)
 3. **Responsive** - Probar en dispositivos móviles reales
-4. **Accessibility** - Verificar contraste y navegación por teclado
+4. **Accessibility** - Verificar contraste y navegación por teclado (Homepage 81/100)
 
 ### 🟢 POST-LANZAMIENTO (Mejoras futuras)
 1. **2FA para admin** - Seguridad adicional
@@ -392,7 +398,7 @@ on push to main:
   - [x] SEO básico (meta tags, Open Graph)
   - [x] Health check endpoint
   - [x] Logging configurado
-  - [ ] Ejecutar Lighthouse audit
+  - [x] Ejecutar Lighthouse audit (22/01/2026 - ver HISTORIAL_AUDITORIAS_LIGHTHOUSE.md)
   - [ ] Probar responsive en móviles
   - [ ] Verificar formulario de contacto
 ```
@@ -425,3 +431,12 @@ on push to main:
   - [ ] 2FA para admin (opcional)
   - [ ] Optimizaciones de rendimiento
 ```
+
+---
+
+## Historial de Revisiones
+
+| Versión | Fecha | Cambios |
+|---------|-------|---------|
+| 1.0 | 2026-01-15 | Documento inicial |
+| 1.1 | 2026-01-26 | Actualizado Performance Budget con resultados Lighthouse |
