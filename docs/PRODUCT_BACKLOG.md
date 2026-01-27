@@ -103,12 +103,25 @@
 
 ---
 
+## EPIC 9: Panel de Oficina
+
+| ID | User Story | Prioridad | Criterios de Aceptación |
+|----|------------|-----------|-------------------------|
+| US-9.1 | AdminSite Separado | M | URL /offynstal/ funcional e independiente |
+| US-9.2 | Restricción por Rol | M | Solo usuarios con rol 'office' y 'admin' pueden acceder |
+| US-9.3 | Lead Simplificado | M | Campos básicos sin RGPD/metadatos técnicos |
+| US-9.4 | Budget Simplificado | M | CRUD básico con archivo PDF |
+| US-9.5 | UI Mejorada | C | (Opcional) UI personalizada para admin |
+| US-9.6 | Sin Eliminación | M | Usuarios de oficina no pueden eliminar registros |
+
+---
+
 ## Resumen por Prioridad
 
 | Prioridad | Total | Descripción |
 |-----------|-------|-------------|
-| Must Have | 14 | Funcionalidades imprescindibles para MVP |
-| Should Have | 9 | Importantes para completar el producto |
+| Must Have | 19 | Funcionalidades imprescindibles para MVP |
+| Should Have | 10 | Importantes para completar el producto |
 | Could Have | 3 | Deseables si hay tiempo |
 
 ---

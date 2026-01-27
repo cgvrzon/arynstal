@@ -106,6 +106,19 @@
 
 ---
 
+## EPIC 9: Panel de Oficina - 100% Completado
+
+| US | Descripción | Prioridad | Estado | Notas |
+|----|-------------|-----------|--------|-------|
+| US-9.1 | AdminSite Separado | M | DONE | URL /offynstal/ funcional |
+| US-9.2 | Restricción por Rol | M | DONE | Solo roles office y admin |
+| US-9.3 | Lead Simplificado | M | DONE | Campos esenciales sin metadatos técnicos |
+| US-9.4 | Budget Simplificado | M | DONE | CRUD con PDF, referencia auto |
+| US-9.5 | UI Mejorada | S | N/A | Admin estándar Django (funcional y limpio) |
+| US-9.6 | Sin Eliminación | M | DONE | has_delete_permission retorna False |
+
+---
+
 ## Gaps Pendientes
 
 **No hay gaps pendientes.** Todas las User Stories del backlog están implementadas.
@@ -122,11 +135,11 @@
 
 | Categoría | Completado | Total | Porcentaje |
 |-----------|------------|-------|------------|
-| Must Have | 14 | 14 | 100% |
-| Should Have | 9 | 9 | 100% |
+| Must Have | 19 | 19 | 100% |
+| Should Have | 10 | 10 | 100% |
 | Could Have | 2 | 2 | 100% |
 | N/A | 1 | 1 | - |
-| **Total** | **25** | **26** | **~100%** |
+| **Total** | **31** | **32** | **~100%** |
 
 **Estado:** Proyecto 100% completo respecto al Product Backlog. Listo para producción.
 

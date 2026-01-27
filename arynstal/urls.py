@@ -19,6 +19,8 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
+from apps.leads.office_admin import office_site
+
 # Personalización del sitio admin
 admin.site.site_header = "Arynstal SL - Administración"
 admin.site.site_title = "Arynstal Admin"
@@ -28,6 +30,8 @@ urlpatterns = [
     path('', include('apps.web.urls')),
     # URL del admin ofuscada por seguridad (en lugar del /admin/ predeterminado)
     path('admynstal/', admin.site.urls),
+    # Panel simplificado para oficina (usuarios con rol 'office' y 'admin')
+    path('offynstal/', office_site.urls),
 ]
 
 # Servir archivos media en desarrollo
