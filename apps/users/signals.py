@@ -76,7 +76,7 @@ def create_user_profile(sender, instance, created, **kwargs):
         3. Es idempotente (seguro de ejecutar múltiples veces)
 
     FLUJO TÍPICO:
-        1. Admin crea usuario desde /gestion-interna/auth/user/add/
+        1. Admin crea usuario desde /admynstal/auth/user/add/
         2. User.save() se ejecuta
         3. Este signal se dispara
         4. Se crea UserProfile con role='field'

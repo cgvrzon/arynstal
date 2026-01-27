@@ -8,7 +8,7 @@ AUTOR: @cgvrzon
 DESCRIPCIÓN:
     Configura el panel de administración de Django para la gestión de leads.
     Define cómo se visualizan, filtran y editan los leads, imágenes,
-    presupuestos y logs desde el backend /gestion-interna/.
+    presupuestos y logs desde el backend /admynstal/.
 
 FUNCIONES PRINCIPALES:
     - LeadAdmin: Administración completa de leads con inlines
@@ -17,7 +17,7 @@ FUNCIONES PRINCIPALES:
     - LeadLogAdmin: Visualización de auditoría (solo lectura)
 
 FLUJO EN LA APLICACIÓN:
-    1. Usuario admin accede a /gestion-interna/
+    1. Usuario admin accede a /admynstal/
     2. Ve listado de leads con filtros, badges y contadores
     3. Accede al detalle de un lead (fieldsets organizados)
     4. Gestiona imágenes y presupuestos desde inlines
@@ -40,10 +40,15 @@ PRINCIPIOS DE DISEÑO:
 ===============================================================================
 """
 
+import csv
+
 from django.contrib import admin
+from django.http import HttpResponse
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
+
 from .models import Lead, LeadImage, Budget, LeadLog
+from .notifications import notify_lead_assigned, notify_note_added
 
 
 # =============================================================================
@@ -257,6 +262,56 @@ class LeadAdmin(admin.ModelAdmin):
     date_hierarchy = 'created_at'
     inlines = [LeadImageInline, BudgetInline, LeadLogInline]
     autocomplete_fields = ['service', 'assigned_to']
+    actions = ['export_to_csv']
+
+    # -------------------------------------------------------------------------
+    # ACCIONES PERSONALIZADAS
+    # -------------------------------------------------------------------------
+
+    @admin.action(description='Exportar leads seleccionados a CSV')
+    def export_to_csv(self, request, queryset):
+        """
+        Exporta los leads seleccionados a un archivo CSV.
+
+        PARÁMETROS:
+            request: Request HTTP
+            queryset: QuerySet de leads seleccionados
+
+        RETORNA:
+            HttpResponse: Archivo CSV para descarga
+
+        CAMPOS EXPORTADOS:
+            ID, Nombre, Email, Teléfono, Servicio, Estado, Urgencia,
+            Origen, Fecha creación, Asignado a, Ubicación
+        """
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="leads_export.csv"'
+        response.write('\ufeff')  # BOM para Excel
+
+        writer = csv.writer(response)
+        writer.writerow([
+            'ID', 'Nombre', 'Email', 'Teléfono', 'Servicio',
+            'Estado', 'Urgencia', 'Origen', 'Fecha creación',
+            'Asignado a', 'Ubicación', 'Mensaje'
+        ])
+
+        for lead in queryset.select_related('service', 'assigned_to'):
+            writer.writerow([
+                lead.id,
+                lead.name,
+                lead.email,
+                lead.phone,
+                lead.service.name if lead.service else '',
+                lead.get_status_display(),
+                lead.get_urgency_display(),
+                lead.get_source_display(),
+                lead.created_at.strftime('%d/%m/%Y %H:%M'),
+                str(lead.assigned_to) if lead.assigned_to else '',
+                lead.location or '',
+                lead.message[:100] + '...' if len(lead.message) > 100 else lead.message
+            ])
+
+        return response
 
     # -------------------------------------------------------------------------
     # FIELDSETS - ORGANIZACIÓN DEL FORMULARIO DE EDICIÓN
@@ -447,20 +502,30 @@ class LeadAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         """
-        Optimiza las consultas del listado para evitar N+1 queries.
+        Optimiza las consultas y filtra por rol de usuario.
 
         PROPÓSITO:
-            El listado muestra servicio, asignado, imágenes y presupuestos.
-            Sin optimización, cada fila generaría 4 queries adicionales.
+            1. El listado muestra servicio, asignado, imágenes y presupuestos.
+               Sin optimización, cada fila generaría 4 queries adicionales.
+            2. Los técnicos de campo solo ven leads asignados a ellos.
 
         OPTIMIZACIONES:
             - select_related: Carga servicio y asignado en una sola query
             - prefetch_related: Carga imágenes y presupuestos en 2 queries
 
+        FILTRADO POR ROL:
+            - admin/office: Ven todos los leads
+            - field: Solo ven leads asignados a ellos
+
         RETORNA:
-            QuerySet: Leads con relaciones precargadas.
+            QuerySet: Leads filtrados y con relaciones precargadas.
         """
         queryset = super().get_queryset(request)
+
+        # Filtrar por rol: técnicos de campo solo ven sus leads asignados
+        if hasattr(request.user, 'profile') and request.user.profile.is_field():
+            queryset = queryset.filter(assigned_to=request.user)
+
         return queryset.select_related(
             'service', 'assigned_to'
         ).prefetch_related(
@@ -523,6 +588,23 @@ class LeadAdmin(admin.ModelAdmin):
                     old_value=str(old_obj.assigned_to) if old_obj.assigned_to else 'Sin asignar',
                     new_value=str(obj.assigned_to) if obj.assigned_to else 'Sin asignar'
                 )
+                # Notificar al nuevo técnico asignado por email
+                if obj.assigned_to:
+                    notify_lead_assigned(obj, obj.assigned_to)
+
+            # Detectar cambio de notas por técnico de campo
+            if old_obj.notes != obj.notes and obj.notes:
+                # Registrar en log
+                LeadLog.objects.create(
+                    lead=obj,
+                    user=request.user,
+                    action='note_added',
+                    old_value=old_obj.notes[:100] if old_obj.notes else '',
+                    new_value=obj.notes[:100]
+                )
+                # Notificar a admin si es técnico de campo
+                if hasattr(request.user, 'profile') and request.user.profile.is_field():
+                    notify_note_added(obj, request.user)
         else:
             # Nuevo lead creado desde el admin
             LeadLog.objects.create(

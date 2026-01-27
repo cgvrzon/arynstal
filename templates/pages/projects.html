@@ -209,12 +209,53 @@
     </div>
 
     <!-- FOOTER -->
-    <footer class="site-footer flex-shrink-0 bg-gradient-to-r from-[#0D3B66] to-[#5A7D9A] text-white">
-      <div class="footer-box container mx-auto px-4 sm:px-6 py-6 sm:py-8 text-center sm:text-left">
-        <p class="text-lg sm:text-xl font-bold mb-2">Arynstal SL</p>
-        <p class="text-sm sm:text-base mb-1">Tel: +34 912 345 678</p>
-        <p class="text-sm sm:text-base mb-1">Email: contacto@arynstal.com</p>
-        <p class="text-sm sm:text-base">Dirección: C/ Naranjo 123, Hospitalet de Llobregat</p>
+    <footer class="bg-gradient-to-r from-[#0D3B66] to-[#5A7D9A] text-white flex-shrink-0">
+      <div class="container mx-auto px-4 sm:px-6 py-8 sm:py-10 lg:py-12">
+        <!-- Grid: 1 columna en movil, 3 en desktop -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-6 lg:gap-8">
+
+          <!-- Columna 1: Info empresa -->
+          <div class="text-center md:text-left">
+            <p class="text-xl sm:text-2xl font-bold mb-2">Arynstal SL</p>
+            <p class="text-sm sm:text-base text-gray-200">
+              Especialistas en instalaciones electricas, domotica KNX y reformas integrales.
+            </p>
+          </div>
+
+          <!-- Columna 2: Contacto -->
+          <div class="text-center">
+            <p class="font-semibold mb-3 text-base sm:text-lg">Contacto</p>
+            <div class="space-y-1 text-sm sm:text-base">
+              <p>
+                <a href="tel:+34912345678" class="hover:text-gray-200 transition-colors">
+                  +34 912 345 678
+                </a>
+              </p>
+              <p>
+                <a href="mailto:contacto@arynstal.com" class="hover:text-gray-200 transition-colors">
+                  contacto@arynstal.com
+                </a>
+              </p>
+              <p class="text-gray-200">C/ Naranjo 123, Hospitalet de Llobregat</p>
+            </div>
+          </div>
+
+          <!-- Columna 3: Enlaces legales -->
+          <div class="text-center md:text-right">
+            <p class="font-semibold mb-3 text-base sm:text-lg">Legal</p>
+            <nav class="space-y-1 text-sm sm:text-base" aria-label="Enlaces legales">
+              <p><a href="{% url 'privacy' %}" class="hover:text-gray-200 transition-colors">Politica de Privacidad</a></p>
+              <p><a href="{% url 'legal_notice' %}" class="hover:text-gray-200 transition-colors">Aviso Legal</a></p>
+              <p><a href="{% url 'cookies' %}" class="hover:text-gray-200 transition-colors">Politica de Cookies</a></p>
+            </nav>
+          </div>
+
+        </div>
+
+        <!-- Copyright -->
+        <div class="mt-8 pt-6 border-t border-white/20 text-center text-xs sm:text-sm text-gray-300">
+          <p>&copy; {% now "Y" %} Arynstal SL. Todos los derechos reservados.</p>
+        </div>
       </div>
     </footer>
 

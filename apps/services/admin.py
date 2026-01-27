@@ -13,7 +13,7 @@ FUNCIONES PRINCIPALES:
     - ServiceAdmin: Administración completa de servicios
 
 FLUJO EN LA APLICACIÓN:
-    1. Admin accede a /gestion-interna/services/service/
+    1. Admin accede a /admynstal/services/service/
     2. Ve listado de servicios con orden editable
     3. Puede añadir/editar/desactivar servicios
     4. Los cambios se reflejan automáticamente en la web pública

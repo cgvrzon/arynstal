@@ -100,9 +100,9 @@ def services(request):
         - Descripciones y iconos
         - Enlaces a contacto
 
-    FUTURO:
-        Podría cargar Service.objects.filter(is_active=True)
-        para mostrar servicios dinámicamente desde BD.
+    NOTA:
+        Servicios hardcodeados en el template por diseño.
+        Son pocos y fijos, no justifica query a BD.
     """
     return render(request, 'pages/services.html')
 

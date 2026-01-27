@@ -142,7 +142,7 @@ def send_admin_notification(lead) -> bool:
     # Preparar contexto para el template
     # -------------------------------------------------------------------------
     # URL absoluta al admin (emails requieren enlaces absolutos).
-    # El admin está en /gestion-interna/, no /admin/.
+    # El admin está en /admynstal/, no /admin/.
     path = reverse('admin:leads_lead_change', args=[lead.id])
     base = getattr(settings, 'COMPANY_INFO', {}).get('WEBSITE', '').rstrip('/')
     lead_url = f'{base}{path}' if base else path
@@ -281,6 +281,182 @@ def send_customer_confirmation(lead) -> bool:
     except Exception as e:
         logger.error(
             f'Error enviando confirmación al cliente para Lead {lead.id}: {e}'
+        )
+        return False
+
+
+# =============================================================================
+# FUNCIÓN: NOTIFICACIÓN DE NOTA AÑADIDA
+# =============================================================================
+
+def notify_note_added(lead, added_by) -> bool:
+    """
+    Envía notificación a admins cuando un técnico añade una nota a un lead.
+
+    DESCRIPCIÓN:
+        Cuando un técnico de campo añade o modifica notas en un lead,
+        se notifica al administrador para que esté al tanto del progreso.
+
+    PARÁMETROS:
+        lead (Lead): Instancia del lead con la nota añadida.
+        added_by (User): Usuario que añadió la nota.
+
+    RETORNA:
+        bool: True si el email se envió correctamente, False si falló.
+
+    TEMPLATE UTILIZADO:
+        templates/emails/lead_note_added.html
+    """
+    config = get_notification_config()
+
+    if not config.get('ENABLED', True):
+        logger.info(
+            f'Notificaciones deshabilitadas. Nota en Lead {lead.id} no notificada.'
+        )
+        return False
+
+    # Obtener email del admin desde configuración
+    admin_email = config.get('ADMIN_EMAIL', 'info@arynstal.es')
+
+    # Preparar contexto
+    path = reverse('admin:leads_lead_change', args=[lead.id])
+    base = getattr(settings, 'COMPANY_INFO', {}).get('WEBSITE', '').rstrip('/')
+    lead_url = f'{base}{path}' if base else path
+
+    context = {
+        'lead': lead,
+        'lead_url': lead_url,
+        'added_by': added_by.get_full_name() or added_by.username,
+    }
+
+    try:
+        html_content = render_to_string(
+            'emails/lead_note_added.html',
+            context
+        )
+        text_content = strip_tags(html_content)
+
+        subject = f'Nueva nota en lead: {lead.name}'
+
+        email = EmailMultiAlternatives(
+            subject=subject,
+            body=text_content,
+            from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', None),
+            to=[admin_email],
+        )
+        email.attach_alternative(html_content, 'text/html')
+        email.send(fail_silently=False)
+
+        logger.info(
+            f'Notificación de nota enviada a {admin_email} para Lead {lead.id}'
+        )
+        return True
+
+    except Exception as e:
+        logger.error(
+            f'Error enviando notificación de nota para Lead {lead.id}: {e}'
+        )
+        return False
+
+
+# =============================================================================
+# FUNCIÓN: NOTIFICACIÓN DE LEAD ASIGNADO
+# =============================================================================
+
+def notify_lead_assigned(lead, assigned_user) -> bool:
+    """
+    Envía notificación al técnico cuando se le asigna un lead.
+
+    DESCRIPCIÓN:
+        Genera y envía un email al técnico informándole que tiene
+        un nuevo lead asignado con todos los datos relevantes.
+
+    PARÁMETROS:
+        lead (Lead): Instancia del lead asignado.
+        assigned_user (User): Usuario al que se asigna el lead.
+
+    RETORNA:
+        bool: True si el email se envió correctamente, False si falló.
+
+    FLUJO:
+        1. Verificar si notificaciones están habilitadas
+        2. Verificar que el usuario tiene email
+        3. Renderizar template HTML con datos del lead
+        4. Enviar email al técnico asignado
+
+    TEMPLATE UTILIZADO:
+        templates/emails/lead_assigned_notification.html
+
+    CONTEXTO DEL TEMPLATE:
+        - lead: Objeto Lead con todos sus datos
+        - lead_url: URL absoluta al admin para ver el lead
+        - assigned_user: Usuario asignado
+    """
+    config = get_notification_config()
+
+    # -------------------------------------------------------------------------
+    # Verificar configuración
+    # -------------------------------------------------------------------------
+    if not config.get('ENABLED', True):
+        logger.info(
+            f'Notificaciones deshabilitadas. Asignación de Lead {lead.id} no notificada.'
+        )
+        return False
+
+    # Verificar que el usuario tiene email
+    if not assigned_user.email:
+        logger.warning(
+            f'Usuario {assigned_user.username} sin email. '
+            f'No se puede notificar asignación de Lead {lead.id}.'
+        )
+        return False
+
+    # -------------------------------------------------------------------------
+    # Preparar contexto para el template
+    # -------------------------------------------------------------------------
+    path = reverse('admin:leads_lead_change', args=[lead.id])
+    base = getattr(settings, 'COMPANY_INFO', {}).get('WEBSITE', '').rstrip('/')
+    lead_url = f'{base}{path}' if base else path
+
+    context = {
+        'lead': lead,
+        'lead_url': lead_url,
+        'assigned_user': assigned_user,
+    }
+
+    try:
+        # ---------------------------------------------------------------------
+        # Renderizar template HTML
+        # ---------------------------------------------------------------------
+        html_content = render_to_string(
+            'emails/lead_assigned_notification.html',
+            context
+        )
+        text_content = strip_tags(html_content)
+
+        subject = f'Lead asignado: {lead.name}'
+
+        # ---------------------------------------------------------------------
+        # Crear y enviar email
+        # ---------------------------------------------------------------------
+        email = EmailMultiAlternatives(
+            subject=subject,
+            body=text_content,
+            from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', None),
+            to=[assigned_user.email],
+        )
+        email.attach_alternative(html_content, 'text/html')
+        email.send(fail_silently=False)
+
+        logger.info(
+            f'Notificación de asignación enviada a {assigned_user.email} '
+            f'para Lead {lead.id}'
+        )
+        return True
+
+    except Exception as e:
+        logger.error(
+            f'Error enviando notificación de asignación para Lead {lead.id}: {e}'
         )
         return False
 

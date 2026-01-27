@@ -16,7 +16,7 @@ FUNCIONES PRINCIPALES:
     - UserProfileInline: Inline para editar perfil dentro de User
 
 FLUJO EN LA APLICACIÓN:
-    1. Admin accede a /gestion-interna/auth/user/
+    1. Admin accede a /admynstal/auth/user/
     2. Ve listado de usuarios con roles y leads asignados
     3. Al crear usuario, signal crea el perfil automáticamente
     4. Admin edita usuario y configura rol en sección "Perfil de Arynstal"

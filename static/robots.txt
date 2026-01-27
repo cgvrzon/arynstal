@@ -7,7 +7,7 @@ User-agent: *
 Allow: /
 
 # Bloquear acceso al panel de administración
-Disallow: /gestion-interna/
+Disallow: /admynstal/
 
 # Bloquear archivos de media privados
 Disallow: /media/leads/

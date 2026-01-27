@@ -14,7 +14,7 @@ FUNCIONES PRINCIPALES:
     - Service: Modelo único para el catálogo de servicios
 
 FLUJO EN LA APLICACIÓN:
-    1. Admin crea/edita servicios desde /gestion-interna/
+    1. Admin crea/edita servicios desde /admynstal/
     2. Vista services() carga Service.objects.filter(is_active=True)
     3. Template services.html renderiza el listado
     4. Usuarios pueden seleccionar un servicio en el formulario de contacto

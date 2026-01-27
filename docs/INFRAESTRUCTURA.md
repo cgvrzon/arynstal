@@ -237,7 +237,7 @@ Se evaluaron tres categorías de hosting:
 - Proxy habilitado para el dominio principal
 - SSL/TLS: Full (strict)
 - Caché de archivos estáticos
-- Reglas de página para excluir `/gestion-interna/` del caché
+- Reglas de página para excluir `/admynstal/` del caché
 
 **Beneficios**:
 - SSL gestionado automáticamente
@@ -459,7 +459,7 @@ Para empezar, configurar alertas de:
 - [ ] SESSION_COOKIE_SECURE=True
 - [ ] SECURE_SSL_REDIRECT=True
 - [ ] SECURE_HSTS_SECONDS configurado
-- [ ] Admin URL ofuscada (/gestion-interna/)
+- [ ] Admin URL ofuscada (/admynstal/)
 
 ### 9.3 Base de Datos
 - [ ] PostgreSQL instalado y configurado

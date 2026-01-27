@@ -70,7 +70,7 @@ python manage.py runserver
 
 Acceder a:
 - Web: http://localhost:8000
-- Admin: http://localhost:8000/gestion-interna/
+- Admin: http://localhost:8000/admynstal/
 
 ## Estructura del Proyecto
 

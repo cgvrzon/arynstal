@@ -46,5 +46,5 @@ admin.site.site_title = "Arynstal Admin"
 # (se concatena con el nombre de cada sección)
 
 admin.site.index_title = "Panel de control"
-# Título que aparece en la página principal del admin (/gestion-interna/)
+# Título que aparece en la página principal del admin (/admynstal/)
 # (reemplaza "Site administration")

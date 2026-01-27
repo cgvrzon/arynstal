@@ -34,7 +34,7 @@ FLUJO DE CONFIGURACIÓN:
     3. El parámetro name permite usar {% url 'name' %} en templates
 
 NOTA SOBRE ADMIN:
-    La URL del admin (/gestion-interna/) se define en arynstal/urls.py,
+    La URL del admin (/admynstal/) se define en arynstal/urls.py,
     no aquí, porque es configuración global del proyecto.
 
 ===============================================================================

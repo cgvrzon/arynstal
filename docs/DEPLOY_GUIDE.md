@@ -606,7 +606,7 @@ ls -la /var/www/arynstal/backups/
 - [ ] Página de inicio carga correctamente
 - [ ] Formulario de contacto funciona
 - [ ] Se recibe email de notificación
-- [ ] Panel admin accesible en /gestion-interna/
+- [ ] Panel admin accesible en /admynstal/
 - [ ] Archivos estáticos cargan (CSS, JS, imágenes)
 - [ ] No hay errores en logs
 
@@ -710,7 +710,7 @@ docker run -d \
 
 Configurar para monitorizar:
 - `https://arynstal.es` (HTTP 200)
-- `https://arynstal.es/gestion-interna/` (HTTP 200/302)
+- `https://arynstal.es/admynstal/` (HTTP 200/302)
 
 ---
 

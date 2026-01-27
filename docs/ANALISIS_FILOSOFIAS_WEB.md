@@ -79,7 +79,7 @@ Capa 5: Validación de formulario ✅
 Capa 6: Validación de modelo ✅
 Capa 7: CSP Headers (django-csp) ✅
 Capa 8: Security Headers (production.py) ✅
-Capa 9: Admin URL ofuscada (/gestion-interna/) ✅
+Capa 9: Admin URL ofuscada (/admynstal/) ✅
 ```
 
 **Capas futuras (no críticas para MVP)**:
