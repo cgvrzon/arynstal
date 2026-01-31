@@ -1,7 +1,7 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -43,35 +43,26 @@
     <link rel="apple-touch-icon" href="{% static 'img/apple-touch-icon.png' %}">
 
     <!-- Tema de color para móviles -->
-    <meta name="theme-color" content="#1e3a5f">
+    <meta name="theme-color" content="#0D3B66">
+
+    <!-- CSS principal (Vite compiled) -->
+    <script type="module" crossorigin src="{% static 'assets/index-Ylwmixza.js' %}"></script>
+    <link rel="stylesheet" crossorigin href="{% static 'assets/index-9j83Pif2.css' %}">
 
     <!-- Bloque para CSS/JS adicional de páginas específicas -->
     {% block head %}{% endblock %}
-
-    <!-- CSS principal -->
-    <link rel="stylesheet" href="{% static 'dist/assets/index-4RbZCXm0.css' %}">
 </head>
 
-<body class="bg-gris-claro">
+<body class="flex flex-col min-h-screen bg-[#F2F2F2]">
 
     <!-- HEADER GLOBAL -->
-    <header class="page-header">
-        <div class="logo-box">
-            <img src="{% static 'dist/logotipo.jpg' %}" alt="Logotipo Arynstal SL - Instalaciones y Reformas">
-        </div>
-        <nav class="navBar" aria-label="Navegación principal">
-            <a href="{% url 'home' %}" class="nav-link">INICIO</a>
-            <a href="{% url 'services' %}" class="nav-link">SERVICIOS</a>
-            <a href="{% url 'projects' %}" class="nav-link">PROYECTOS</a>
-            <a href="{% url 'about_us' %}" class="nav-link">SOBRE NOSOTROS</a>
-        </nav>
-    </header>
+    {% include 'components/header.html' %}
 
     <!-- Mensajes flash de Django -->
     {% if messages %}
-    <div class="messages-container" role="alert">
+    <div class="container mx-auto px-4 py-4" role="alert">
         {% for message in messages %}
-        <div class="message message-{{ message.tags }}">
+        <div class="p-4 mb-2 rounded-lg {% if message.tags == 'success' %}bg-green-100 text-green-800{% elif message.tags == 'error' %}bg-red-100 text-red-800{% else %}bg-blue-100 text-blue-800{% endif %}">
             {{ message }}
         </div>
         {% endfor %}
@@ -79,63 +70,12 @@
     {% endif %}
 
     <!-- CONTENIDO PRINCIPAL -->
-    <main>
+    <main class="flex-1">
         {% block content %}{% endblock %}
     </main>
 
     <!-- FOOTER GLOBAL -->
-    <footer class="bg-gradient-to-r from-[#0D3B66] to-[#5A7D9A] text-white">
-        <div class="container mx-auto px-4 sm:px-6 py-8 sm:py-10 lg:py-12">
-            <!-- Grid: 1 columna en movil, 3 en desktop -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-6 lg:gap-8">
-
-                <!-- Columna 1: Info empresa -->
-                <div class="text-center md:text-left">
-                    <p class="text-xl sm:text-2xl font-bold mb-2">Arynstal SL</p>
-                    <p class="text-sm sm:text-base text-gray-200">
-                        Especialistas en instalaciones electricas, domotica KNX y reformas integrales.
-                    </p>
-                </div>
-
-                <!-- Columna 2: Contacto -->
-                <div class="text-center">
-                    <p class="font-semibold mb-3 text-base sm:text-lg">Contacto</p>
-                    <div class="space-y-1 text-sm sm:text-base">
-                        <p>
-                            <a href="tel:+34912345678" class="hover:text-gray-200 transition-colors">
-                                +34 912 345 678
-                            </a>
-                        </p>
-                        <p>
-                            <a href="mailto:contacto@arynstal.com" class="hover:text-gray-200 transition-colors">
-                                contacto@arynstal.com
-                            </a>
-                        </p>
-                        <p class="text-gray-200">C/ Naranjo 123, Hospitalet de Llobregat</p>
-                    </div>
-                </div>
-
-                <!-- Columna 3: Enlaces legales -->
-                <div class="text-center md:text-right">
-                    <p class="font-semibold mb-3 text-base sm:text-lg">Legal</p>
-                    <nav class="space-y-1 text-sm sm:text-base" aria-label="Enlaces legales">
-                        <p><a href="{% url 'privacy' %}" class="hover:text-gray-200 transition-colors">Politica de Privacidad</a></p>
-                        <p><a href="{% url 'legal_notice' %}" class="hover:text-gray-200 transition-colors">Aviso Legal</a></p>
-                        <p><a href="{% url 'cookies' %}" class="hover:text-gray-200 transition-colors">Politica de Cookies</a></p>
-                    </nav>
-                </div>
-
-            </div>
-
-            <!-- Copyright -->
-            <div class="mt-8 pt-6 border-t border-white/20 text-center text-xs sm:text-sm text-gray-300">
-                <p>&copy; {% now "Y" %} Arynstal SL. Todos los derechos reservados.</p>
-            </div>
-        </div>
-    </footer>
-
-    <!-- JavaScript principal -->
-    <script type="module" src="{% static 'dist/assets/index-Cz6qP6vT.js' %}"></script>
+    {% include 'components/footer.html' %}
 
     <!-- Banner de consentimiento de cookies (RGPD) -->
     <script src="{% static 'js/cookies.js' %}"></script>

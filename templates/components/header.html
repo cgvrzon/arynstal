@@ -1,5 +1,46 @@
+{% load static %}
 <!-- Header component -->
-<!-- TODO FASE 6: Extraer del base.html cuando se refactorice -->
-<header>
-    <!-- Placeholder: se extraerá del base.html -->
+<header class="w-full bg-gradient-to-r from-[#E0E8F2] via-[#5A7D9A] to-[#0D3B66] px-4 py-3 flex items-center justify-between shadow-sm relative z-50 flex-shrink-0">
+  <!-- LOGO -->
+  <div class="w-24 sm:w-28 md:w-36">
+    <a href="{% url 'home' %}">
+      <img src="{% static 'img/services/logotipo.png' %}" alt="Logotipo Arynstal SL" class="w-full h-auto">
+    </a>
+  </div>
+
+  <!-- BOTÓN HAMBURGUESA -->
+  <button id="menuToggle" aria-label="Abrir menú"
+    class="lg:hidden text-2xl sm:text-3xl text-white transition-all duration-300 ease-in-out px-2 py-1 rounded-md">
+    ☰
+  </button>
+
+  <!-- MENÚ DESPLEGABLE -->
+  <nav id="mobileMenu" aria-label="Navegación principal"
+    class="hidden flex-col items-center gap-4 text-white font-semibold absolute top-full left-0 w-full bg-[#0D3B66] px-6 py-4 lg:flex lg:flex-row lg:items-center lg:gap-10 lg:static lg:bg-transparent lg:px-0 lg:py-0 lg:w-auto lg:mr-8 z-40">
+    <a href="{% url 'home' %}" class="menu-link max-w-none lg:max-w-[300px]">INICIO</a>
+    <a href="{% url 'services' %}" class="menu-link max-w-none lg:max-w-[300px]">SERVICIOS</a>
+    <a href="{% url 'projects' %}" class="menu-link max-w-none lg:max-w-[300px]">PROYECTOS</a>
+    <a href="{% url 'about_us' %}" class="menu-link max-w-none lg:max-w-[300px]">ARYNSTAL</a>
+    <a href="{% url 'contact_us' %}" class="menu-link max-w-none lg:max-w-[300px]">CONTÁCTANOS</a>
+  </nav>
 </header>
+
+<!-- Fix para el menú móvil: añade 'flex' cuando se quita 'hidden' -->
+<script>
+(function() {
+  const toggle = document.getElementById('menuToggle');
+  const menu = document.getElementById('mobileMenu');
+  if (toggle && menu) {
+    toggle.addEventListener('click', function() {
+      // Después de que el JS principal toggle 'hidden', nosotros toggle 'flex'
+      setTimeout(function() {
+        if (!menu.classList.contains('hidden')) {
+          menu.classList.add('flex');
+        } else {
+          menu.classList.remove('flex');
+        }
+      }, 0);
+    });
+  }
+})();
+</script>

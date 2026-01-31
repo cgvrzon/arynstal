@@ -6,129 +6,58 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Arynstal SL - Servicios de construcción, reformas e instalaciones eléctricas." />
     <title>Servicios - Arynstal SL</title>
-    <script type="module" crossorigin src="{% static 'assets/index-BsthKayq.js' %}"></script>
-    <link rel="stylesheet" crossorigin href="{% static 'assets/index-BnlAnuup.css' %}">
+    <script type="module" crossorigin src="{% static 'assets/index-Ylwmixza.js' %}"></script>
+    <link rel="stylesheet" crossorigin href="{% static 'assets/index-9j83Pif2.css' %}">
   </head>
 
-  <body class="flex flex-col min-h-screen bg-gris-claro">
-    <!-- Header con menú hamburguesa -->
-    <header class="w-full bg-gradient-to-r from-[#E0E8F2] via-[#5A7D9A] to-[#0D3B66] px-4 py-3 flex items-center justify-between shadow-sm relative z-50 flex-shrink-0">
-      <!-- LOGO -->
-      <div class="w-28 sm:w-36">
-        <img src="{% static 'img/services/logotipo.png' %}" alt="Logotipo Arynstal SL" class="w-full h-auto">
-      </div>
-
-      <!-- BOTÓN HAMBURGUESA -->
-      <button id="menuToggle" aria-label="Abrir menú"
-        class="lg:hidden text-2xl sm:text-3xl text-white transition-all duration-300 ease-in-out px-2 py-1 rounded-md">
-        ☰
-      </button>
-
-      <!-- MENÚ DESPLEGABLE -->
-      <nav id="mobileMenu"
-        class="hidden lg:flex flex-col lg:flex-row gap-4 lg:gap-10 text-white font-semibold absolute top-full left-0 w-full bg-[#0D3B66] px-6 py-4 lg:static lg:bg-transparent lg:px-0 lg:py-0 lg:w-auto z-40">
-        <a href="{% url 'home' %}" class="menu-link">INICIO</a>
-        <a href="{% url 'services' %}" class="menu-link">SERVICIOS</a>
-        <a href="{% url 'projects' %}" class="menu-link">PROYECTOS</a>
-        <a href="{% url 'about_us' %}" class="menu-link">SOBRE NOSOTROS</a>
-        <a href="{% url 'contact_us' %}" class="menu-link">CONTÁCTANOS</a>
-      </nav>
-    </header>
+  <body class="flex flex-col min-h-screen bg-[#F2F2F2]">
+    {% include 'components/header.html' %}
 
     <!-- Sección Principal -->
     <section class="bg-white box-border py-8 sm:py-12 lg:py-16 flex-1">
-      <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-center text-azul-oscuro mb-6 sm:mb-8 lg:mb-10 px-4 sm:px-6">
+      <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-center text-[#0D3B66] mb-6 sm:mb-8 lg:mb-10 px-4 sm:px-6">
         NUESTRAS ÁREAS DE SERVICIO
       </h1>
 
       <!-- Primera fila de servicios -->
-      <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 max-w-7xl mx-auto mb-8 sm:mb-10 px-4 sm:px-6">
-        <article class="service-card bg-gris-claro rounded-xl p-4 sm:p-6 shadow-md text-center w-full min-h-[100px] sm:min-h-[120px] flex items-center justify-center transition-all duration-300 hover:-translate-y-2 hover:shadow-xl cursor-pointer" data-service="1">
-          <span class="text-base sm:text-lg font-semibold text-gris-oscuro">Servicio 1</span>
+      <section class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 max-w-7xl mx-auto mb-8 sm:mb-10 px-4 sm:px-6">
+        <article class="service-card bg-[#F2F2F2] rounded-xl p-4 sm:p-6 shadow-md text-center w-full min-h-[100px] sm:min-h-[120px] flex items-center justify-center transition-all duration-300 hover:-translate-y-2 hover:shadow-xl cursor-pointer" data-service="1">
+          <span class="text-base sm:text-lg font-semibold text-[#4A4A4A]">Servicio 1</span>
         </article>
 
-        <article class="service-card bg-gris-claro rounded-xl p-4 sm:p-6 shadow-md text-center w-full min-h-[100px] sm:min-h-[120px] flex items-center justify-center transition-all duration-300 hover:-translate-y-2 hover:shadow-xl cursor-pointer" data-service="2">
-          <span class="text-base sm:text-lg font-semibold text-gris-oscuro">Servicio 2</span>
+        <article class="service-card bg-[#F2F2F2] rounded-xl p-4 sm:p-6 shadow-md text-center w-full min-h-[100px] sm:min-h-[120px] flex items-center justify-center transition-all duration-300 hover:-translate-y-2 hover:shadow-xl cursor-pointer" data-service="2">
+          <span class="text-base sm:text-lg font-semibold text-[#4A4A4A]">Servicio 2</span>
         </article>
 
-        <article class="service-card bg-gris-claro rounded-xl p-4 sm:p-6 shadow-md text-center w-full min-h-[100px] sm:min-h-[120px] flex items-center justify-center transition-all duration-300 hover:-translate-y-2 hover:shadow-xl cursor-pointer" data-service="3">
-          <span class="text-base sm:text-lg font-semibold text-gris-oscuro">Servicio 3</span>
+        <article class="service-card bg-[#F2F2F2] rounded-xl p-4 sm:p-6 shadow-md text-center w-full min-h-[100px] sm:min-h-[120px] flex items-center justify-center transition-all duration-300 hover:-translate-y-2 hover:shadow-xl cursor-pointer" data-service="3">
+          <span class="text-base sm:text-lg font-semibold text-[#4A4A4A]">Servicio 3</span>
         </article>
       </section>
 
       <!-- PANEL EXPANDIBLE DESKTOP -->
-      <div id="expanded-panel" class="hidden transition-all duration-700 ease-in-out w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] lg:block" style="opacity: 0;">
+      <div id="expanded-panel" class="hidden transition-all duration-700 ease-in-out w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] sm:block" style="opacity: 0;">
         <!-- El contenido se insertará aquí dinámicamente en DESKTOP -->
       </div>
 
       <!-- Segunda fila de servicios -->
       <div id="bottom-curtain">
-        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 max-w-7xl mx-auto mb-8 sm:mb-10 mt-8 sm:mt-10 px-4 sm:px-6">
-          <article class="service-card bg-gris-claro rounded-xl p-4 sm:p-6 shadow-md text-center w-full min-h-[100px] sm:min-h-[120px] flex items-center justify-center transition-all duration-300 hover:-translate-y-2 hover:shadow-xl cursor-pointer" data-service="4">
-            <span class="text-base sm:text-lg font-semibold text-gris-oscuro">Servicio 4</span>
+        <section class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 max-w-7xl mx-auto mb-8 sm:mb-10 mt-8 sm:mt-10 px-4 sm:px-6">
+          <article class="service-card bg-[#F2F2F2] rounded-xl p-4 sm:p-6 shadow-md text-center w-full min-h-[100px] sm:min-h-[120px] flex items-center justify-center transition-all duration-300 hover:-translate-y-2 hover:shadow-xl cursor-pointer" data-service="4">
+            <span class="text-base sm:text-lg font-semibold text-[#4A4A4A]">Servicio 4</span>
           </article>
 
-          <article class="service-card bg-gris-claro rounded-xl p-4 sm:p-6 shadow-md text-center w-full min-h-[100px] sm:min-h-[120px] flex items-center justify-center transition-all duration-300 hover:-translate-y-2 hover:shadow-xl cursor-pointer" data-service="5">
-            <span class="text-base sm:text-lg font-semibold text-gris-oscuro">Servicio 5</span>
+          <article class="service-card bg-[#F2F2F2] rounded-xl p-4 sm:p-6 shadow-md text-center w-full min-h-[100px] sm:min-h-[120px] flex items-center justify-center transition-all duration-300 hover:-translate-y-2 hover:shadow-xl cursor-pointer" data-service="5">
+            <span class="text-base sm:text-lg font-semibold text-[#4A4A4A]">Servicio 5</span>
           </article>
 
-          <article class="service-card bg-gris-claro rounded-xl p-4 sm:p-6 shadow-md text-center w-full min-h-[100px] sm:min-h-[120px] flex items-center justify-center transition-all duration-300 hover:-translate-y-2 hover:shadow-xl cursor-pointer" data-service="6">
-            <span class="text-base sm:text-lg font-semibold text-gris-oscuro">Servicio 6</span>
+          <article class="service-card bg-[#F2F2F2] rounded-xl p-4 sm:p-6 shadow-md text-center w-full min-h-[100px] sm:min-h-[120px] flex items-center justify-center transition-all duration-300 hover:-translate-y-2 hover:shadow-xl cursor-pointer" data-service="6">
+            <span class="text-base sm:text-lg font-semibold text-[#4A4A4A]">Servicio 6</span>
           </article>
         </section>
       </div>
     </section>
 
-    <!-- FOOTER -->
-    <footer class="bg-gradient-to-r from-[#0D3B66] to-[#5A7D9A] text-white flex-shrink-0">
-      <div class="container mx-auto px-4 sm:px-6 py-8 sm:py-10 lg:py-12">
-        <!-- Grid: 1 columna en movil, 3 en desktop -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-6 lg:gap-8">
-
-          <!-- Columna 1: Info empresa -->
-          <div class="text-center md:text-left">
-            <p class="text-xl sm:text-2xl font-bold mb-2">Arynstal SL</p>
-            <p class="text-sm sm:text-base text-gray-200">
-              Especialistas en instalaciones electricas, domotica KNX y reformas integrales.
-            </p>
-          </div>
-
-          <!-- Columna 2: Contacto -->
-          <div class="text-center">
-            <p class="font-semibold mb-3 text-base sm:text-lg">Contacto</p>
-            <div class="space-y-1 text-sm sm:text-base">
-              <p>
-                <a href="tel:+34912345678" class="hover:text-gray-200 transition-colors">
-                  +34 912 345 678
-                </a>
-              </p>
-              <p>
-                <a href="mailto:contacto@arynstal.com" class="hover:text-gray-200 transition-colors">
-                  contacto@arynstal.com
-                </a>
-              </p>
-              <p class="text-gray-200">C/ Naranjo 123, Hospitalet de Llobregat</p>
-            </div>
-          </div>
-
-          <!-- Columna 3: Enlaces legales -->
-          <div class="text-center md:text-right">
-            <p class="font-semibold mb-3 text-base sm:text-lg">Legal</p>
-            <nav class="space-y-1 text-sm sm:text-base" aria-label="Enlaces legales">
-              <p><a href="{% url 'privacy' %}" class="hover:text-gray-200 transition-colors">Politica de Privacidad</a></p>
-              <p><a href="{% url 'legal_notice' %}" class="hover:text-gray-200 transition-colors">Aviso Legal</a></p>
-              <p><a href="{% url 'cookies' %}" class="hover:text-gray-200 transition-colors">Politica de Cookies</a></p>
-            </nav>
-          </div>
-
-        </div>
-
-        <!-- Copyright -->
-        <div class="mt-8 pt-6 border-t border-white/20 text-center text-xs sm:text-sm text-gray-300">
-          <p>&copy; {% now "Y" %} Arynstal SL. Todos los derechos reservados.</p>
-        </div>
-      </div>
-    </footer>
+    {% include 'components/footer.html' %}
 
   </body>
 </html>
