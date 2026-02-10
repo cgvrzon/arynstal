@@ -173,9 +173,9 @@ NOTIFICATIONS = {
 # HTTPS
 # -------------------------------------------------------------------------
 
-SECURE_SSL_REDIRECT = True
+SECURE_SSL_REDIRECT = os.environ.get('SECURE_SSL_REDIRECT', 'True').lower() == 'true'
 # Redirige automáticamente HTTP → HTTPS.
-# Requiere certificado SSL configurado en el servidor.
+# Desactivar si Cloudflare gestiona SSL (modo Flexible): SECURE_SSL_REDIRECT=False en .env
 
 SESSION_COOKIE_SECURE = True
 # Las cookies de sesión solo se envían por HTTPS.
