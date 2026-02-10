@@ -8,6 +8,7 @@
 
 ## Índice
 
+0. [Contexto y Decisiones Técnicas](#0-contexto-y-decisiones-técnicas)
 1. [Preparación Local](#1-preparación-local)
 2. [Contratar Servicios](#2-contratar-servicios)
 3. [Configurar DNS](#3-configurar-dns)
@@ -22,6 +23,86 @@
 12. [Configurar Backups](#12-configurar-backups)
 13. [Go-Live](#13-go-live)
 14. [Post-Despliegue](#14-post-despliegue)
+
+---
+
+## 0. Contexto y Decisiones Técnicas
+
+### 0.1 Contexto de Negocio
+
+| Aspecto | Detalle |
+|---------|---------|
+| **Empresa** | Arynstal S.L. - empresa familiar de instalaciones |
+| **Equipo** | 4 personas: 1 administrativa, 2 técnicos, 1 responsable |
+| **Ubicación** | Barcelona y alrededores (radio 1-1.5h) |
+| **Volumen** | 5-10 leads/mes en fase inicial |
+| **Web** | Landing page con formulario de contacto + CRM interno |
+
+### 0.2 Presupuesto y Objetivos
+
+- **Objetivo de coste**: ~60€/año para toda la infraestructura
+- **Prioridades**: Fiabilidad > simplicidad > coste > escalabilidad
+- **Mantenimiento**: Debe ser gestionable por una persona con conocimientos junior-mid
+
+### 0.3 Decisiones de Arquitectura
+
+#### Por qué Hetzner CX22
+
+- **3.99€/mes** por 2 vCPU + 4 GB RAM: imbatible en relación calidad/precio
+- Datacenter en Alemania (cumple RGPD, baja latencia desde España)
+- Escalado vertical sin migración (CX22 → CX32 → CX42)
+- **Descartado**: DigitalOcean (50% más caro), Contabo (soporte deficiente), PaaS (más caro a largo plazo)
+
+#### Por qué Cloudflare
+
+- Plan gratuito incluye: DNS, CDN, protección DDoS, WAF básico, SSL
+- Gestión DNS centralizada (todos los registros en un solo panel)
+- Analytics de tráfico incluidos
+- **Descartado**: DNS del registrador (funcionalidad limitada, sin CDN)
+
+#### Por qué Brevo para email transaccional
+
+- Plan gratuito: 300 emails/día (necesitamos <50/mes)
+- SMTP estándar: integración directa con Django `send_mail()`
+- Buena reputación de entrega (deliverability)
+- Dashboard para monitorizar envíos
+- **Uso**: Emails automáticos del sistema (notificaciones de leads, confirmaciones)
+- **FROM**: `noreply@arynstal.es`
+- **Descartado**: Amazon SES (complejo para el volumen), Mailgun (menos generoso en free tier)
+
+#### Por qué Zoho Mail Free para email corporativo
+
+- Plan Forever Free: 5 buzones con dominio propio, 5 GB/buzón
+- Webmail profesional + acceso IMAP/POP
+- Empresa establecida (>25 años), buena reputación
+- Sin anuncios en el webmail
+- **Uso**: Comunicación humana (responder clientes, email de contacto público)
+- **Descartado**: Google Workspace (6€/usuario/mes, innecesario), Outlook.com (no soporta dominio propio gratis)
+
+#### Separación de responsabilidades email
+
+| Aspecto | Zoho Mail (corporativo) | Brevo SMTP (transaccional) |
+|---------|------------------------|---------------------------|
+| **Propósito** | Comunicación humana | Emails automáticos |
+| **Ejemplos** | Responder clientes, presupuestos | Notificaciones leads, confirmaciones |
+| **Buzones** | info@, carlos@, personales | noreply@ |
+| **Enviado por** | Personas (webmail/IMAP) | Django (`send_mail()`) |
+| **Volumen** | Variable | <50/mes |
+| **Autenticación** | DKIM Zoho + SPF | DKIM Brevo + SPF |
+
+**No hay conflicto**: SPF se combina en un solo registro, DKIM usa selectores diferentes.
+
+### 0.4 Tabla Resumen de Costes
+
+| Servicio | Proveedor | Coste mensual | Coste anual |
+|----------|-----------|---------------|-------------|
+| VPS | Hetzner CX22 | 3.99€ | 47.88€ |
+| Dominio | DonDominio (.es) | ~1€ | ~12€ |
+| DNS + CDN | Cloudflare Free | 0€ | 0€ |
+| SSL | Cloudflare / Let's Encrypt | 0€ | 0€ |
+| Email transaccional | Brevo Free | 0€ | 0€ |
+| Email corporativo | Zoho Mail Free | 0€ | 0€ |
+| **TOTAL** | | **~5€** | **~60€** |
 
 ---
 
@@ -69,10 +150,11 @@ git push -u origin main
 
 ### 2.1 Dominio
 
-1. Ir a [Dondominio](https://www.dondominio.com) o [Porkbun](https://porkbun.com)
+1. Ir a [DonDominio](https://www.dondominio.com)
 2. Buscar `arynstal.es`
-3. Registrar (~9€/año)
-4. **No configurar DNS todavía** - lo haremos con Cloudflare
+3. Registrar (~12€/año)
+4. **Importante en DonDominio**: Al registrar, seleccionar "Continuar sin añadir servicios" para evitar extras innecesarios (hosting, email, etc.)
+5. **No configurar DNS en DonDominio** - lo haremos con Cloudflare
 
 ### 2.2 Cloudflare
 
@@ -81,7 +163,7 @@ git push -u origin main
 3. Cloudflare te dará dos nameservers, ejemplo:
    - `ada.ns.cloudflare.com`
    - `bob.ns.cloudflare.com`
-4. Volver al registrador de dominio y cambiar los nameservers a los de Cloudflare
+4. Volver a DonDominio y cambiar los nameservers a los de Cloudflare
 5. Esperar propagación (puede tardar hasta 24h, normalmente 1-2h)
 
 ### 2.3 VPS Hetzner
@@ -96,7 +178,9 @@ git push -u origin main
    - **Nombre**: `arynstal-prod`
 4. Anotar la IP pública del servidor
 
-### 2.4 Brevo (Email)
+### 2.4 Brevo (Email Transaccional)
+
+> Brevo gestiona los emails **automáticos** que envía Django (notificaciones de leads, confirmaciones). No es para correo corporativo.
 
 1. Crear cuenta en [Brevo](https://www.brevo.com)
 2. Ir a SMTP & API
@@ -104,28 +188,127 @@ git push -u origin main
 4. Anotar las credenciales:
    - Host: `smtp-relay.brevo.com`
    - Puerto: `587`
-   - Usuario: tu email
+   - Usuario: tu email de registro en Brevo
    - Password: la API key generada
+
+### 2.5 Zoho Mail Free (Email Corporativo)
+
+> Zoho gestiona el correo **corporativo** con dominio propio (info@arynstal.es, carlos@arynstal.es). Es para comunicación humana.
+
+1. Ir a [Zoho Mail](https://www.zoho.com/mail/)
+2. Seleccionar **Mail Free** (Forever Free plan, hasta 5 usuarios)
+3. Registrarse con un email personal (será el admin)
+4. Añadir dominio `arynstal.es`
+5. Zoho pedirá verificar el dominio con un registro TXT en DNS
+   - **Nota**: Este registro se configura en la sección 3 (DNS)
+6. **No crear buzones todavía** - primero hay que configurar DNS (sección 3) y verificar el dominio (sección 11.1)
 
 ---
 
 ## 3. Configurar DNS
 
-En el panel de Cloudflare:
+En el panel de Cloudflare, configurar los siguientes registros para `arynstal.es`:
 
-### 3.1 Registros DNS
+### 3.1 Registros A (Web)
 
-| Tipo | Nombre | Contenido | Proxy |
-|------|--------|-----------|-------|
-| A | @ | IP_DEL_VPS | ✅ Proxied |
-| A | www | IP_DEL_VPS | ✅ Proxied |
+| Tipo | Nombre | Contenido | Proxy | TTL |
+|------|--------|-----------|-------|-----|
+| A | @ | IP_DEL_VPS | Proxied | Auto |
+| A | www | IP_DEL_VPS | Proxied | Auto |
 
-### 3.2 Configuración SSL/TLS
+### 3.2 Registros MX (Zoho Mail)
+
+> Los registros MX indican qué servidores reciben el correo de tu dominio. **NO deben estar proxied** (solo DNS).
+
+| Tipo | Nombre | Contenido | Prioridad | Proxy | TTL |
+|------|--------|-----------|-----------|-------|-----|
+| MX | @ | mx.zoho.eu | 10 | DNS only | Auto |
+| MX | @ | mx2.zoho.eu | 20 | DNS only | Auto |
+| MX | @ | mx3.zoho.eu | 50 | DNS only | Auto |
+
+### 3.3 SPF (Zoho + Brevo combinado)
+
+> SPF indica qué servidores están autorizados a enviar email en nombre de tu dominio. **Un solo registro SPF** que incluye ambos servicios.
+
+| Tipo | Nombre | Contenido | Proxy | TTL |
+|------|--------|-----------|-------|-----|
+| TXT | @ | `v=spf1 include:zoho.eu include:spf.brevo.com ~all` | DNS only | Auto |
+
+**Nota**: Solo puede haber **un registro SPF** por dominio. Si necesitas añadir más servicios, agrégalos con `include:` adicionales en este mismo registro.
+
+### 3.4 DKIM - Zoho
+
+> DKIM firma los emails para que el destinatario pueda verificar que no han sido alterados. Zoho proporciona su propia clave DKIM.
+
+1. En Zoho Mail Admin → Domain → Email Authentication → DKIM
+2. Generar clave DKIM (selector: `zmail`)
+3. Añadir el registro en Cloudflare:
+
+| Tipo | Nombre | Contenido | Proxy | TTL |
+|------|--------|-----------|-------|-----|
+| TXT | `zmail._domainkey` | (valor proporcionado por Zoho) | DNS only | Auto |
+
+### 3.5 DKIM - Brevo
+
+> Brevo usa un selector DKIM diferente, así que no hay conflicto con Zoho.
+
+1. En Brevo → Settings → Senders & Domains → Domains → Add domain `arynstal.es`
+2. Brevo te dará un registro DKIM (selector: `mail`)
+3. Añadir el registro en Cloudflare:
+
+| Tipo | Nombre | Contenido | Proxy | TTL |
+|------|--------|-----------|-------|-----|
+| TXT | `mail._domainkey` | (valor proporcionado por Brevo) | DNS only | Auto |
+
+### 3.6 DMARC
+
+> DMARC indica a los servidores receptores qué hacer con emails que fallen SPF/DKIM. Empezar en modo monitorización (`p=none`).
+
+| Tipo | Nombre | Contenido | Proxy | TTL |
+|------|--------|-----------|-------|-----|
+| TXT | `_dmarc` | `v=DMARC1; p=none; rua=mailto:carlos@arynstal.es; fo=1` | DNS only | Auto |
+
+**Fases DMARC**:
+1. **Semana 1-4**: `p=none` (solo monitorizar, revisar reportes en carlos@)
+2. **Mes 2+**: `p=quarantine` (emails sospechosos van a spam)
+3. **Cuando todo esté estable**: `p=reject` (bloquear emails no autenticados)
+
+### 3.7 Verificar DNS
+
+Después de configurar todos los registros, esperar 5-15 minutos y verificar:
+
+```bash
+# Verificar registros A
+dig arynstal.es A +short
+dig www.arynstal.es A +short
+
+# Verificar MX (Zoho)
+dig arynstal.es MX +short
+# Debe mostrar: mx.zoho.eu, mx2.zoho.eu, mx3.zoho.eu
+
+# Verificar SPF
+dig arynstal.es TXT +short
+# Debe incluir: v=spf1 include:zoho.eu include:spf.brevo.com ~all
+
+# Verificar DKIM
+dig zmail._domainkey.arynstal.es TXT +short  # Zoho
+dig mail._domainkey.arynstal.es TXT +short   # Brevo
+
+# Verificar DMARC
+dig _dmarc.arynstal.es TXT +short
+```
+
+**Herramientas online** para verificación más detallada:
+- [MXToolbox](https://mxtoolbox.com/SuperTool.aspx) - verificar MX, SPF, DKIM, DMARC
+- [DMARCian](https://dmarcian.com/dmarc-inspector/) - inspector DMARC
+- [Mail Tester](https://www.mail-tester.com/) - test completo de entrega de email
+
+### 3.8 Configuración SSL/TLS
 
 1. Ir a SSL/TLS → Overview
 2. Seleccionar **Full (strict)**
 
-### 3.3 Configuración de seguridad
+### 3.9 Configuración de seguridad
 
 1. Ir a Security → Settings
 2. Security Level: **Medium**
@@ -288,6 +471,7 @@ DJANGO_ENV=production
 SECRET_KEY=tu-secret-key-generada-antes
 DEBUG=False
 ALLOWED_HOSTS=arynstal.es,www.arynstal.es
+CSRF_TRUSTED_ORIGINS=arynstal.es,www.arynstal.es
 
 # Base de datos
 DB_NAME=arynstal
@@ -296,12 +480,12 @@ DB_PASSWORD=CONTRASEÑA_DE_POSTGRESQL
 DB_HOST=localhost
 DB_PORT=5432
 
-# Email
+# Email transaccional (Brevo) - emails automáticos de Django
 EMAIL_HOST=smtp-relay.brevo.com
 EMAIL_PORT=587
 EMAIL_HOST_USER=tu-email@dominio.com
 EMAIL_HOST_PASSWORD=tu-api-key-de-brevo
-DEFAULT_FROM_EMAIL=Arynstal <info@arynstal.es>
+DEFAULT_FROM_EMAIL=Arynstal <noreply@arynstal.es>
 
 # Notificaciones
 LEAD_NOTIFICATION_EMAIL=garzoncl01@gmail.com
@@ -335,11 +519,19 @@ python manage.py check --deploy
 
 ### 8.1 Crear archivo de configuración
 
+El archivo `gunicorn.conf.py` ya está incluido en el repositorio. Verificar que está presente:
+
+```bash
+ls /var/www/arynstal/app/gunicorn.conf.py
+```
+
+Si necesitas ajustar algo, editarlo:
+
 ```bash
 nano /var/www/arynstal/app/gunicorn.conf.py
 ```
 
-Contenido:
+Contenido esperado:
 
 ```python
 # Gunicorn configuration file
@@ -509,7 +701,61 @@ sudo certbot renew --dry-run
 
 ## 11. Configurar Email
 
-### 11.1 Probar envío de emails
+### 11.1 Verificar Email Corporativo (Zoho)
+
+Después de configurar los registros DNS (sección 3), volver a Zoho Mail Admin:
+
+1. Ir a Zoho Mail Admin → Domain Settings → Domain Verification
+2. Seleccionar verificación por **registro TXT** (ya configurado en DNS)
+3. Hacer clic en "Verify" - Zoho comprobará el registro TXT
+4. Verificar que los registros MX están correctos (Zoho lo comprueba automáticamente)
+
+### 11.2 Crear Buzones en Zoho
+
+Una vez verificado el dominio, crear los 5 buzones del plan Free:
+
+| Buzón | Uso | Acceso |
+|-------|-----|--------|
+| `info@arynstal.es` | Email principal, contacto público | Carlos + madre (administrativa) |
+| `carlos@arynstal.es` | IT/admin, reportes DMARC | Carlos |
+| `nombre1@arynstal.es` | Personal (familiar) | Familiar 1 |
+| `nombre2@arynstal.es` | Personal (familiar) | Familiar 2 |
+| `nombre3@arynstal.es` | Personal (familiar) | Familiar 3 |
+
+**Pasos para cada buzón**:
+1. Zoho Mail Admin → Users → Add User
+2. Rellenar nombre y crear contraseña
+3. El usuario recibirá instrucciones de acceso
+
+**Nota**: `info@` es el email que aparece en la web y formularios. Carlos y la administrativa gestionan este buzón. Considerar configurar un alias o acceso compartido.
+
+### 11.3 Test Email Corporativo
+
+Verificar que Zoho funciona correctamente:
+
+1. **Webmail**: Ir a [mail.zoho.eu](https://mail.zoho.eu) → Iniciar sesión con `info@arynstal.es`
+2. **Enviar test**: Enviar un email desde `info@arynstal.es` a un Gmail personal
+3. **Recibir test**: Enviar un email desde Gmail a `info@arynstal.es`
+4. **Verificar headers**: En Gmail, al recibir el email de Zoho, hacer clic en "Mostrar original" y comprobar que SPF y DKIM pasan
+
+**Configuración IMAP** (para clientes de correo):
+
+| Parámetro | Valor |
+|-----------|-------|
+| Servidor entrante (IMAP) | `imappro.zoho.eu` |
+| Puerto IMAP | 993 (SSL) |
+| Servidor saliente (SMTP) | `smtppro.zoho.eu` |
+| Puerto SMTP | 465 (SSL) |
+| Autenticación | Email completo + contraseña |
+
+### 11.4 Autenticar Dominio en Brevo
+
+1. En Brevo → Settings → Senders & Domains → Domains
+2. Verificar que `arynstal.es` aparece como verificado
+3. Comprobar que DKIM (selector `mail`) está validado
+4. Si no está verificado, revisar el registro DKIM en Cloudflare (sección 3.5)
+
+### 11.5 Probar Email Transaccional (Django)
 
 ```bash
 cd /var/www/arynstal/app
@@ -524,13 +770,35 @@ from django.core.mail import send_mail
 send_mail(
     'Test desde Arynstal',
     'Este es un email de prueba del servidor de producción.',
-    'info@arynstal.es',
+    'Arynstal <noreply@arynstal.es>',
     ['garzoncl01@gmail.com'],
     fail_silently=False,
 )
 ```
 
-Si recibes el email, la configuración es correcta.
+**Verificaciones**:
+- El email llega a la bandeja de entrada (no spam)
+- El remitente aparece como "Arynstal" con `noreply@arynstal.es`
+- En Gmail → "Mostrar original": SPF = pass, DKIM = pass
+
+### 11.6 Troubleshooting Email
+
+**Emails de Django van a spam**:
+1. Verificar SPF: `dig arynstal.es TXT +short` → debe incluir `spf.brevo.com`
+2. Verificar DKIM en Brevo: Settings → Domains → comprobar estado
+3. Verificar DMARC: `dig _dmarc.arynstal.es TXT +short`
+4. Usar [Mail Tester](https://www.mail-tester.com/) para puntuación completa
+
+**Zoho no recibe emails**:
+1. Verificar MX: `dig arynstal.es MX +short` → debe mostrar `mx.zoho.eu`
+2. Verificar que los registros MX NO están proxied en Cloudflare
+3. Comprobar que el dominio está verificado en Zoho Admin
+
+**Django no puede enviar (ConnectionError/TimeoutError)**:
+1. Verificar credenciales en `.env`: `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`
+2. Verificar que el puerto 587 está abierto: `telnet smtp-relay.brevo.com 587`
+3. Verificar en Brevo que la API key está activa
+4. Comprobar logs: `tail -20 /var/www/arynstal/logs/django_errors.log`
 
 ---
 
@@ -601,11 +869,13 @@ ls -la /var/www/arynstal/backups/
 
 ### 13.1 Checklist final
 
-- [ ] DNS apuntando al servidor
+- [ ] DNS apuntando al servidor (registros A)
+- [ ] DNS email configurado (MX, SPF, DKIM, DMARC)
 - [ ] SSL funcionando (https://arynstal.es)
 - [ ] Página de inicio carga correctamente
 - [ ] Formulario de contacto funciona
-- [ ] Se recibe email de notificación
+- [ ] Se recibe email de notificación (via Brevo)
+- [ ] Email corporativo funciona (Zoho: info@arynstal.es)
 - [ ] Panel admin accesible en /admynstal/
 - [ ] Archivos estáticos cargan (CSS, JS, imágenes)
 - [ ] No hay errores en logs
@@ -760,15 +1030,7 @@ cat /var/www/arynstal/app/.env | grep DB_
 
 ### Problema: Emails no se envían
 
-```bash
-# Probar desde shell de Django
-python manage.py shell
->>> from django.core.mail import send_mail
->>> send_mail('Test', 'Body', 'from@test.com', ['to@test.com'])
-
-# Verificar credenciales en .env
-cat /var/www/arynstal/app/.env | grep EMAIL
-```
+Ver sección [11.6 Troubleshooting Email](#116-troubleshooting-email) para diagnóstico detallado.
 
 ---
 
@@ -791,6 +1053,7 @@ cat /var/www/arynstal/app/.env | grep EMAIL
 |---------|-------|---------|
 | 1.0 | 2026-01-15 | Documento inicial |
 | 1.1 | 2026-01-26 | Añadida sección de historial |
+| 1.2 | 2026-02-10 | Sección 0 (decisiones técnicas), Zoho Mail Free, DNS completa (MX, SPF, DKIM, DMARC), sección 11 reescrita (email corporativo + transaccional) |
 
 ---
 

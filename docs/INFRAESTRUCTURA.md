@@ -40,11 +40,12 @@
 │  Sistema:      Ubuntu 24.04 LTS                                 │
 │  DNS/CDN:      Cloudflare (plan gratuito)                       │
 │  SSL:          Let's Encrypt (Certbot)                          │
-│  Email:        Brevo SMTP (tier gratuito)                       │
-│  Dominio:      Registrador a elegir (.es)                       │
+│  Email trans.: Brevo SMTP (tier gratuito)                       │
+│  Email corp.:  Zoho Mail Free (5 buzones)                       │
+│  Dominio:      DonDominio (.es)                                 │
 │  Backups:      Script local + almacenamiento externo            │
 │                                                                 │
-│  Coste estimado: ~70€/año                                       │
+│  Coste estimado: ~60€/año                                       │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -167,8 +168,8 @@ Se evaluaron tres categorías de hosting:
               ┌─────────────────┼─────────────────┐
               ▼                 ▼                 ▼
     ┌─────────────────┐ ┌─────────────┐ ┌─────────────────┐
-    │   BREVO SMTP    │ │   BACKUPS   │ │   MONITORING    │
-    │  (email salida) │ │  (externo)  │ │   (opcional)    │
+    │   BREVO SMTP    │ │   BACKUPS   │ │   ZOHO MAIL     │
+    │  (transaccional)│ │  (externo)  │ │  (corporativo)  │
     └─────────────────┘ └─────────────┘ └─────────────────┘
 ```
 
@@ -263,7 +264,23 @@ EMAIL_HOST_USER = '<tu-email>'
 EMAIL_HOST_PASSWORD = '<api-key>'
 ```
 
-### 4.3 Dominio
+### 4.4 Zoho Mail Free (Email Corporativo)
+
+**Plan**: Forever Free (5 buzones, 5 GB/buzón)
+
+**Uso previsto**:
+- Comunicación humana con clientes (responder consultas, enviar presupuestos)
+- Email de contacto público: `info@arynstal.es`
+- Buzones personales para el equipo
+
+**Buzones**:
+- `info@arynstal.es` - email principal (gestiona Carlos + administrativa)
+- `carlos@arynstal.es` - IT/admin
+- 3 buzones personales adicionales
+
+**Nota**: Zoho NO envía los emails automáticos de Django. Eso lo hace Brevo (sección 4.2).
+
+### 4.5 Dominio
 
 **Opciones recomendadas para .es**:
 
@@ -419,12 +436,13 @@ Para empezar, configurar alertas de:
 | Concepto | Proveedor | Coste mensual | Coste anual |
 |----------|-----------|---------------|-------------|
 | VPS CX22 | Hetzner | 3.99€ | 47.88€ |
-| Dominio .es | Dondominio | 0.75€ | 8.95€ |
+| Dominio .es | DonDominio | ~1€ | ~12€ |
 | DNS + CDN | Cloudflare | 0€ | 0€ |
 | SSL | Let's Encrypt | 0€ | 0€ |
-| Email SMTP | Brevo | 0€ | 0€ |
+| Email transaccional | Brevo | 0€ | 0€ |
+| Email corporativo | Zoho Mail Free | 0€ | 0€ |
 | Backups | Local + Script | 0€ | 0€ |
-| **TOTAL** | | **~4.75€** | **~57€** |
+| **TOTAL** | | **~5€** | **~60€** |
 
 ### 8.2 Costes Opcionales
 
@@ -432,7 +450,7 @@ Para empezar, configurar alertas de:
 |----------|-----------|-------|
 | Backup externo | Backblaze B2 | ~1€/mes |
 | Monitorización | Uptime Kuma | 0€ (self-hosted) |
-| Email profesional | Google Workspace | 6€/usuario/mes |
+| ~~Email profesional~~ | ~~Google Workspace~~ | ~~6€/usuario/mes~~ (descartado: Zoho Mail Free cubre la necesidad) |
 
 ### 8.3 Proyección de Costes por Crecimiento
 
@@ -510,6 +528,7 @@ La arquitectura seleccionada (Hetzner + Cloudflare + Brevo) ofrece:
 | Versión | Fecha | Cambios |
 |---------|-------|---------|
 | 1.0 | 2026-01-15 | Documento inicial |
+| 1.1 | 2026-02-10 | Añadir Zoho Mail Free, actualizar costes y diagrama |
 
 ---
 
