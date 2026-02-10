@@ -3,25 +3,223 @@
 {% block title %}Política de Cookies - Arynstal{% endblock %}
 
 {% block content %}
-<div class="container mx-auto px-4 py-12">
-    <h1 class="text-4xl font-bold mb-6">Política de Cookies</h1>
+<div class="container mx-auto px-4 py-12 max-w-4xl">
+    <h1 class="text-3xl md:text-4xl font-bold mb-8 text-gray-900">Política de Cookies</h1>
 
-    <div class="prose max-w-none">
-        <p class="text-gray-600 mb-4">
-            TODO FASE 8: Implementar contenido completo de la política de cookies.
+    <div class="prose prose-gray max-w-none space-y-8">
+
+        <p class="text-gray-600 text-lg">
+            En cumplimiento de la Ley 34/2002 (LSSI-CE) y el Reglamento (UE) 2016/679 (RGPD), te informamos sobre el uso de cookies en este sitio web.
         </p>
 
-        <h2 class="text-2xl font-semibold mt-8 mb-4">¿Qué son las cookies?</h2>
-        <p>Pequeños archivos de texto que se almacenan en tu navegador.</p>
+        <!-- Qué son las cookies -->
+        <section>
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">1. ¿Qué son las cookies?</h2>
+            <p class="text-gray-600">
+                Las cookies son pequeños archivos de texto que los sitios web almacenan en tu dispositivo (ordenador, tablet o móvil) cuando los visitas. Permiten que el sitio recuerde información sobre tu visita, como tus preferencias, facilitando tu próxima visita y haciendo el sitio más útil.
+            </p>
+        </section>
 
-        <h2 class="text-2xl font-semibold mt-8 mb-4">Cookies que utilizamos</h2>
-        <ul>
-            <li><strong>Técnicas:</strong> Necesarias para el funcionamiento del sitio</li>
-            <li><strong>Analíticas:</strong> Google Analytics (si aceptas)</li>
-        </ul>
+        <!-- Tipos de cookies -->
+        <section>
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">2. Tipos de cookies</h2>
 
-        <h2 class="text-2xl font-semibold mt-8 mb-4">Gestión de cookies</h2>
-        <p>Puedes configurar o rechazar cookies desde tu navegador.</p>
+            <h3 class="text-lg font-medium text-gray-700 mt-6 mb-3">Según su titularidad:</h3>
+            <ul class="list-disc list-inside text-gray-600 space-y-2 ml-4">
+                <li><strong>Cookies propias:</strong> Enviadas desde nuestro servidor o dominio</li>
+                <li><strong>Cookies de terceros:</strong> Enviadas desde servidores de otras entidades</li>
+            </ul>
+
+            <h3 class="text-lg font-medium text-gray-700 mt-6 mb-3">Según su finalidad:</h3>
+            <ul class="list-disc list-inside text-gray-600 space-y-2 ml-4">
+                <li><strong>Técnicas/Necesarias:</strong> Imprescindibles para el funcionamiento del sitio</li>
+                <li><strong>De preferencias:</strong> Recuerdan tus opciones (idioma, región)</li>
+                <li><strong>Analíticas:</strong> Recopilan información sobre el uso del sitio</li>
+                <li><strong>Publicitarias:</strong> Gestionan espacios publicitarios (no usamos)</li>
+            </ul>
+
+            <h3 class="text-lg font-medium text-gray-700 mt-6 mb-3">Según su duración:</h3>
+            <ul class="list-disc list-inside text-gray-600 space-y-2 ml-4">
+                <li><strong>De sesión:</strong> Se eliminan al cerrar el navegador</li>
+                <li><strong>Persistentes:</strong> Permanecen durante un tiempo determinado</li>
+            </ul>
+        </section>
+
+        <!-- Cookies que utilizamos -->
+        <section>
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">3. Cookies que utilizamos</h2>
+
+            <h3 class="text-lg font-medium text-gray-700 mt-6 mb-3">Cookies técnicas (necesarias)</h3>
+            <p class="text-gray-600 mb-4">
+                Estas cookies son imprescindibles para el correcto funcionamiento del sitio web. <strong>No requieren tu consentimiento</strong> ya que son estrictamente necesarias.
+            </p>
+            <div class="overflow-x-auto">
+                <table class="min-w-full bg-white border border-gray-200 rounded-lg overflow-hidden">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Cookie</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Proveedor</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Finalidad</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Duración</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        <tr>
+                            <td class="px-4 py-3 text-sm font-mono text-gray-600">csrftoken</td>
+                            <td class="px-4 py-3 text-sm text-gray-600">Propia</td>
+                            <td class="px-4 py-3 text-sm text-gray-600">Seguridad en formularios (protección CSRF)</td>
+                            <td class="px-4 py-3 text-sm text-gray-600">1 año</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 text-sm font-mono text-gray-600">sessionid</td>
+                            <td class="px-4 py-3 text-sm text-gray-600">Propia</td>
+                            <td class="px-4 py-3 text-sm text-gray-600">Mantener la sesión del usuario</td>
+                            <td class="px-4 py-3 text-sm text-gray-600">2 semanas</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 text-sm font-mono text-gray-600">cookies_accepted</td>
+                            <td class="px-4 py-3 text-sm text-gray-600">Propia</td>
+                            <td class="px-4 py-3 text-sm text-gray-600">Guardar tus preferencias de cookies</td>
+                            <td class="px-4 py-3 text-sm text-gray-600">1 año</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 class="text-lg font-medium text-gray-700 mt-8 mb-3">Cookies analíticas (opcionales)</h3>
+            <p class="text-gray-600 mb-4">
+                Estas cookies nos ayudan a entender cómo los visitantes interactúan con el sitio web. <strong>Requieren tu consentimiento</strong> y solo se activan si las aceptas.
+            </p>
+            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
+                <p class="text-yellow-800 text-sm">
+                    <strong>Nota:</strong> Actualmente no utilizamos cookies analíticas de terceros. Si en el futuro implementamos Google Analytics u otra herramienta similar, actualizaremos esta política y solicitaremos tu consentimiento.
+                </p>
+            </div>
+
+            <!--
+            Cuando se implemente Google Analytics, descomentar esta tabla:
+
+            <div class="overflow-x-auto">
+                <table class="min-w-full bg-white border border-gray-200 rounded-lg overflow-hidden">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Cookie</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Proveedor</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Finalidad</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Duración</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        <tr>
+                            <td class="px-4 py-3 text-sm font-mono text-gray-600">_ga</td>
+                            <td class="px-4 py-3 text-sm text-gray-600">Google Analytics</td>
+                            <td class="px-4 py-3 text-sm text-gray-600">Distinguir usuarios únicos</td>
+                            <td class="px-4 py-3 text-sm text-gray-600">2 años</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 text-sm font-mono text-gray-600">_ga_*</td>
+                            <td class="px-4 py-3 text-sm text-gray-600">Google Analytics</td>
+                            <td class="px-4 py-3 text-sm text-gray-600">Mantener estado de sesión</td>
+                            <td class="px-4 py-3 text-sm text-gray-600">2 años</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 text-sm font-mono text-gray-600">_gid</td>
+                            <td class="px-4 py-3 text-sm text-gray-600">Google Analytics</td>
+                            <td class="px-4 py-3 text-sm text-gray-600">Distinguir usuarios</td>
+                            <td class="px-4 py-3 text-sm text-gray-600">24 horas</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            -->
+        </section>
+
+        <!-- Gestión de cookies -->
+        <section>
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">4. Gestión de cookies</h2>
+
+            <h3 class="text-lg font-medium text-gray-700 mt-6 mb-3">Desde nuestro sitio web</h3>
+            <p class="text-gray-600 mb-4">
+                Al acceder a nuestro sitio web por primera vez, te mostramos un banner informativo donde puedes:
+            </p>
+            <ul class="list-disc list-inside text-gray-600 space-y-2 ml-4">
+                <li><strong>Aceptar todas:</strong> Se activan todas las cookies</li>
+                <li><strong>Rechazar no esenciales:</strong> Solo se mantienen las cookies técnicas imprescindibles</li>
+            </ul>
+            <p class="text-gray-600 mt-4">
+                Puedes cambiar tus preferencias en cualquier momento haciendo clic en el enlace <strong>"Configurar cookies"</strong> del pie de página.
+            </p>
+
+            <h3 class="text-lg font-medium text-gray-700 mt-8 mb-3">Desde tu navegador</h3>
+            <p class="text-gray-600 mb-4">
+                También puedes gestionar las cookies desde la configuración de tu navegador:
+            </p>
+            <div class="grid md:grid-cols-2 gap-4">
+                <a href="https://support.google.com/chrome/answer/95647" target="_blank" rel="noopener noreferrer" class="block bg-gray-50 rounded-lg p-4 hover:bg-gray-100 transition-colors">
+                    <h4 class="font-medium text-gray-800">Google Chrome</h4>
+                    <p class="text-sm text-gray-600">Configuración → Privacidad y seguridad → Cookies</p>
+                </a>
+                <a href="https://support.mozilla.org/es/kb/proteccion-de-rastreo-mejorada-en-firefox-para-esc" target="_blank" rel="noopener noreferrer" class="block bg-gray-50 rounded-lg p-4 hover:bg-gray-100 transition-colors">
+                    <h4 class="font-medium text-gray-800">Mozilla Firefox</h4>
+                    <p class="text-sm text-gray-600">Configuración → Privacidad y seguridad</p>
+                </a>
+                <a href="https://support.apple.com/es-es/guide/safari/sfri11471/mac" target="_blank" rel="noopener noreferrer" class="block bg-gray-50 rounded-lg p-4 hover:bg-gray-100 transition-colors">
+                    <h4 class="font-medium text-gray-800">Safari</h4>
+                    <p class="text-sm text-gray-600">Preferencias → Privacidad</p>
+                </a>
+                <a href="https://support.microsoft.com/es-es/microsoft-edge/eliminar-cookies-en-microsoft-edge-63947406-40ac-c3b8-57b9-2a946a29ae09" target="_blank" rel="noopener noreferrer" class="block bg-gray-50 rounded-lg p-4 hover:bg-gray-100 transition-colors">
+                    <h4 class="font-medium text-gray-800">Microsoft Edge</h4>
+                    <p class="text-sm text-gray-600">Configuración → Privacidad, búsqueda y servicios</p>
+                </a>
+            </div>
+
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-6">
+                <p class="text-blue-800 text-sm">
+                    <strong>Importante:</strong> Si desactivas las cookies técnicas, algunas funciones del sitio web (como el envío de formularios) podrían no funcionar correctamente.
+                </p>
+            </div>
+        </section>
+
+        <!-- Más información -->
+        <section>
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">5. Más información</h2>
+            <p class="text-gray-600 mb-4">
+                Para obtener más información sobre las cookies, puedes visitar:
+            </p>
+            <ul class="list-disc list-inside text-gray-600 space-y-2 ml-4">
+                <li><a href="https://www.aboutcookies.org/" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">www.aboutcookies.org</a></li>
+                <li><a href="https://www.allaboutcookies.org/" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">www.allaboutcookies.org</a></li>
+                <li><a href="https://www.aepd.es/es/areas-de-actuacion/internet-y-redes-sociales/cookies" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">Guía de la AEPD sobre cookies</a></li>
+            </ul>
+        </section>
+
+        <!-- Actualizaciones -->
+        <section>
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">6. Actualizaciones</h2>
+            <p class="text-gray-600">
+                Esta Política de Cookies puede actualizarse para reflejar cambios en las cookies que utilizamos o en la normativa aplicable. Te recomendamos revisar esta página periódicamente.
+            </p>
+        </section>
+
+        <!-- Contacto -->
+        <section>
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">7. Contacto</h2>
+            <p class="text-gray-600">
+                Si tienes dudas sobre nuestra Política de Cookies, puedes contactarnos en:
+            </p>
+            <div class="bg-gray-50 rounded-lg p-4 mt-4">
+                <p><strong>Email:</strong> <a href="mailto:info@arynstal.es" class="text-primary-600 hover:underline">info@arynstal.es</a></p>
+                <p><strong>Teléfono:</strong> <a href="tel:+34677707244" class="text-primary-600 hover:underline">677 707 244</a></p>
+            </div>
+        </section>
+
+        <!-- Fecha actualización -->
+        <div class="mt-12 pt-6 border-t border-gray-200">
+            <p class="text-sm text-gray-500">
+                <strong>Última actualización:</strong> Febrero 2026
+            </p>
+        </div>
+
     </div>
 </div>
 {% endblock %}

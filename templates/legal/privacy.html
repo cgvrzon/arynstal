@@ -3,28 +3,217 @@
 {% block title %}Política de Privacidad - Arynstal{% endblock %}
 
 {% block content %}
-<div class="container mx-auto px-4 py-12">
-    <h1 class="text-4xl font-bold mb-6">Política de Privacidad</h1>
+<div class="container mx-auto px-4 py-12 max-w-4xl">
+    <h1 class="text-3xl md:text-4xl font-bold mb-8 text-gray-900">Política de Privacidad</h1>
 
-    <div class="prose max-w-none">
-        <p class="text-gray-600 mb-4">
-            TODO FASE 8: Implementar contenido completo de la política de privacidad RGPD.
+    <div class="prose prose-gray max-w-none space-y-8">
+
+        <p class="text-gray-600 text-lg">
+            En ARYNSTAL SL nos comprometemos a proteger tu privacidad. Esta política explica cómo recopilamos, usamos y protegemos tus datos personales conforme al Reglamento (UE) 2016/679 (RGPD) y la Ley Orgánica 3/2018 (LOPDGDD).
         </p>
 
-        <h2 class="text-2xl font-semibold mt-8 mb-4">1. Responsable del tratamiento</h2>
-        <p>Arynstal SL</p>
+        <!-- Responsable del tratamiento -->
+        <section>
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">1. Responsable del tratamiento</h2>
+            <div class="bg-gray-50 rounded-lg p-6 space-y-2">
+                <p><strong>Identidad:</strong> ARYNSTAL SL</p>
+                <p><strong>CIF:</strong> B67396101</p>
+                <p><strong>Dirección:</strong> Calle Naranjos, 44 Local 3, 08906 L'Hospitalet de Llobregat, Barcelona</p>
+                <p><strong>Email de contacto:</strong> <a href="mailto:info@arynstal.es" class="text-primary-600 hover:underline">info@arynstal.es</a></p>
+                <p><strong>Teléfono:</strong> <a href="tel:+34677707244" class="text-primary-600 hover:underline">677 707 244</a></p>
+            </div>
+        </section>
 
-        <h2 class="text-2xl font-semibold mt-8 mb-4">2. Datos que recopilamos</h2>
-        <p>Nombre, email, teléfono, ubicación, mensaje.</p>
+        <!-- Datos que recopilamos -->
+        <section>
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">2. Datos que recopilamos</h2>
+            <p class="text-gray-600 mb-4">Recopilamos los siguientes datos personales:</p>
 
-        <h2 class="text-2xl font-semibold mt-8 mb-4">3. Finalidad</h2>
-        <p>Gestionar solicitudes de presupuesto y contacto.</p>
+            <h3 class="text-lg font-medium text-gray-700 mt-6 mb-3">Datos proporcionados por ti:</h3>
+            <ul class="list-disc list-inside text-gray-600 space-y-2 ml-4">
+                <li><strong>Formulario de contacto:</strong> Nombre, email, teléfono (opcional), ubicación (código postal o ciudad), mensaje</li>
+            </ul>
 
-        <h2 class="text-2xl font-semibold mt-8 mb-4">4. Base legal</h2>
-        <p>Consentimiento del interesado.</p>
+            <h3 class="text-lg font-medium text-gray-700 mt-6 mb-3">Datos recopilados automáticamente:</h3>
+            <ul class="list-disc list-inside text-gray-600 space-y-2 ml-4">
+                <li><strong>Datos técnicos:</strong> Dirección IP, tipo de navegador, sistema operativo</li>
+                <li><strong>Datos de navegación:</strong> Páginas visitadas, tiempo de permanencia (mediante cookies analíticas, si las aceptas)</li>
+            </ul>
+        </section>
 
-        <h2 class="text-2xl font-semibold mt-8 mb-4">5. Derechos</h2>
-        <p>Acceso, rectificación, supresión, limitación, portabilidad y oposición.</p>
+        <!-- Finalidades del tratamiento -->
+        <section>
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">3. Finalidades del tratamiento</h2>
+            <p class="text-gray-600 mb-4">Tratamos tus datos para las siguientes finalidades:</p>
+
+            <div class="overflow-x-auto">
+                <table class="min-w-full bg-white border border-gray-200 rounded-lg overflow-hidden">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Finalidad</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Base legal</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Conservación</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        <tr>
+                            <td class="px-4 py-3 text-sm text-gray-600">Responder a consultas del formulario de contacto</td>
+                            <td class="px-4 py-3 text-sm text-gray-600">Consentimiento (art. 6.1.a RGPD)</td>
+                            <td class="px-4 py-3 text-sm text-gray-600">Hasta resolver la consulta + 1 año</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 text-sm text-gray-600">Gestionar solicitudes de presupuesto</td>
+                            <td class="px-4 py-3 text-sm text-gray-600">Ejecución precontractual (art. 6.1.b RGPD)</td>
+                            <td class="px-4 py-3 text-sm text-gray-600">Duración de la gestión + 1 año</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 text-sm text-gray-600">Analizar el uso del sitio web</td>
+                            <td class="px-4 py-3 text-sm text-gray-600">Consentimiento (cookies analíticas)</td>
+                            <td class="px-4 py-3 text-sm text-gray-600">Según duración de las cookies</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 text-sm text-gray-600">Cumplir obligaciones legales</td>
+                            <td class="px-4 py-3 text-sm text-gray-600">Obligación legal (art. 6.1.c RGPD)</td>
+                            <td class="px-4 py-3 text-sm text-gray-600">Plazos legales aplicables</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Destinatarios -->
+        <section>
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">4. Destinatarios de los datos</h2>
+            <p class="text-gray-600 mb-4">
+                <strong>No cedemos tus datos a terceros</strong>, salvo obligación legal o en los siguientes casos:
+            </p>
+
+            <h3 class="text-lg font-medium text-gray-700 mt-6 mb-3">Encargados del tratamiento:</h3>
+            <div class="overflow-x-auto">
+                <table class="min-w-full bg-white border border-gray-200 rounded-lg overflow-hidden">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Servicio</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Finalidad</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Ubicación</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        <tr>
+                            <td class="px-4 py-3 text-sm text-gray-600">Proveedor de hosting</td>
+                            <td class="px-4 py-3 text-sm text-gray-600">Alojamiento del sitio web</td>
+                            <td class="px-4 py-3 text-sm text-gray-600">Unión Europea</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 text-sm text-gray-600">Proveedor de email</td>
+                            <td class="px-4 py-3 text-sm text-gray-600">Envío de notificaciones</td>
+                            <td class="px-4 py-3 text-sm text-gray-600">Unión Europea</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Transferencias internacionales -->
+        <section>
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">5. Transferencias internacionales</h2>
+            <p class="text-gray-600">
+                No realizamos transferencias de datos fuera del Espacio Económico Europeo (EEE). Todos nuestros proveedores de servicios están ubicados en la UE o cuentan con las garantías adecuadas según el RGPD.
+            </p>
+        </section>
+
+        <!-- Derechos del usuario -->
+        <section>
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">6. Tus derechos</h2>
+            <p class="text-gray-600 mb-4">Puedes ejercer los siguientes derechos:</p>
+
+            <div class="grid md:grid-cols-2 gap-4">
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <h4 class="font-medium text-gray-800 mb-2">Acceso</h4>
+                    <p class="text-sm text-gray-600">Conocer qué datos personales tenemos sobre ti</p>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <h4 class="font-medium text-gray-800 mb-2">Rectificación</h4>
+                    <p class="text-sm text-gray-600">Corregir datos inexactos o incompletos</p>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <h4 class="font-medium text-gray-800 mb-2">Supresión</h4>
+                    <p class="text-sm text-gray-600">Solicitar el borrado de tus datos</p>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <h4 class="font-medium text-gray-800 mb-2">Oposición</h4>
+                    <p class="text-sm text-gray-600">Oponerte a determinados tratamientos</p>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <h4 class="font-medium text-gray-800 mb-2">Limitación</h4>
+                    <p class="text-sm text-gray-600">Solicitar la limitación del tratamiento</p>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <h4 class="font-medium text-gray-800 mb-2">Portabilidad</h4>
+                    <p class="text-sm text-gray-600">Recibir tus datos en formato estructurado</p>
+                </div>
+            </div>
+
+            <div class="bg-primary-50 border border-primary-200 rounded-lg p-6 mt-6">
+                <h3 class="text-lg font-medium text-primary-800 mb-3">¿Cómo ejercer tus derechos?</h3>
+                <p class="text-primary-700 mb-2">Envía un email a <a href="mailto:info@arynstal.es" class="font-medium underline">info@arynstal.es</a> indicando:</p>
+                <ul class="list-disc list-inside text-primary-700 space-y-1 ml-4">
+                    <li>Tu nombre y apellidos</li>
+                    <li>Copia del DNI (para verificar tu identidad)</li>
+                    <li>El derecho que deseas ejercer</li>
+                    <li>Dirección de email para notificaciones</li>
+                </ul>
+                <p class="text-primary-700 mt-4">
+                    <strong>Plazo de respuesta:</strong> 1 mes desde la recepción de la solicitud.
+                </p>
+            </div>
+
+            <div class="mt-6">
+                <h3 class="text-lg font-medium text-gray-700 mb-3">Derecho a reclamar</h3>
+                <p class="text-gray-600">
+                    Si consideras que no hemos tratado tus datos correctamente, puedes presentar una reclamación ante la <strong>Agencia Española de Protección de Datos</strong> (AEPD): <a href="https://www.aepd.es" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:underline">www.aepd.es</a>
+                </p>
+            </div>
+        </section>
+
+        <!-- Medidas de seguridad -->
+        <section>
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">7. Medidas de seguridad</h2>
+            <p class="text-gray-600 mb-4">
+                Hemos implementado medidas técnicas y organizativas para proteger tus datos:
+            </p>
+            <ul class="list-disc list-inside text-gray-600 space-y-2 ml-4">
+                <li>Conexión segura mediante HTTPS (certificado SSL/TLS)</li>
+                <li>Protección contra ataques CSRF en formularios</li>
+                <li>Acceso restringido a los datos personales</li>
+                <li>Copias de seguridad periódicas</li>
+                <li>Sistemas actualizados y monitorizados</li>
+            </ul>
+        </section>
+
+        <!-- Cookies -->
+        <section>
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">8. Cookies</h2>
+            <p class="text-gray-600">
+                Este sitio web utiliza cookies. Para información detallada sobre qué cookies utilizamos y cómo gestionarlas, consulta nuestra <a href="{% url 'web:cookies' %}" class="text-primary-600 hover:underline">Política de Cookies</a>.
+            </p>
+        </section>
+
+        <!-- Modificaciones -->
+        <section>
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">9. Modificaciones</h2>
+            <p class="text-gray-600">
+                Esta Política de Privacidad puede actualizarse para adaptarse a cambios normativos o en nuestros servicios. Te recomendamos revisarla periódicamente. Cualquier cambio significativo será comunicado de forma visible en el sitio web.
+            </p>
+        </section>
+
+        <!-- Fecha actualización -->
+        <div class="mt-12 pt-6 border-t border-gray-200">
+            <p class="text-sm text-gray-500">
+                <strong>Última actualización:</strong> Febrero 2026
+            </p>
+        </div>
+
     </div>
 </div>
 {% endblock %}

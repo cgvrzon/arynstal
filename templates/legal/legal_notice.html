@@ -3,21 +3,118 @@
 {% block title %}Aviso Legal - Arynstal{% endblock %}
 
 {% block content %}
-<div class="container mx-auto px-4 py-12">
-    <h1 class="text-4xl font-bold mb-6">Aviso Legal</h1>
+<div class="container mx-auto px-4 py-12 max-w-4xl">
+    <h1 class="text-3xl md:text-4xl font-bold mb-8 text-gray-900">Aviso Legal</h1>
 
-    <div class="prose max-w-none">
-        <p class="text-gray-600 mb-4">
-            TODO FASE 8: Implementar contenido completo del aviso legal.
-        </p>
+    <div class="prose prose-gray max-w-none space-y-8">
 
-        <h2 class="text-2xl font-semibold mt-8 mb-4">Datos identificativos</h2>
-        <ul>
-            <li>Razón social: Arynstal SL</li>
-            <li>CIF: BXXXXXXXX</li>
-            <li>Domicilio: Barcelona, España</li>
-            <li>Email: info@arynstal.es</li>
-        </ul>
+        <!-- Datos identificativos -->
+        <section>
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">1. Datos identificativos</h2>
+            <p class="text-gray-600 mb-4">
+                En cumplimiento del artículo 10 de la Ley 34/2002, de 11 de julio, de Servicios de la Sociedad de la Información y de Comercio Electrónico (LSSI-CE), se informa de los siguientes datos:
+            </p>
+            <div class="bg-gray-50 rounded-lg p-6 space-y-2">
+                <p><strong>Denominación social:</strong> ARYNSTAL SL</p>
+                <p><strong>CIF:</strong> B67396101</p>
+                <p><strong>Domicilio social:</strong> Calle Naranjos, 44 Local 3, 08906 L'Hospitalet de Llobregat, Barcelona</p>
+                <p><strong>Registro Mercantil:</strong> Inscrita en el Registro Mercantil de Barcelona, Tomo 46827, Folio 108, Sección 8, Hoja B-532232</p>
+                <p><strong>Email:</strong> <a href="mailto:info@arynstal.es" class="text-primary-600 hover:underline">info@arynstal.es</a></p>
+                <p><strong>Teléfono:</strong> <a href="tel:+34677707244" class="text-primary-600 hover:underline">677 707 244</a></p>
+            </div>
+        </section>
+
+        <!-- Objeto y ámbito -->
+        <section>
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">2. Objeto y ámbito de aplicación</h2>
+            <p class="text-gray-600">
+                Este sitio web tiene como finalidad informar sobre los servicios profesionales de ARYNSTAL SL en el ámbito de las instalaciones eléctricas, fontanería, climatización (aerotermia y aire acondicionado), domótica y reformas integrales, así como facilitar el contacto con clientes potenciales.
+            </p>
+            <p class="text-gray-600 mt-4">
+                El presente Aviso Legal regula el acceso y uso del sitio web que ARYNSTAL SL pone a disposición de los usuarios de Internet.
+            </p>
+        </section>
+
+        <!-- Condiciones de uso -->
+        <section>
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">3. Condiciones de uso</h2>
+            <p class="text-gray-600 mb-4">
+                El acceso a este sitio web es gratuito y no requiere registro previo. El usuario se compromete a:
+            </p>
+            <ul class="list-disc list-inside text-gray-600 space-y-2 ml-4">
+                <li>Hacer un uso adecuado de los contenidos y servicios ofrecidos</li>
+                <li>No realizar actividades ilícitas o contrarias a la buena fe</li>
+                <li>No difundir contenidos que atenten contra los derechos de terceros</li>
+                <li>No introducir virus informáticos o cualquier otro código malicioso</li>
+                <li>No intentar acceder a áreas restringidas del sitio web</li>
+            </ul>
+        </section>
+
+        <!-- Propiedad intelectual -->
+        <section>
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">4. Propiedad intelectual e industrial</h2>
+            <p class="text-gray-600 mb-4">
+                Todos los contenidos del sitio web, incluyendo textos, imágenes, logotipos, iconos, diseño gráfico, código fuente y software, son propiedad de ARYNSTAL SL o de terceros que han autorizado su uso, y están protegidos por las leyes de propiedad intelectual e industrial.
+            </p>
+            <p class="text-gray-600">
+                Queda prohibida la reproducción, distribución, comunicación pública, transformación o cualquier otra forma de explotación de los contenidos sin autorización expresa y por escrito de ARYNSTAL SL.
+            </p>
+        </section>
+
+        <!-- Exclusión de responsabilidad -->
+        <section>
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">5. Exclusión de responsabilidad</h2>
+            <p class="text-gray-600 mb-4">ARYNSTAL SL no se hace responsable de:</p>
+            <ul class="list-disc list-inside text-gray-600 space-y-2 ml-4">
+                <li>La falta de disponibilidad, continuidad o calidad del sitio web</li>
+                <li>Los daños que puedan derivarse de interferencias, omisiones, interrupciones, virus informáticos o averías telefónicas</li>
+                <li>Los contenidos y servicios de páginas web de terceros a las que se pueda acceder mediante enlaces</li>
+                <li>Las opiniones vertidas por terceros en el sitio web</li>
+            </ul>
+            <p class="text-gray-600 mt-4">
+                ARYNSTAL SL se reserva el derecho de modificar, suspender o eliminar cualquier contenido o servicio del sitio web sin previo aviso.
+            </p>
+        </section>
+
+        <!-- Protección de datos -->
+        <section>
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">6. Protección de datos</h2>
+            <p class="text-gray-600">
+                El tratamiento de los datos personales de los usuarios se realiza conforme al Reglamento (UE) 2016/679 (RGPD) y la Ley Orgánica 3/2018 (LOPDGDD). Para más información, consulta nuestra <a href="{% url 'web:privacy' %}" class="text-primary-600 hover:underline">Política de Privacidad</a>.
+            </p>
+        </section>
+
+        <!-- Cookies -->
+        <section>
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">7. Cookies</h2>
+            <p class="text-gray-600">
+                Este sitio web utiliza cookies propias y de terceros. Para más información sobre qué cookies utilizamos y cómo gestionarlas, consulta nuestra <a href="{% url 'web:cookies' %}" class="text-primary-600 hover:underline">Política de Cookies</a>.
+            </p>
+        </section>
+
+        <!-- Legislación aplicable -->
+        <section>
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">8. Legislación aplicable y jurisdicción</h2>
+            <p class="text-gray-600">
+                Las presentes condiciones se rigen por la legislación española. Para cualquier controversia que pudiera derivarse del acceso o uso de este sitio web, las partes se someten expresamente a los Juzgados y Tribunales de Barcelona, renunciando a cualquier otro fuero que pudiera corresponderles.
+            </p>
+        </section>
+
+        <!-- Modificaciones -->
+        <section>
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">9. Modificaciones</h2>
+            <p class="text-gray-600">
+                ARYNSTAL SL se reserva el derecho de modificar el presente Aviso Legal en cualquier momento. Las modificaciones entrarán en vigor desde su publicación en el sitio web. Te recomendamos revisar periódicamente esta página.
+            </p>
+        </section>
+
+        <!-- Fecha actualización -->
+        <div class="mt-12 pt-6 border-t border-gray-200">
+            <p class="text-sm text-gray-500">
+                <strong>Última actualización:</strong> Febrero 2026
+            </p>
+        </div>
+
     </div>
 </div>
 {% endblock %}
