@@ -31,7 +31,7 @@ VARIABLES DE ENTORNO REQUERIDAS:
     - EMAIL_PORT: Puerto SMTP (default: '587')
     - EMAIL_HOST_USER: Usuario SMTP
     - EMAIL_HOST_PASSWORD: Contraseña SMTP
-    - DEFAULT_FROM_EMAIL: Remitente (default: 'info@arynstal.es')
+    - DEFAULT_FROM_EMAIL: Remitente (default: 'Arynstal <noreply@arynstal.es>')
     - LEAD_NOTIFICATION_EMAIL: Email para notificaciones de leads
 
 DESPLIEGUE:
@@ -77,6 +77,19 @@ ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')
 # Lista de dominios que pueden servir esta aplicación.
 # Formato en variable de entorno: "arynstal.es,www.arynstal.es"
 # Sin esto, Django rechaza todas las peticiones (error 400).
+
+
+# =============================================================================
+# CSRF TRUSTED ORIGINS
+# =============================================================================
+
+CSRF_TRUSTED_ORIGINS = [
+    f'https://{host.strip()}' for host in
+    os.environ.get('CSRF_TRUSTED_ORIGINS', 'arynstal.es,www.arynstal.es').split(',')
+]
+# Orígenes confiables para peticiones CSRF.
+# Necesario cuando Django está detrás de proxy (Cloudflare → Nginx → Gunicorn).
+# Sin esto, los formularios POST fallan con error 403 CSRF.
 
 
 # =============================================================================
@@ -129,8 +142,10 @@ EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 # Contraseña SMTP. Para Gmail, usar App Password de 2FA.
 
-DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'info@arynstal.es')
-# Remitente por defecto para todos los emails del sistema.
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'Arynstal <noreply@arynstal.es>')
+# Remitente por defecto para emails automáticos del sistema (via Brevo).
+# Usa noreply@ porque los emails transaccionales no deben recibir respuestas.
+# El email de contacto público (info@) se gestiona con Zoho Mail.
 
 
 # =============================================================================
