@@ -2,13 +2,12 @@
 
 > Guía paso a paso para desplegar la aplicación en producción.
 >
-> **Prerequisitos**: Leer primero `INFRAESTRUCTURA.md`
+> **Prerequisitos**: Leer primero `INFRAESTRUCTURA.md` para entender las decisiones de arquitectura, costes y servicios seleccionados.
 
 ---
 
 ## Índice
 
-0. [Contexto y Decisiones Técnicas](#0-contexto-y-decisiones-técnicas)
 1. [Preparación Local](#1-preparación-local)
 2. [Contratar Servicios](#2-contratar-servicios)
 3. [Configurar DNS](#3-configurar-dns)
@@ -23,86 +22,6 @@
 12. [Configurar Backups](#12-configurar-backups)
 13. [Go-Live](#13-go-live)
 14. [Post-Despliegue](#14-post-despliegue)
-
----
-
-## 0. Contexto y Decisiones Técnicas
-
-### 0.1 Contexto de Negocio
-
-| Aspecto | Detalle |
-|---------|---------|
-| **Empresa** | Arynstal S.L. - empresa familiar de instalaciones |
-| **Equipo** | 4 personas: 1 administrativa, 2 técnicos, 1 responsable |
-| **Ubicación** | Barcelona y alrededores (radio 1-1.5h) |
-| **Volumen** | 5-10 leads/mes en fase inicial |
-| **Web** | Landing page con formulario de contacto + CRM interno |
-
-### 0.2 Presupuesto y Objetivos
-
-- **Objetivo de coste**: ~60€/año para toda la infraestructura
-- **Prioridades**: Fiabilidad > simplicidad > coste > escalabilidad
-- **Mantenimiento**: Debe ser gestionable por una persona con conocimientos junior-mid
-
-### 0.3 Decisiones de Arquitectura
-
-#### Por qué Hetzner CX22
-
-- **3.99€/mes** por 2 vCPU + 4 GB RAM: imbatible en relación calidad/precio
-- Datacenter en Alemania (cumple RGPD, baja latencia desde España)
-- Escalado vertical sin migración (CX22 → CX32 → CX42)
-- **Descartado**: DigitalOcean (50% más caro), Contabo (soporte deficiente), PaaS (más caro a largo plazo)
-
-#### Por qué Cloudflare
-
-- Plan gratuito incluye: DNS, CDN, protección DDoS, WAF básico, SSL
-- Gestión DNS centralizada (todos los registros en un solo panel)
-- Analytics de tráfico incluidos
-- **Descartado**: DNS del registrador (funcionalidad limitada, sin CDN)
-
-#### Por qué Brevo para email transaccional
-
-- Plan gratuito: 300 emails/día (necesitamos <50/mes)
-- SMTP estándar: integración directa con Django `send_mail()`
-- Buena reputación de entrega (deliverability)
-- Dashboard para monitorizar envíos
-- **Uso**: Emails automáticos del sistema (notificaciones de leads, confirmaciones)
-- **FROM**: `noreply@arynstal.es`
-- **Descartado**: Amazon SES (complejo para el volumen), Mailgun (menos generoso en free tier)
-
-#### Por qué Zoho Mail Free para email corporativo
-
-- Plan Forever Free: 5 buzones con dominio propio, 5 GB/buzón
-- Webmail profesional + acceso IMAP/POP
-- Empresa establecida (>25 años), buena reputación
-- Sin anuncios en el webmail
-- **Uso**: Comunicación humana (responder clientes, email de contacto público)
-- **Descartado**: Google Workspace (6€/usuario/mes, innecesario), Outlook.com (no soporta dominio propio gratis)
-
-#### Separación de responsabilidades email
-
-| Aspecto | Zoho Mail (corporativo) | Brevo SMTP (transaccional) |
-|---------|------------------------|---------------------------|
-| **Propósito** | Comunicación humana | Emails automáticos |
-| **Ejemplos** | Responder clientes, presupuestos | Notificaciones leads, confirmaciones |
-| **Buzones** | info@, carlos@, personales | noreply@ |
-| **Enviado por** | Personas (webmail/IMAP) | Django (`send_mail()`) |
-| **Volumen** | Variable | <50/mes |
-| **Autenticación** | DKIM Zoho + SPF | DKIM Brevo + SPF |
-
-**No hay conflicto**: SPF se combina en un solo registro, DKIM usa selectores diferentes.
-
-### 0.4 Tabla Resumen de Costes
-
-| Servicio | Proveedor | Coste mensual | Coste anual |
-|----------|-----------|---------------|-------------|
-| VPS | Hetzner CX22 | 3.99€ | 47.88€ |
-| Dominio | DonDominio (.es) | ~1€ | ~12€ |
-| DNS + CDN | Cloudflare Free | 0€ | 0€ |
-| SSL | Cloudflare / Let's Encrypt | 0€ | 0€ |
-| Email transaccional | Brevo Free | 0€ | 0€ |
-| Email corporativo | Zoho Mail Free | 0€ | 0€ |
-| **TOTAL** | | **~5€** | **~60€** |
 
 ---
 
@@ -1054,6 +973,7 @@ Ver sección [11.6 Troubleshooting Email](#116-troubleshooting-email) para diagn
 | 1.0 | 2026-01-15 | Documento inicial |
 | 1.1 | 2026-01-26 | Añadida sección de historial |
 | 1.2 | 2026-02-10 | Sección 0 (decisiones técnicas), Zoho Mail Free, DNS completa (MX, SPF, DKIM, DMARC), sección 11 reescrita (email corporativo + transaccional) |
+| 1.3 | 2026-02-11 | Sección 0 migrada a INFRAESTRUCTURA.md — DEPLOY_GUIDE queda puramente procedimental |
 
 ---
 

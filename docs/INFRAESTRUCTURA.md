@@ -18,7 +18,15 @@
 | **Volumen esperado** | 5-10 leads/mes en fase inicial |
 | **Presupuesto** | 70-150€/año para infraestructura |
 
-### 1.2 Requisitos Técnicos
+### 1.2 Presupuesto y Prioridades
+
+| Aspecto | Detalle |
+|---------|---------|
+| **Objetivo de coste** | ~60€/año para toda la infraestructura |
+| **Prioridades** | Fiabilidad > simplicidad > coste > escalabilidad |
+| **Mantenimiento** | Debe ser gestionable por una persona con conocimientos junior-mid |
+
+### 1.3 Requisitos Técnicos
 
 | Requisito | Especificación |
 |-----------|----------------|
@@ -30,7 +38,7 @@
 | **Almacenamiento** | Archivos estáticos + media (imágenes de leads) |
 | **Backups** | Diarios, retención 7 días mínimo |
 
-### 1.3 Decisión Final
+### 1.4 Decisión Final
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -246,6 +254,8 @@ Se evaluaron tres categorías de hosting:
 - CDN global (mejora velocidad)
 - Analytics de tráfico
 
+**Descartado**: DNS del registrador (funcionalidad limitada, sin CDN)
+
 ### 4.2 Brevo (Email Transaccional)
 
 **Plan**: Gratuito (300 emails/día)
@@ -262,9 +272,12 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = '<tu-email>'
 EMAIL_HOST_PASSWORD = '<api-key>'
+DEFAULT_FROM_EMAIL = 'Arynstal <noreply@arynstal.es>'
 ```
 
-### 4.4 Zoho Mail Free (Email Corporativo)
+**Descartado**: Amazon SES (complejo para el volumen), Mailgun (menos generoso en free tier)
+
+### 4.3 Zoho Mail Free (Email Corporativo)
 
 **Plan**: Forever Free (5 buzones, 5 GB/buzón)
 
@@ -279,6 +292,21 @@ EMAIL_HOST_PASSWORD = '<api-key>'
 - 3 buzones personales adicionales
 
 **Nota**: Zoho NO envía los emails automáticos de Django. Eso lo hace Brevo (sección 4.2).
+
+**Descartado**: Google Workspace (6€/usuario/mes, innecesario), Outlook.com (no soporta dominio propio gratis)
+
+### 4.4 Separación de Responsabilidades Email
+
+| Aspecto | Zoho Mail (corporativo) | Brevo SMTP (transaccional) |
+|---------|------------------------|---------------------------|
+| **Propósito** | Comunicación humana | Emails automáticos |
+| **Ejemplos** | Responder clientes, presupuestos | Notificaciones leads, confirmaciones |
+| **Buzones** | info@, carlos@, personales | noreply@ |
+| **Enviado por** | Personas (webmail/IMAP) | Django (`send_mail()`) |
+| **Volumen** | Variable | <50/mes |
+| **Autenticación** | DKIM Zoho + SPF | DKIM Brevo + SPF |
+
+**No hay conflicto**: SPF se combina en un solo registro, DKIM usa selectores diferentes.
 
 ### 4.5 Dominio
 
@@ -529,6 +557,7 @@ La arquitectura seleccionada (Hetzner + Cloudflare + Brevo) ofrece:
 |---------|-------|---------|
 | 1.0 | 2026-01-15 | Documento inicial |
 | 1.1 | 2026-02-10 | Añadir Zoho Mail Free, actualizar costes y diagrama |
+| 1.2 | 2026-02-11 | Integrar decisiones técnicas desde DEPLOY_GUIDE (prioridades, alternativas descartadas, tabla separación email) |
 
 ---
 
