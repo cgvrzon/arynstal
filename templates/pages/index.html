@@ -10,7 +10,7 @@
     <link rel="stylesheet" crossorigin href="{% static 'assets/index-Fxy-Mlu2.css' %}">
   </head>
 
-  <body class="bg-[#F2F2F2]">
+  <body class="bg-gris-claro">
     {% include 'components/header.html' %}
 
     <!-- Hero / Carrusel -->
@@ -61,23 +61,18 @@
 
       <!-- Dots -->
       <div class="nav-dots absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 flex gap-2 sm:gap-3 z-20">
-        <button class="carousel-dot w-3 h-3 rounded-full bg-white/50 transition-all duration-300"></button>
-        <button class="carousel-dot w-3 h-3 rounded-full bg-white/50 transition-all duration-300"></button>
-        <button class="carousel-dot w-3 h-3 rounded-full bg-white/50 transition-all duration-300"></button>
+        <button class="dot w-3 h-3 rounded-full bg-white/50 transition-all duration-300"></button>
+        <button class="dot w-3 h-3 rounded-full bg-white/50 transition-all duration-300"></button>
+        <button class="dot w-3 h-3 rounded-full bg-white/50 transition-all duration-300"></button>
       </div>
     </section>
 
-    <!-- Circuit divider -->
-    <div class="circuit-divider">
-      <svg viewBox="0 0 300 20" class="w-full max-w-xs mx-auto"><use href="#icon-circuit-divider"/></svg>
-    </div>
-
     <!-- Sección de introducción -->
-    <section class="relative z-0 bg-[rgba(242,242,242,0.8)] backdrop-blur-sm text-center py-12 sm:py-16 px-4 sm:px-6 -mt-5">
-      <h2 class="reveal text-2xl sm:text-3xl lg:text-4xl font-bold text-[#0D3B66] mb-3 sm:mb-4" data-delay="0">
+    <section class="relative z-0 bg-gris-claro/80 backdrop-blur-sm text-center py-12 sm:py-16 px-4 sm:px-6 -mt-5">
+      <h2 class="reveal text-2xl sm:text-3xl lg:text-4xl font-bold text-azul-oscuro mb-3 sm:mb-4" data-delay="0">
         Soluciones técnicas para espacios inteligentes
       </h2>
-      <p class="reveal text-base sm:text-lg text-[#4A4A4A] max-w-3xl mx-auto" data-delay="150">
+      <p class="reveal text-base sm:text-lg text-gris-oscuro max-w-3xl mx-auto" data-delay="150">
         En Arynstal SL combinamos experiencia en instalaciones eléctricas con innovación en domótica KNX. Descubre cómo transformamos hogares, oficinas y espacios industriales con eficiencia, seguridad y diseño.
       </p>
     </section>
@@ -92,11 +87,11 @@
             class="reveal from-left w-full lg:w-[55%] rounded-lg object-cover aspect-video lg:aspect-[4/3]"
             data-delay="0">
         <div class="reveal from-right lg:w-[45%]" data-delay="150">
-          <h2 class="accent-heading text-2xl sm:text-3xl font-bold text-[#0D3B66] mb-3 sm:mb-4">Instalaciones eléctricas</h2>
-          <p class="text-sm sm:text-base text-[#4A4A4A] mb-4 sm:mb-6">
+          <h2 class="accent-heading text-2xl sm:text-3xl font-bold text-azul-oscuro mb-3 sm:mb-4">Instalaciones eléctricas</h2>
+          <p class="text-sm sm:text-base text-gris-oscuro mb-4 sm:mb-6">
             Realizamos instalaciones seguras y eficientes en todo tipo de espacios. Cumplimos normativa y garantizamos durabilidad.
           </p>
-          <a href="{% url 'services' %}" class="text-[#3FA9F5] font-semibold inline-flex items-center gap-1 group text-sm sm:text-base">
+          <a href="{% url 'services' %}" class="text-acento font-semibold inline-flex items-center gap-1 group text-sm sm:text-base">
             Ver más sobre nuestros servicios
             <span class="inline-block transition-transform duration-300 group-hover:translate-x-1">&rarr;</span>
           </a>
@@ -115,11 +110,11 @@
          class="reveal from-right w-full lg:w-[55%] rounded-lg object-cover aspect-video lg:aspect-[4/3]"
          data-delay="0">
         <div class="reveal from-left lg:w-[45%]" data-delay="150">
-          <h2 class="accent-heading text-2xl sm:text-3xl font-bold text-[#0D3B66] mb-3 sm:mb-4">Domótica KNX</h2>
-          <p class="text-sm sm:text-base text-[#4A4A4A] mb-4 sm:mb-6">
+          <h2 class="accent-heading text-2xl sm:text-3xl font-bold text-azul-oscuro mb-3 sm:mb-4">Domótica KNX</h2>
+          <p class="text-sm sm:text-base text-gris-oscuro mb-4 sm:mb-6">
             Automatiza tu hogar o negocio con tecnología KNX. Controla iluminación, climatización y seguridad desde un solo sistema.
           </p>
-          <a href="{% url 'services' %}" class="text-[#3FA9F5] font-semibold inline-flex items-center gap-1 group text-sm sm:text-base">
+          <a href="{% url 'services' %}" class="text-acento font-semibold inline-flex items-center gap-1 group text-sm sm:text-base">
             Ver más sobre nuestros servicios
             <span class="inline-block transition-transform duration-300 group-hover:translate-x-1">&rarr;</span>
           </a>
@@ -138,13 +133,13 @@
          class="reveal from-left w-full lg:w-[55%] rounded-lg object-cover aspect-video lg:aspect-[4/3]"
          data-delay="0">
         <div class="reveal from-right lg:w-[45%]" data-delay="150">
-          <h2 class="accent-heading text-2xl sm:text-3xl font-bold text-[#0D3B66] mb-3 sm:mb-4">Reformas integrales</h2>
-          <p class="text-sm sm:text-base text-[#4A4A4A] mb-4 sm:mb-6">
+          <h2 class="accent-heading text-2xl sm:text-3xl font-bold text-azul-oscuro mb-3 sm:mb-4">Reformas integrales</h2>
+          <p class="text-sm sm:text-base text-gris-oscuro mb-4 sm:mb-6">
             Reforma tu hogar o negocio.
             <br/>
             Reformamos tu espacio a medida y al detalle, siempre con los mejores precios y materiales del mercado.
           </p>
-          <a href="{% url 'services' %}" class="text-[#3FA9F5] font-semibold inline-flex items-center gap-1 group text-sm sm:text-base">
+          <a href="{% url 'services' %}" class="text-acento font-semibold inline-flex items-center gap-1 group text-sm sm:text-base">
             Ver más sobre nuestros servicios
             <span class="inline-block transition-transform duration-300 group-hover:translate-x-1">&rarr;</span>
           </a>
@@ -163,11 +158,11 @@
             class="reveal from-right w-full lg:w-[55%] rounded-lg object-cover aspect-video lg:aspect-[4/3]"
             data-delay="0">
         <div class="reveal from-left lg:w-[45%]" data-delay="150">
-          <h2 class="accent-heading text-2xl sm:text-3xl font-bold text-[#0D3B66] mb-3 sm:mb-4">Experiencia demostrable. Calidad garantizada</h2>
-          <p class="text-sm sm:text-base text-[#4A4A4A] mb-4 sm:mb-6">
+          <h2 class="accent-heading text-2xl sm:text-3xl font-bold text-azul-oscuro mb-3 sm:mb-4">Experiencia demostrable. Calidad garantizada</h2>
+          <p class="text-sm sm:text-base text-gris-oscuro mb-4 sm:mb-6">
             Años de experiencia trabajando con los mejores del sector, ofreciendo resultados fiables y duraderos en cada proyecto.
           </p>
-          <a href="{% url 'projects' %}" class="text-[#3FA9F5] font-semibold inline-flex items-center gap-1 group text-sm sm:text-base">
+          <a href="{% url 'projects' %}" class="text-acento font-semibold inline-flex items-center gap-1 group text-sm sm:text-base">
             Ver nuestros proyectos
             <span class="inline-block transition-transform duration-300 group-hover:translate-x-1">&rarr;</span>
           </a>
@@ -186,17 +181,17 @@
             class="reveal from-left w-full lg:w-[55%] rounded-lg object-cover aspect-video lg:aspect-[4/3]"
             data-delay="0">
         <div class="reveal from-right lg:w-[45%]" data-delay="150">
-          <h2 class="accent-heading text-2xl sm:text-3xl font-bold text-[#0D3B66] mb-3 sm:mb-4">Sobre nosotros</h2>
-          <p class="text-sm sm:text-base text-[#4A4A4A] mb-3 sm:mb-4">
+          <h2 class="accent-heading text-2xl sm:text-3xl font-bold text-azul-oscuro mb-3 sm:mb-4">Sobre nosotros</h2>
+          <p class="text-sm sm:text-base text-gris-oscuro mb-3 sm:mb-4">
             Desde nuestros inicios hemos evolucionado gracias a la confianza de grandes empresas del sector.
             Durante años, Arynstal SL ha trabajado como empresa subcontratada de <strong>Elecnor</strong>,
             consolidando nuestra reputación como un socio fiable y comprometido en proyectos de alta exigencia.
           </p>
-          <p class="text-sm sm:text-base text-[#4A4A4A] mb-4 sm:mb-6">
+          <p class="text-sm sm:text-base text-gris-oscuro mb-4 sm:mb-6">
             Esta experiencia nos ha permitido crecer, ampliar nuestro equipo y ofrecer soluciones técnicas cada vez más innovadoras,
             siempre con la calidad garantizada que nos caracteriza.
           </p>
-          <a href="{% url 'about_us' %}" class="text-[#3FA9F5] font-semibold inline-flex items-center gap-1 group text-sm sm:text-base">
+          <a href="{% url 'about_us' %}" class="text-acento font-semibold inline-flex items-center gap-1 group text-sm sm:text-base">
             Conoce nuestra historia
             <span class="inline-block transition-transform duration-300 group-hover:translate-x-1">&rarr;</span>
           </a>
