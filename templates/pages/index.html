@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Arynstal SL - Instalaciones eléctricas y domótica KNX. Reformas y proyectos con experiencia y compromiso." />
     <title>Arynstal SL</title>
-    <script type="module" crossorigin src="{% static 'assets/index-Ylwmixza.js' %}"></script>
-    <link rel="stylesheet" crossorigin href="{% static 'assets/index-9j83Pif2.css' %}">
+    <script type="module" crossorigin src="{% static 'assets/index-BPChkp9X.js' %}"></script>
+    <link rel="stylesheet" crossorigin href="{% static 'assets/index-Fxy-Mlu2.css' %}">
   </head>
 
   <body class="bg-[#F2F2F2]">
@@ -20,6 +20,7 @@
         <!-- Slide 1 -->
         <figure class="slides w-full flex-shrink-0 relative">
           <img src="{% static 'img/imgSlide3.avif' %}" class="w-full h-full object-cover" alt="Subestación eléctrica.">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
           <figcaption class="absolute inset-0 flex items-center justify-center text-white px-4 sm:px-6">
             <h2 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold drop-shadow-[2px_2px_6px_rgba(0,0,0,0.7)] text-center leading-tight">
               REFORMAMOS TU HOGAR O NEGOCIO<br/>CON DETALLE Y COMPROMISO
@@ -30,6 +31,7 @@
         <!-- Slide 2 -->
         <figure class="slides w-full flex-shrink-0 relative">
           <img src="{% static 'img/knxImgSlide2M.avif' %}" class="w-full h-full object-cover" alt="KNX Partners. Construye el futuro en tu hogar.">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
           <figcaption class="absolute inset-0 flex flex-col items-center justify-center text-white px-4 sm:px-6">
             <h2 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold drop-shadow-[2px_2px_6px_rgba(0,0,0,0.7)] text-center leading-tight">
               KNX PARTNERS
@@ -43,6 +45,7 @@
         <!-- Slide 3 -->
         <figure class="slides w-full flex-shrink-0 relative">
           <img src="{% static 'img/imgSlide1.avif' %}" class="w-full h-full object-cover object-bottom" alt="Estación eléctrica. Proyecto realizado junto con Elecnor SL.">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
           <figcaption class="absolute inset-0 flex items-center justify-center text-white px-4 sm:px-6">
             <h2 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold drop-shadow-[2px_2px_6px_rgba(0,0,0,0.7)] text-center leading-tight">
               AÑOS DE EXPERIENCIA <br/> DE LA MANO DE LOS MEJORES
@@ -58,18 +61,23 @@
 
       <!-- Dots -->
       <div class="nav-dots absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 flex gap-2 sm:gap-3 z-20">
-        <button class="dot w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-white/50"></button>
-        <button class="dot w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-white/50"></button>
-        <button class="dot w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-white/50"></button>
+        <button class="carousel-dot w-3 h-3 rounded-full bg-white/50 transition-all duration-300"></button>
+        <button class="carousel-dot w-3 h-3 rounded-full bg-white/50 transition-all duration-300"></button>
+        <button class="carousel-dot w-3 h-3 rounded-full bg-white/50 transition-all duration-300"></button>
       </div>
     </section>
 
+    <!-- Circuit divider -->
+    <div class="circuit-divider">
+      <svg viewBox="0 0 300 20" class="w-full max-w-xs mx-auto"><use href="#icon-circuit-divider"/></svg>
+    </div>
+
     <!-- Sección de introducción -->
     <section class="relative z-0 bg-[rgba(242,242,242,0.8)] backdrop-blur-sm text-center py-12 sm:py-16 px-4 sm:px-6 -mt-5">
-      <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#0D3B66] mb-3 sm:mb-4">
+      <h2 class="reveal text-2xl sm:text-3xl lg:text-4xl font-bold text-[#0D3B66] mb-3 sm:mb-4" data-delay="0">
         Soluciones técnicas para espacios inteligentes
       </h2>
-      <p class="text-base sm:text-lg text-[#4A4A4A] max-w-3xl mx-auto">
+      <p class="reveal text-base sm:text-lg text-[#4A4A4A] max-w-3xl mx-auto" data-delay="150">
         En Arynstal SL combinamos experiencia en instalaciones eléctricas con innovación en domótica KNX. Descubre cómo transformamos hogares, oficinas y espacios industriales con eficiencia, seguridad y diseño.
       </p>
     </section>
@@ -81,67 +89,104 @@
       <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-8 lg:gap-16 xl:gap-24 py-8 sm:py-10">
         <img src="{% static 'img/services/instalacion_electrica.jpg' %}"
             alt="Instalaciones eléctricas"
-            class="w-full lg:w-[55%] rounded-lg object-cover aspect-video lg:aspect-[4/3]">
-        <div class="lg:w-[45%]">
-          <h2 class="text-2xl sm:text-3xl font-bold text-[#0D3B66] mb-3 sm:mb-4">Instalaciones eléctricas</h2>
+            class="reveal from-left w-full lg:w-[55%] rounded-lg object-cover aspect-video lg:aspect-[4/3]"
+            data-delay="0">
+        <div class="reveal from-right lg:w-[45%]" data-delay="150">
+          <h2 class="accent-heading text-2xl sm:text-3xl font-bold text-[#0D3B66] mb-3 sm:mb-4">Instalaciones eléctricas</h2>
           <p class="text-sm sm:text-base text-[#4A4A4A] mb-4 sm:mb-6">
             Realizamos instalaciones seguras y eficientes en todo tipo de espacios. Cumplimos normativa y garantizamos durabilidad.
           </p>
-          <a href="{% url 'services' %}" class="text-[#3FA9F5] font-semibold hover:underline text-sm sm:text-base">Ver más sobre nuestros servicios</a>
+          <a href="{% url 'services' %}" class="text-[#3FA9F5] font-semibold inline-flex items-center gap-1 group text-sm sm:text-base">
+            Ver más sobre nuestros servicios
+            <span class="inline-block transition-transform duration-300 group-hover:translate-x-1">&rarr;</span>
+          </a>
         </div>
+      </div>
+
+      <!-- Circuit divider -->
+      <div class="circuit-divider">
+        <svg viewBox="0 0 300 20" class="w-full max-w-xs mx-auto"><use href="#icon-circuit-divider"/></svg>
       </div>
 
       <!-- Article domótica KNX -->
       <div class="max-w-7xl mx-auto flex flex-col lg:flex-row-reverse items-center gap-8 lg:gap-16 xl:gap-24 py-8 sm:py-10">
         <img src="{% static 'img/services/domotica_knx.jpg' %}"
          alt="Domótica KNX"
-         class="w-full lg:w-[55%] rounded-lg object-cover aspect-video lg:aspect-[4/3]">
-        <div class="lg:w-[45%]">
-          <h2 class="text-2xl sm:text-3xl font-bold text-[#0D3B66] mb-3 sm:mb-4">Domótica KNX</h2>
+         class="reveal from-right w-full lg:w-[55%] rounded-lg object-cover aspect-video lg:aspect-[4/3]"
+         data-delay="0">
+        <div class="reveal from-left lg:w-[45%]" data-delay="150">
+          <h2 class="accent-heading text-2xl sm:text-3xl font-bold text-[#0D3B66] mb-3 sm:mb-4">Domótica KNX</h2>
           <p class="text-sm sm:text-base text-[#4A4A4A] mb-4 sm:mb-6">
             Automatiza tu hogar o negocio con tecnología KNX. Controla iluminación, climatización y seguridad desde un solo sistema.
           </p>
-          <a href="{% url 'services' %}" class="text-[#3FA9F5] font-semibold hover:underline text-sm sm:text-base">Ver más sobre nuestros servicios</a>
+          <a href="{% url 'services' %}" class="text-[#3FA9F5] font-semibold inline-flex items-center gap-1 group text-sm sm:text-base">
+            Ver más sobre nuestros servicios
+            <span class="inline-block transition-transform duration-300 group-hover:translate-x-1">&rarr;</span>
+          </a>
         </div>
+      </div>
+
+      <!-- Circuit divider -->
+      <div class="circuit-divider">
+        <svg viewBox="0 0 300 20" class="w-full max-w-xs mx-auto"><use href="#icon-circuit-divider"/></svg>
       </div>
 
       <!-- Article reformas integrales -->
       <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-8 lg:gap-16 xl:gap-24 py-8 sm:py-10">
         <img src="{% static 'img/services/reformas_integrales.jpg' %}"
          alt="Reformas integrales"
-         class="w-full lg:w-[55%] rounded-lg object-cover aspect-video lg:aspect-[4/3]">
-        <div class="lg:w-[45%]">
-          <h2 class="text-2xl sm:text-3xl font-bold text-[#0D3B66] mb-3 sm:mb-4">Reformas integrales</h2>
+         class="reveal from-left w-full lg:w-[55%] rounded-lg object-cover aspect-video lg:aspect-[4/3]"
+         data-delay="0">
+        <div class="reveal from-right lg:w-[45%]" data-delay="150">
+          <h2 class="accent-heading text-2xl sm:text-3xl font-bold text-[#0D3B66] mb-3 sm:mb-4">Reformas integrales</h2>
           <p class="text-sm sm:text-base text-[#4A4A4A] mb-4 sm:mb-6">
             Reforma tu hogar o negocio.
             <br/>
             Reformamos tu espacio a medida y al detalle, siempre con los mejores precios y materiales del mercado.
           </p>
-          <a href="{% url 'services' %}" class="text-[#3FA9F5] font-semibold hover:underline text-sm sm:text-base">Ver más sobre nuestros servicios</a>
+          <a href="{% url 'services' %}" class="text-[#3FA9F5] font-semibold inline-flex items-center gap-1 group text-sm sm:text-base">
+            Ver más sobre nuestros servicios
+            <span class="inline-block transition-transform duration-300 group-hover:translate-x-1">&rarr;</span>
+          </a>
         </div>
+      </div>
+
+      <!-- Circuit divider -->
+      <div class="circuit-divider">
+        <svg viewBox="0 0 300 20" class="w-full max-w-xs mx-auto"><use href="#icon-circuit-divider"/></svg>
       </div>
 
       <!-- Article proyectos realizados -->
       <div class="max-w-7xl mx-auto flex flex-col lg:flex-row-reverse items-center gap-8 lg:gap-16 xl:gap-24 py-8 sm:py-10">
         <img src="{% static 'img/services/handhshake.jpg' %}"
             alt="Experiencia y calidad"
-            class="w-full lg:w-[55%] rounded-lg object-cover aspect-video lg:aspect-[4/3]">
-        <div class="lg:w-[45%]">
-          <h2 class="text-2xl sm:text-3xl font-bold text-[#0D3B66] mb-3 sm:mb-4">Experiencia demostrable. Calidad garantizada</h2>
+            class="reveal from-right w-full lg:w-[55%] rounded-lg object-cover aspect-video lg:aspect-[4/3]"
+            data-delay="0">
+        <div class="reveal from-left lg:w-[45%]" data-delay="150">
+          <h2 class="accent-heading text-2xl sm:text-3xl font-bold text-[#0D3B66] mb-3 sm:mb-4">Experiencia demostrable. Calidad garantizada</h2>
           <p class="text-sm sm:text-base text-[#4A4A4A] mb-4 sm:mb-6">
             Años de experiencia trabajando con los mejores del sector, ofreciendo resultados fiables y duraderos en cada proyecto.
           </p>
-          <a href="{% url 'projects' %}" class="text-[#3FA9F5] font-semibold hover:underline text-sm sm:text-base">Ver nuestros proyectos</a>
+          <a href="{% url 'projects' %}" class="text-[#3FA9F5] font-semibold inline-flex items-center gap-1 group text-sm sm:text-base">
+            Ver nuestros proyectos
+            <span class="inline-block transition-transform duration-300 group-hover:translate-x-1">&rarr;</span>
+          </a>
         </div>
+      </div>
+
+      <!-- Circuit divider -->
+      <div class="circuit-divider">
+        <svg viewBox="0 0 300 20" class="w-full max-w-xs mx-auto"><use href="#icon-circuit-divider"/></svg>
       </div>
 
       <!-- Article sobre nosotros -->
       <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-8 lg:gap-16 xl:gap-24 py-8 sm:py-10">
         <img src="{% static 'img/services/logotipo.png' %}"
             alt="Sobre nosotros"
-            class="w-full lg:w-[55%] rounded-lg object-cover aspect-video lg:aspect-[4/3]">
-        <div class="lg:w-[45%]">
-          <h2 class="text-2xl sm:text-3xl font-bold text-[#0D3B66] mb-3 sm:mb-4">Sobre nosotros</h2>
+            class="reveal from-left w-full lg:w-[55%] rounded-lg object-cover aspect-video lg:aspect-[4/3]"
+            data-delay="0">
+        <div class="reveal from-right lg:w-[45%]" data-delay="150">
+          <h2 class="accent-heading text-2xl sm:text-3xl font-bold text-[#0D3B66] mb-3 sm:mb-4">Sobre nosotros</h2>
           <p class="text-sm sm:text-base text-[#4A4A4A] mb-3 sm:mb-4">
             Desde nuestros inicios hemos evolucionado gracias a la confianza de grandes empresas del sector.
             Durante años, Arynstal SL ha trabajado como empresa subcontratada de <strong>Elecnor</strong>,
@@ -151,7 +196,10 @@
             Esta experiencia nos ha permitido crecer, ampliar nuestro equipo y ofrecer soluciones técnicas cada vez más innovadoras,
             siempre con la calidad garantizada que nos caracteriza.
           </p>
-          <a href="{% url 'about_us' %}" class="text-[#3FA9F5] font-semibold hover:underline text-sm sm:text-base">Conoce nuestra historia</a>
+          <a href="{% url 'about_us' %}" class="text-[#3FA9F5] font-semibold inline-flex items-center gap-1 group text-sm sm:text-base">
+            Conoce nuestra historia
+            <span class="inline-block transition-transform duration-300 group-hover:translate-x-1">&rarr;</span>
+          </a>
         </div>
       </div>
 

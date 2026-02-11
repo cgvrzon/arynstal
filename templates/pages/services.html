@@ -6,52 +6,88 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Arynstal SL - Servicios de construcción, reformas e instalaciones eléctricas." />
     <title>Servicios - Arynstal SL</title>
-    <script type="module" crossorigin src="{% static 'assets/index-Ylwmixza.js' %}"></script>
-    <link rel="stylesheet" crossorigin href="{% static 'assets/index-9j83Pif2.css' %}">
+    <script type="module" crossorigin src="{% static 'assets/index-BPChkp9X.js' %}"></script>
+    <link rel="stylesheet" crossorigin href="{% static 'assets/index-Fxy-Mlu2.css' %}">
   </head>
 
-  <body class="flex flex-col min-h-screen bg-[#F2F2F2]">
+  <body class="flex flex-col min-h-screen bg-gris-claro">
     {% include 'components/header.html' %}
 
     <!-- Sección Principal -->
     <section class="bg-white box-border py-8 sm:py-12 lg:py-16 flex-1">
-      <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-center text-[#0D3B66] mb-6 sm:mb-8 lg:mb-10 px-4 sm:px-6">
+      <h1 class="reveal text-2xl sm:text-3xl lg:text-4xl font-bold text-center text-azul-oscuro mb-6 sm:mb-8 lg:mb-10 px-4 sm:px-6" data-delay="0">
         NUESTRAS ÁREAS DE SERVICIO
       </h1>
 
       <!-- Primera fila de servicios -->
       <section class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 max-w-7xl mx-auto mb-8 sm:mb-10 px-4 sm:px-6">
-        <article class="service-card bg-[#F2F2F2] rounded-xl p-4 sm:p-6 shadow-md text-center w-full min-h-[100px] sm:min-h-[120px] flex items-center justify-center transition-all duration-300 hover:-translate-y-2 hover:shadow-xl cursor-pointer" data-service="1">
-          <span class="text-base sm:text-lg font-semibold text-[#4A4A4A]">Servicio 1</span>
+        <article class="service-card glow-hover reveal bg-gris-claro rounded-xl p-4 sm:p-6 shadow-md text-center w-full min-h-[100px] sm:min-h-[120px] flex items-center justify-center transition-all duration-300 hover:-translate-y-2 hover:shadow-xl cursor-pointer relative" data-service="1" data-delay="0">
+          <div class="flex flex-col items-center gap-3">
+            <div class="w-12 h-12 flex items-center justify-center text-azul-oscuro">
+              <svg class="w-8 h-8"><use href="#icon-lightning"/></svg>
+            </div>
+            <span class="text-base sm:text-lg font-semibold text-gris-oscuro">Servicio 1</span>
+            <span class="absolute top-2 right-3 text-xs font-mono text-azul-oscuro/20 font-bold">01</span>
+          </div>
         </article>
 
-        <article class="service-card bg-[#F2F2F2] rounded-xl p-4 sm:p-6 shadow-md text-center w-full min-h-[100px] sm:min-h-[120px] flex items-center justify-center transition-all duration-300 hover:-translate-y-2 hover:shadow-xl cursor-pointer" data-service="2">
-          <span class="text-base sm:text-lg font-semibold text-[#4A4A4A]">Servicio 2</span>
+        <article class="service-card glow-hover reveal bg-gris-claro rounded-xl p-4 sm:p-6 shadow-md text-center w-full min-h-[100px] sm:min-h-[120px] flex items-center justify-center transition-all duration-300 hover:-translate-y-2 hover:shadow-xl cursor-pointer relative" data-service="2" data-delay="100">
+          <div class="flex flex-col items-center gap-3">
+            <div class="w-12 h-12 flex items-center justify-center text-azul-oscuro">
+              <svg class="w-8 h-8"><use href="#icon-hvac"/></svg>
+            </div>
+            <span class="text-base sm:text-lg font-semibold text-gris-oscuro">Servicio 2</span>
+            <span class="absolute top-2 right-3 text-xs font-mono text-azul-oscuro/20 font-bold">02</span>
+          </div>
         </article>
 
-        <article class="service-card bg-[#F2F2F2] rounded-xl p-4 sm:p-6 shadow-md text-center w-full min-h-[100px] sm:min-h-[120px] flex items-center justify-center transition-all duration-300 hover:-translate-y-2 hover:shadow-xl cursor-pointer" data-service="3">
-          <span class="text-base sm:text-lg font-semibold text-[#4A4A4A]">Servicio 3</span>
+        <article class="service-card glow-hover reveal bg-gris-claro rounded-xl p-4 sm:p-6 shadow-md text-center w-full min-h-[100px] sm:min-h-[120px] flex items-center justify-center transition-all duration-300 hover:-translate-y-2 hover:shadow-xl cursor-pointer relative" data-service="3" data-delay="200">
+          <div class="flex flex-col items-center gap-3">
+            <div class="w-12 h-12 flex items-center justify-center text-azul-oscuro">
+              <svg class="w-8 h-8"><use href="#icon-gear"/></svg>
+            </div>
+            <span class="text-base sm:text-lg font-semibold text-gris-oscuro">Servicio 3</span>
+            <span class="absolute top-2 right-3 text-xs font-mono text-azul-oscuro/20 font-bold">03</span>
+          </div>
         </article>
       </section>
 
       <!-- PANEL EXPANDIBLE DESKTOP -->
-      <div id="expanded-panel" class="hidden transition-all duration-700 ease-in-out w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] sm:block" style="opacity: 0;">
+      <div id="expanded-panel" class="hidden transition-all duration-700 ease-in-out w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] border-t-3 border-acento sm:block" style="opacity: 0;">
         <!-- El contenido se insertará aquí dinámicamente en DESKTOP -->
       </div>
 
       <!-- Segunda fila de servicios -->
       <div id="bottom-curtain">
         <section class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 max-w-7xl mx-auto mb-8 sm:mb-10 mt-8 sm:mt-10 px-4 sm:px-6">
-          <article class="service-card bg-[#F2F2F2] rounded-xl p-4 sm:p-6 shadow-md text-center w-full min-h-[100px] sm:min-h-[120px] flex items-center justify-center transition-all duration-300 hover:-translate-y-2 hover:shadow-xl cursor-pointer" data-service="4">
-            <span class="text-base sm:text-lg font-semibold text-[#4A4A4A]">Servicio 4</span>
+          <article class="service-card glow-hover reveal bg-gris-claro rounded-xl p-4 sm:p-6 shadow-md text-center w-full min-h-[100px] sm:min-h-[120px] flex items-center justify-center transition-all duration-300 hover:-translate-y-2 hover:shadow-xl cursor-pointer relative" data-service="4" data-delay="0">
+            <div class="flex flex-col items-center gap-3">
+              <div class="w-12 h-12 flex items-center justify-center text-azul-oscuro">
+                <svg class="w-8 h-8"><use href="#icon-house"/></svg>
+              </div>
+              <span class="text-base sm:text-lg font-semibold text-gris-oscuro">Servicio 4</span>
+              <span class="absolute top-2 right-3 text-xs font-mono text-azul-oscuro/20 font-bold">04</span>
+            </div>
           </article>
 
-          <article class="service-card bg-[#F2F2F2] rounded-xl p-4 sm:p-6 shadow-md text-center w-full min-h-[100px] sm:min-h-[120px] flex items-center justify-center transition-all duration-300 hover:-translate-y-2 hover:shadow-xl cursor-pointer" data-service="5">
-            <span class="text-base sm:text-lg font-semibold text-[#4A4A4A]">Servicio 5</span>
+          <article class="service-card glow-hover reveal bg-gris-claro rounded-xl p-4 sm:p-6 shadow-md text-center w-full min-h-[100px] sm:min-h-[120px] flex items-center justify-center transition-all duration-300 hover:-translate-y-2 hover:shadow-xl cursor-pointer relative" data-service="5" data-delay="100">
+            <div class="flex flex-col items-center gap-3">
+              <div class="w-12 h-12 flex items-center justify-center text-azul-oscuro">
+                <svg class="w-8 h-8"><use href="#icon-shield-check"/></svg>
+              </div>
+              <span class="text-base sm:text-lg font-semibold text-gris-oscuro">Servicio 5</span>
+              <span class="absolute top-2 right-3 text-xs font-mono text-azul-oscuro/20 font-bold">05</span>
+            </div>
           </article>
 
-          <article class="service-card bg-[#F2F2F2] rounded-xl p-4 sm:p-6 shadow-md text-center w-full min-h-[100px] sm:min-h-[120px] flex items-center justify-center transition-all duration-300 hover:-translate-y-2 hover:shadow-xl cursor-pointer" data-service="6">
-            <span class="text-base sm:text-lg font-semibold text-[#4A4A4A]">Servicio 6</span>
+          <article class="service-card glow-hover reveal bg-gris-claro rounded-xl p-4 sm:p-6 shadow-md text-center w-full min-h-[100px] sm:min-h-[120px] flex items-center justify-center transition-all duration-300 hover:-translate-y-2 hover:shadow-xl cursor-pointer relative" data-service="6" data-delay="200">
+            <div class="flex flex-col items-center gap-3">
+              <div class="w-12 h-12 flex items-center justify-center text-azul-oscuro">
+                <svg class="w-8 h-8"><use href="#icon-chart"/></svg>
+              </div>
+              <span class="text-base sm:text-lg font-semibold text-gris-oscuro">Servicio 6</span>
+              <span class="absolute top-2 right-3 text-xs font-mono text-azul-oscuro/20 font-bold">06</span>
+            </div>
           </article>
         </section>
       </div>
