@@ -36,54 +36,77 @@
 
 ### Problemas detectados
 
-#### Critico — LCP alto (About, Projects, Contact)
+- **LCP critico** en About (13.2s), Projects (15.9s), Contact (11.2s) — imagenes sin optimizar
+- **Accesibilidad** — sin `<main>`, sin `aria-label` en botones, touch targets < 48px
+- **SEO** — Contact con `<meta name="message">` en vez de `description`
+- **JS** — console.log de debug en produccion
 
-Las paginas About (13.2s), Projects (15.9s) y Contact (11.2s) tienen un LCP muy por encima del objetivo de 2.5s. Causa probable: imagenes grandes sin optimizar y sin lazy loading adecuado.
+---
 
-**Acciones:**
-- [ ] Optimizar imagenes (WebP, compresion, tamanios adecuados)
-- [ ] Revisar LCP element en cada pagina y priorizar su carga
-- [ ] Anadir `width` y `height` explicitos a todas las imagenes
+## Auditoria #2 — 13 febrero 2026 (Post-optimizacion)
 
-#### Importante — Accesibilidad (Home 85/100)
+**Cambios aplicados entre auditorias #1 y #2:**
+- Imagenes convertidas a WebP (6.8MB → 262KB, reduccion 97%)
+- Anadido `width`/`height` a todas las imagenes (elimina CLS)
+- Anadido `loading="lazy"` a imagenes below-the-fold
+- Anadido `<main>` landmark en index, services, projects
+- Anadido `aria-label` en botones de carousel, modal y filtros
+- Corregido `<meta name="description">` en contact.html
+- Anadido `<h1>` en index.html, corregido jerarquia headings en projects
+- Eliminados console.log/warn del JS compilado (rebuild Vite)
+- Touch targets de iconos sociales: w-8 → w-11
 
-- Botones sin nombre accesible (`aria-label` faltante)
-- Sin landmark `<main>` en el documento
-- Touch targets demasiado pequenos en movil (Services, About, Contact)
+### Resultados por pagina
 
-**Acciones:**
-- [ ] Anadir `<main>` como landmark principal en cada pagina
-- [ ] Anadir `aria-label` a botones interactivos (slider, modal, menu)
-- [ ] Revisar tamano de botones/links en movil (minimo 48x48px)
+| Pagina | Performance | Accessibility | Best Practices | SEO |
+|--------|:-----------:|:-------------:|:--------------:|:---:|
+| Home | 84 | 95 | 96 | 100 |
+| Services | 100 | 95 | 96 | 100 |
+| About | 93 | 95 | 96 | 100 |
+| Projects | 84 | 95 | 96 | 100 |
+| Contact | 100 | 96 | 96 | 100 |
+| **Media** | **92** | **95** | **96** | **100** |
 
-#### Menor — SEO (Contact 92/100)
+### Core Web Vitals
 
-Contact no llega a 100 en SEO. Revisar meta tags y estructura.
+| Pagina | FCP | LCP | TBT | CLS | SI |
+|--------|-----|-----|-----|-----|-----|
+| Home | 1.3s | 4.5s | 0ms | 0 | 1.3s |
+| Services | 1.0s | 1.2s | 0ms | 0 | 1.2s |
+| About | 1.1s | 3.2s | 0ms | 0 | 1.2s |
+| Projects | 1.1s | 4.6s | 0ms | 0 | 1.2s |
+| Contact | 0.9s | 1.5s | 0ms | 0 | 0.9s |
 
-**Acciones:**
-- [ ] Revisar meta description y title en contact.html
-- [ ] Verificar orden de headings (h1 > h2 > h3 secuencial)
+### Comparativa #1 vs #2
 
-#### Menor — Best Practices
-
-- Errores de consola en todas las paginas (probablemente JS)
-- Cache headers pueden mejorarse para estaticos
-
-**Acciones:**
-- [ ] Investigar errores de consola del navegador
-- [ ] Revisar cache lifetimes en Nginx/Cloudflare
-
-### Comparativa con auditoria en desarrollo (enero 2026)
-
-| Metrica | Desarrollo | Produccion | Cambio |
-|---------|:----------:|:----------:|:------:|
-| Performance (media) | 75 | 83 | +8 |
-| Accessibility (media) | 95 | 92 | -3 |
+| Metrica | Audit #1 | Audit #2 | Cambio |
+|---------|:--------:|:--------:|:------:|
+| Performance (media) | 83 | 92 | **+9** |
+| Accessibility (media) | 92 | 95 | **+3** |
 | Best Practices (media) | 96 | 96 | = |
-| SEO (media) | 98 | 98 | = |
-| FCP (home) | 11.3s | 1.1s | -10.2s |
+| SEO (media) | 98 | 100 | **+2** |
 
-**Mejora notable** en FCP gracias a Cloudflare CDN y servidor de produccion real (vs runserver de desarrollo). Performance global sube 8 puntos. Accesibilidad baja ligeramente por cambios recientes en UI.
+**Mejoras destacadas:**
+- Contact Performance: 69 → 100 (+31) — WebP + meta fix
+- About Performance: 75 → 93 (+18) — LCP de 13.2s a 3.2s
+- Projects CLS: 0.027 → 0 — width/height en imagenes
+- TBT: todos a 0ms (antes hasta 300ms en Contact)
+- SEO: 100 en todas las paginas
+
+### Problemas pendientes
+
+#### LCP en Home (4.5s) y Projects (4.6s)
+
+Las imagenes del carousel (Home) y cards de proyectos siguen por encima de 2.5s. Posibles acciones futuras:
+- Preload de la primera imagen del carousel via `<link rel="preload">`
+- Reducir tamano de imagenes de proyectos o usar thumbnails
+- Implementar responsive images con `srcset`
+
+#### Touch targets (Accessibility)
+
+Los dots del carousel (`w-3 h-3` = 12px) y los links del footer no alcanzan 48px.
+- Dots: ampliar area clickable con padding o min-w/min-h
+- Footer links: anadir padding vertical
 
 ---
 
@@ -92,3 +115,4 @@ Contact no llega a 100 en SEO. Revisar meta tags y estructura.
 | Version | Fecha | Cambios |
 |---------|-------|---------|
 | 1.0 | 2026-02-12 | Primera auditoria en produccion |
+| 1.1 | 2026-02-13 | Auditoria #2 post-optimizacion imagenes, a11y y SEO |
