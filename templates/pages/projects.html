@@ -6,13 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Arynstal SL - Proyectos realizados en construcción, reformas industriales e instalaciones eléctricas." />
     <title>Proyectos Realizados - Arynstal SL</title>
-    <script type="module" crossorigin src="{% static 'assets/index-BPChkp9X.js' %}"></script>
-    <link rel="stylesheet" crossorigin href="{% static 'assets/index-Fxy-Mlu2.css' %}">
+    <script type="module" crossorigin src="{% static 'assets/index-B_TwAqul.js' %}"></script>
+    <link rel="stylesheet" crossorigin href="{% static 'assets/index-Bg83hvod.css' %}">
   </head>
 
   <body class="flex flex-col min-h-screen bg-white">
     {% include 'components/header.html' %}
 
+    <main class="flex-1">
     <!-- Banner Hero con Filtros - RESPONSIVO -->
     <section class="relative bg-gray-400 h-64 sm:h-80 md:h-96 lg:h-[28rem] flex items-center justify-center" 
       style="background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=1920&h=600&fit=crop'); background-size: cover; background-position: center;">
@@ -21,13 +22,13 @@
         
         <!-- Filtros - Sin desbordamiento -->
         <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-2 sm:gap-0 bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-2 sm:p-3 md:p-4 w-full max-w-4xl mx-auto overflow-hidden">
-          <button class="filter-btn w-full sm:w-auto px-3 sm:px-6 md:px-8 py-2 sm:py-2.5 md:py-3 text-xs sm:text-sm md:text-base text-white font-semibold transition-all duration-300 sm:border-r border-white border-opacity-50 hover:text-acento hover:bg-white hover:bg-opacity-20 rounded sm:rounded-none overflow-hidden text-ellipsis" data-filter="reformas-industriales">
+          <button class="filter-btn w-full sm:w-auto px-3 sm:px-6 md:px-8 py-2 sm:py-2.5 md:py-3 text-xs sm:text-sm md:text-base text-white font-semibold transition-all duration-300 sm:border-r border-white border-opacity-50 hover:text-acento hover:bg-white hover:bg-opacity-20 rounded sm:rounded-none overflow-hidden text-ellipsis" data-filter="reformas-industriales" aria-label="Filtrar por reformas industriales">
             Reformas industriales
           </button>
-          <button class="filter-btn w-full sm:w-auto px-3 sm:px-6 md:px-8 py-2 sm:py-2.5 md:py-3 text-xs sm:text-sm md:text-base text-white font-semibold transition-all duration-300 sm:border-r border-white border-opacity-50 hover:text-acento hover:bg-white hover:bg-opacity-20 rounded sm:rounded-none overflow-hidden text-ellipsis" data-filter="instalaciones-electricas">
+          <button class="filter-btn w-full sm:w-auto px-3 sm:px-6 md:px-8 py-2 sm:py-2.5 md:py-3 text-xs sm:text-sm md:text-base text-white font-semibold transition-all duration-300 sm:border-r border-white border-opacity-50 hover:text-acento hover:bg-white hover:bg-opacity-20 rounded sm:rounded-none overflow-hidden text-ellipsis" data-filter="instalaciones-electricas" aria-label="Filtrar por instalaciones eléctricas">
             Instalaciones eléctricas
           </button>
-          <button class="filter-btn w-full sm:w-auto px-3 sm:px-6 md:px-8 py-2 sm:py-2.5 md:py-3 text-xs sm:text-sm md:text-base text-white font-semibold transition-all duration-300 hover:text-acento hover:bg-white hover:bg-opacity-20 rounded sm:rounded-none overflow-hidden text-ellipsis" data-filter="reformas-hogar">
+          <button class="filter-btn w-full sm:w-auto px-3 sm:px-6 md:px-8 py-2 sm:py-2.5 md:py-3 text-xs sm:text-sm md:text-base text-white font-semibold transition-all duration-300 hover:text-acento hover:bg-white hover:bg-opacity-20 rounded sm:rounded-none overflow-hidden text-ellipsis" data-filter="reformas-hogar" aria-label="Filtrar por reformas en el hogar">
             Reformas en el hogar
           </button>
         </div>
@@ -43,90 +44,90 @@
           
           <!-- Proyecto 1 - Reformas industriales -->
           <article class="project-card reveal group relative overflow-hidden rounded-lg shadow-lg cursor-pointer transition-transform duration-300 hover:scale-105" data-category="reformas-industriales" data-project="1" data-delay="0">
-            <img src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=600&h=400&fit=crop" alt="Proyecto 1" class="w-full h-64 sm:h-72 lg:h-80 object-cover">
+            <img src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=600&h=400&fit=crop" alt="Proyecto 1" class="w-full h-64 sm:h-72 lg:h-80 object-cover" width="600" height="400" loading="lazy">
             <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-0 group-hover:opacity-90 transition-opacity duration-300"></div>
             <div class="absolute bottom-0 left-0 p-4 sm:p-6 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              <h3 class="text-lg sm:text-xl lg:text-2xl font-bold mb-1 sm:mb-2">Reforma Industrial Planta A</h3>
+              <h2 class="text-lg sm:text-xl lg:text-2xl font-bold mb-1 sm:mb-2">Reforma Industrial Planta A</h3>
               <p class="text-xs sm:text-sm">Ver proyecto</p>
             </div>
           </article>
 
           <!-- Proyecto 2 - Reformas industriales -->
           <article class="project-card reveal group relative overflow-hidden rounded-lg shadow-lg cursor-pointer transition-transform duration-300 hover:scale-105" data-category="reformas-industriales" data-project="2" data-delay="100">
-            <img src="https://images.unsplash.com/photo-1590856029826-c7a73142bbf1?w=600&h=400&fit=crop" alt="Proyecto 2" class="w-full h-64 sm:h-72 lg:h-80 object-cover">
+            <img src="https://images.unsplash.com/photo-1590856029826-c7a73142bbf1?w=600&h=400&fit=crop" alt="Proyecto 2" class="w-full h-64 sm:h-72 lg:h-80 object-cover" width="600" height="400" loading="lazy">
             <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-0 group-hover:opacity-90 transition-opacity duration-300"></div>
             <div class="absolute bottom-0 left-0 p-4 sm:p-6 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              <h3 class="text-lg sm:text-xl lg:text-2xl font-bold mb-1 sm:mb-2">Reforma Industrial Planta B</h3>
+              <h2 class="text-lg sm:text-xl lg:text-2xl font-bold mb-1 sm:mb-2">Reforma Industrial Planta B</h3>
               <p class="text-xs sm:text-sm">Ver proyecto</p>
             </div>
           </article>
 
           <!-- Proyecto 3 - Reformas industriales -->
           <article class="project-card reveal group relative overflow-hidden rounded-lg shadow-lg cursor-pointer transition-transform duration-300 hover:scale-105" data-category="reformas-industriales" data-project="3" data-delay="200">
-            <img src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=600&h=400&fit=crop" alt="Proyecto 3" class="w-full h-64 sm:h-72 lg:h-80 object-cover">
+            <img src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=600&h=400&fit=crop" alt="Proyecto 3" class="w-full h-64 sm:h-72 lg:h-80 object-cover" width="600" height="400" loading="lazy">
             <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-0 group-hover:opacity-90 transition-opacity duration-300"></div>
             <div class="absolute bottom-0 left-0 p-4 sm:p-6 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              <h3 class="text-lg sm:text-xl lg:text-2xl font-bold mb-1 sm:mb-2">Reforma Industrial Planta C</h3>
+              <h2 class="text-lg sm:text-xl lg:text-2xl font-bold mb-1 sm:mb-2">Reforma Industrial Planta C</h3>
               <p class="text-xs sm:text-sm">Ver proyecto</p>
             </div>
           </article>
 
           <!-- Proyecto 4 - Instalaciones eléctricas -->
           <article class="project-card reveal group relative overflow-hidden rounded-lg shadow-lg cursor-pointer transition-transform duration-300 hover:scale-105 hidden" data-category="instalaciones-electricas" data-project="4" data-delay="0">
-            <img src="https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=600&h=400&fit=crop" alt="Proyecto 4" class="w-full h-64 sm:h-72 lg:h-80 object-cover">
+            <img src="https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=600&h=400&fit=crop" alt="Proyecto 4" class="w-full h-64 sm:h-72 lg:h-80 object-cover" width="600" height="400" loading="lazy">
             <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-0 group-hover:opacity-90 transition-opacity duration-300"></div>
             <div class="absolute bottom-0 left-0 p-4 sm:p-6 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              <h3 class="text-lg sm:text-xl lg:text-2xl font-bold mb-1 sm:mb-2">Instalación Eléctrica Edificio A</h3>
+              <h2 class="text-lg sm:text-xl lg:text-2xl font-bold mb-1 sm:mb-2">Instalación Eléctrica Edificio A</h3>
               <p class="text-xs sm:text-sm">Ver proyecto</p>
             </div>
           </article>
 
           <!-- Proyecto 5 - Instalaciones eléctricas -->
           <article class="project-card reveal group relative overflow-hidden rounded-lg shadow-lg cursor-pointer transition-transform duration-300 hover:scale-105 hidden" data-category="instalaciones-electricas" data-project="5" data-delay="100">
-            <img src="https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=600&h=400&fit=crop" alt="Proyecto 5" class="w-full h-64 sm:h-72 lg:h-80 object-cover">
+            <img src="https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=600&h=400&fit=crop" alt="Proyecto 5" class="w-full h-64 sm:h-72 lg:h-80 object-cover" width="600" height="400" loading="lazy">
             <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-0 group-hover:opacity-90 transition-opacity duration-300"></div>
             <div class="absolute bottom-0 left-0 p-4 sm:p-6 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              <h3 class="text-lg sm:text-xl lg:text-2xl font-bold mb-1 sm:mb-2">Instalación Eléctrica Edificio B</h3>
+              <h2 class="text-lg sm:text-xl lg:text-2xl font-bold mb-1 sm:mb-2">Instalación Eléctrica Edificio B</h3>
               <p class="text-xs sm:text-sm">Ver proyecto</p>
             </div>
           </article>
 
           <!-- Proyecto 6 - Instalaciones eléctricas -->
           <article class="project-card reveal group relative overflow-hidden rounded-lg shadow-lg cursor-pointer transition-transform duration-300 hover:scale-105 hidden" data-category="instalaciones-electricas" data-project="6" data-delay="200">
-            <img src="https://images.unsplash.com/photo-1555963966-b7ae5404b6ed?w=600&h=400&fit=crop&auto=format" alt="Instalación eléctrica profesional" class="w-full h-64 sm:h-72 lg:h-80 object-cover">
+            <img src="https://images.unsplash.com/photo-1555963966-b7ae5404b6ed?w=600&h=400&fit=crop&auto=format" alt="Instalación eléctrica profesional" class="w-full h-64 sm:h-72 lg:h-80 object-cover" width="600" height="400" loading="lazy">
             <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-0 group-hover:opacity-90 transition-opacity duration-300"></div>
             <div class="absolute bottom-0 left-0 p-4 sm:p-6 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              <h3 class="text-lg sm:text-xl lg:text-2xl font-bold mb-1 sm:mb-2">Instalación Eléctrica Edificio C</h3>
+              <h2 class="text-lg sm:text-xl lg:text-2xl font-bold mb-1 sm:mb-2">Instalación Eléctrica Edificio C</h3>
               <p class="text-xs sm:text-sm">Ver proyecto</p>
             </div>
           </article>
 
           <!-- Proyecto 7 - Reformas en el hogar -->
           <article class="project-card reveal group relative overflow-hidden rounded-lg shadow-lg cursor-pointer transition-transform duration-300 hover:scale-105 hidden" data-category="reformas-hogar" data-project="7" data-delay="0">
-            <img src="https://images.unsplash.com/photo-1556912172-45b7abe8b7e1?w=600&h=400&fit=crop" alt="Proyecto 7" class="w-full h-64 sm:h-72 lg:h-80 object-cover">
+            <img src="https://images.unsplash.com/photo-1556912172-45b7abe8b7e1?w=600&h=400&fit=crop" alt="Proyecto 7" class="w-full h-64 sm:h-72 lg:h-80 object-cover" width="600" height="400" loading="lazy">
             <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-0 group-hover:opacity-90 transition-opacity duration-300"></div>
             <div class="absolute bottom-0 left-0 p-4 sm:p-6 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              <h3 class="text-lg sm:text-xl lg:text-2xl font-bold mb-1 sm:mb-2">Reforma Integral Vivienda 1</h3>
+              <h2 class="text-lg sm:text-xl lg:text-2xl font-bold mb-1 sm:mb-2">Reforma Integral Vivienda 1</h3>
               <p class="text-xs sm:text-sm">Ver proyecto</p>
             </div>
           </article>
 
           <!-- Proyecto 8 - Reformas en el hogar -->
           <article class="project-card reveal group relative overflow-hidden rounded-lg shadow-lg cursor-pointer transition-transform duration-300 hover:scale-105 hidden" data-category="reformas-hogar" data-project="8" data-delay="100">
-            <img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=600&h=400&fit=crop" alt="Proyecto 8" class="w-full h-64 sm:h-72 lg:h-80 object-cover">
+            <img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=600&h=400&fit=crop" alt="Proyecto 8" class="w-full h-64 sm:h-72 lg:h-80 object-cover" width="600" height="400" loading="lazy">
             <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-0 group-hover:opacity-90 transition-opacity duration-300"></div>
             <div class="absolute bottom-0 left-0 p-4 sm:p-6 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              <h3 class="text-lg sm:text-xl lg:text-2xl font-bold mb-1 sm:mb-2">Reforma Integral Vivienda 2</h3>
+              <h2 class="text-lg sm:text-xl lg:text-2xl font-bold mb-1 sm:mb-2">Reforma Integral Vivienda 2</h3>
               <p class="text-xs sm:text-sm">Ver proyecto</p>
             </div>
           </article>
 
           <!-- Proyecto 9 - Reformas en el hogar -->
           <article class="project-card reveal group relative overflow-hidden rounded-lg shadow-lg cursor-pointer transition-transform duration-300 hover:scale-105 hidden" data-category="reformas-hogar" data-project="9" data-delay="200">
-            <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600&h=400&fit=crop" alt="Proyecto 9" class="w-full h-64 sm:h-72 lg:h-80 object-cover">
+            <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600&h=400&fit=crop" alt="Proyecto 9" class="w-full h-64 sm:h-72 lg:h-80 object-cover" width="600" height="400" loading="lazy">
             <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-0 group-hover:opacity-90 transition-opacity duration-300"></div>
             <div class="absolute bottom-0 left-0 p-4 sm:p-6 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              <h3 class="text-lg sm:text-xl lg:text-2xl font-bold mb-1 sm:mb-2">Reforma Integral Vivienda 3</h3>
+              <h2 class="text-lg sm:text-xl lg:text-2xl font-bold mb-1 sm:mb-2">Reforma Integral Vivienda 3</h3>
               <p class="text-xs sm:text-sm">Ver proyecto</p>
             </div>
           </article>
@@ -134,6 +135,7 @@
         </div>
       </div>
     </section>
+    </main>
 
     <!-- Modal de proyecto -->
     <div id="project-modal" class="fixed inset-0 bg-black bg-opacity-75 z-50 hidden items-center justify-center p-2 sm:p-4">
@@ -144,14 +146,14 @@
           <!-- Carrusel -->
           <div class="relative h-full w-full">
             <div id="carousel-container" class="h-full w-full">
-              <img id="carousel-image" src="" alt="Imagen del proyecto" class="w-full h-full object-cover">
+              <img id="carousel-image" src="" alt="Imagen del proyecto" class="w-full h-full object-cover" width="800" height="600">
             </div>
 
             <!-- Flechas -->
-            <button id="carousel-prev" class="absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-75 hover:bg-opacity-100 rounded-full p-2 sm:p-3 transition-all shadow-md">
+            <button id="carousel-prev" aria-label="Imagen anterior" class="absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-75 hover:bg-opacity-100 rounded-full p-2 sm:p-3 transition-all shadow-md">
               <svg class="h-4 w-4 sm:h-6 sm:w-6"><use href="#icon-arrow-left"/></svg>
             </button>
-            <button id="carousel-next" class="absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-75 hover:bg-opacity-100 rounded-full p-2 sm:p-3 transition-all shadow-md">
+            <button id="carousel-next" aria-label="Imagen siguiente" class="absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-75 hover:bg-opacity-100 rounded-full p-2 sm:p-3 transition-all shadow-md">
               <svg class="h-4 w-4 sm:h-6 sm:w-6"><use href="#icon-arrow-right"/></svg>
             </button>
 
@@ -165,7 +167,7 @@
         <!-- Información del proyecto -->
         <div class="w-full md:w-2/5 flex-1 md:h-full p-5 sm:p-8 lg:p-10 overflow-y-auto bg-white relative">
           <!-- Botón cerrar -->
-          <button id="modal-close" class="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 bg-gray-100 hover:bg-gray-200 rounded-full p-1.5 sm:p-2 transition-colors">
+          <button id="modal-close" aria-label="Cerrar proyecto" class="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 bg-gray-100 hover:bg-gray-200 rounded-full p-1.5 sm:p-2 transition-colors">
             <svg class="h-5 w-5 sm:h-6 sm:w-6 text-gray-600"><use href="#icon-close"/></svg>
           </button>
           <h2 id="modal-title" class="text-xl sm:text-2xl lg:text-3xl font-bold text-azul-oscuro mb-3 sm:mb-4"></h2>

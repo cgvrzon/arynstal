@@ -6,20 +6,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Arynstal SL - Instalaciones eléctricas y domótica KNX. Reformas y proyectos con experiencia y compromiso." />
     <title>Arynstal SL</title>
-    <script type="module" crossorigin src="{% static 'assets/index-BPChkp9X.js' %}"></script>
-    <link rel="stylesheet" crossorigin href="{% static 'assets/index-Fxy-Mlu2.css' %}">
+    <script type="module" crossorigin src="{% static 'assets/index-B_TwAqul.js' %}"></script>
+    <link rel="stylesheet" crossorigin href="{% static 'assets/index-Bg83hvod.css' %}">
   </head>
 
   <body class="bg-gris-claro">
     {% include 'components/header.html' %}
 
+    <main>
     <!-- Hero / Carrusel -->
     <section class="slider z-10 relative w-full h-[50vh] sm:h-[60vh] lg:h-[70vh] overflow-hidden shadow-lg">
       <div class="slides flex h-full transition-transform duration-700">
 
         <!-- Slide 1 -->
         <figure class="slides w-full flex-shrink-0 relative">
-          <img src="{% static 'img/imgSlide3.avif' %}" class="w-full h-full object-cover" alt="Subestación eléctrica.">
+          <img src="{% static 'img/imgSlide3.avif' %}" class="w-full h-full object-cover" alt="Subestación eléctrica." width="1920" height="1280">
           <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
           <figcaption class="absolute inset-0 flex items-center justify-center text-white px-4 sm:px-6">
             <h2 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold drop-shadow-[2px_2px_6px_rgba(0,0,0,0.7)] text-center leading-tight">
@@ -30,7 +31,7 @@
 
         <!-- Slide 2 -->
         <figure class="slides w-full flex-shrink-0 relative">
-          <img src="{% static 'img/knxImgSlide2M.avif' %}" class="w-full h-full object-cover" alt="KNX Partners. Construye el futuro en tu hogar.">
+          <img src="{% static 'img/knxImgSlide2M.avif' %}" class="w-full h-full object-cover" alt="KNX Partners. Construye el futuro en tu hogar." width="1440" height="720">
           <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
           <figcaption class="absolute inset-0 flex flex-col items-center justify-center text-white px-4 sm:px-6">
             <h2 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold drop-shadow-[2px_2px_6px_rgba(0,0,0,0.7)] text-center leading-tight">
@@ -44,7 +45,7 @@
 
         <!-- Slide 3 -->
         <figure class="slides w-full flex-shrink-0 relative">
-          <img src="{% static 'img/imgSlide1.avif' %}" class="w-full h-full object-cover object-bottom" alt="Estación eléctrica. Proyecto realizado junto con Elecnor SL.">
+          <img src="{% static 'img/imgSlide1.avif' %}" class="w-full h-full object-cover object-bottom" alt="Estación eléctrica. Proyecto realizado junto con Elecnor SL." width="1248" height="698">
           <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
           <figcaption class="absolute inset-0 flex items-center justify-center text-white px-4 sm:px-6">
             <h2 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold drop-shadow-[2px_2px_6px_rgba(0,0,0,0.7)] text-center leading-tight">
@@ -56,22 +57,22 @@
       </div>
 
       <!-- Botones -->
-      <button id="btnPrev" class="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-white/50 hover:bg-white/80 rounded-full text-xl sm:text-2xl z-20">&#10094;</button>
-      <button id="btnNext" class="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-white/50 hover:bg-white/80 rounded-full text-xl sm:text-2xl z-20">&#10095;</button>
+      <button id="btnPrev" aria-label="Imagen anterior" class="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-white/50 hover:bg-white/80 rounded-full text-xl sm:text-2xl z-20">&#10094;</button>
+      <button id="btnNext" aria-label="Imagen siguiente" class="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-white/50 hover:bg-white/80 rounded-full text-xl sm:text-2xl z-20">&#10095;</button>
 
       <!-- Dots -->
       <div class="nav-dots absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 flex gap-2 sm:gap-3 z-20">
-        <button class="dot w-3 h-3 rounded-full bg-white/50 transition-all duration-300"></button>
-        <button class="dot w-3 h-3 rounded-full bg-white/50 transition-all duration-300"></button>
-        <button class="dot w-3 h-3 rounded-full bg-white/50 transition-all duration-300"></button>
+        <button class="dot w-3 h-3 rounded-full bg-white/50 transition-all duration-300" aria-label="Ir a imagen 1"></button>
+        <button class="dot w-3 h-3 rounded-full bg-white/50 transition-all duration-300" aria-label="Ir a imagen 2"></button>
+        <button class="dot w-3 h-3 rounded-full bg-white/50 transition-all duration-300" aria-label="Ir a imagen 3"></button>
       </div>
     </section>
 
     <!-- Sección de introducción -->
     <section class="relative z-0 bg-gris-claro/80 backdrop-blur-sm text-center py-12 sm:py-16 px-4 sm:px-6 -mt-5">
-      <h2 class="reveal text-2xl sm:text-3xl lg:text-4xl font-bold text-azul-oscuro mb-3 sm:mb-4" data-delay="0">
+      <h1 class="reveal text-2xl sm:text-3xl lg:text-4xl font-bold text-azul-oscuro mb-3 sm:mb-4" data-delay="0">
         Soluciones técnicas para espacios inteligentes
-      </h2>
+      </h1>
       <p class="reveal text-base sm:text-lg text-gris-oscuro max-w-3xl mx-auto" data-delay="150">
         En Arynstal SL combinamos experiencia en instalaciones eléctricas con innovación en domótica KNX. Descubre cómo transformamos hogares, oficinas y espacios industriales con eficiencia, seguridad y diseño.
       </p>
@@ -82,10 +83,10 @@
 
       <!-- Article instalaciones eléctricas -->
       <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-8 lg:gap-16 xl:gap-24 py-8 sm:py-10">
-        <img src="{% static 'img/services/instalacion_electrica.jpg' %}"
+        <img src="{% static 'img/services/instalacion_electrica.webp' %}"
             alt="Instalaciones eléctricas"
             class="reveal from-left w-full lg:w-[55%] rounded-lg object-cover aspect-video lg:aspect-[4/3]"
-            data-delay="0">
+            data-delay="0" width="1200" height="798" loading="lazy">
         <div class="reveal from-right lg:w-[45%]" data-delay="150">
           <h2 class="text-2xl sm:text-3xl font-bold text-azul-oscuro mb-3 sm:mb-4">Instalaciones eléctricas</h2>
           <p class="text-sm sm:text-base text-gris-oscuro mb-4 sm:mb-6">
@@ -105,10 +106,10 @@
 
       <!-- Article domótica KNX -->
       <div class="max-w-7xl mx-auto flex flex-col lg:flex-row-reverse items-center gap-8 lg:gap-16 xl:gap-24 py-8 sm:py-10">
-        <img src="{% static 'img/services/domotica_knx.jpg' %}"
+        <img src="{% static 'img/services/domotica_knx.webp' %}"
          alt="Domótica KNX"
          class="reveal from-right w-full lg:w-[55%] rounded-lg object-cover aspect-video lg:aspect-[4/3]"
-         data-delay="0">
+         data-delay="0" width="1200" height="800" loading="lazy">
         <div class="reveal from-left lg:w-[45%]" data-delay="150">
           <h2 class="text-2xl sm:text-3xl font-bold text-azul-oscuro mb-3 sm:mb-4">Domótica KNX</h2>
           <p class="text-sm sm:text-base text-gris-oscuro mb-4 sm:mb-6">
@@ -128,10 +129,10 @@
 
       <!-- Article reformas integrales -->
       <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-8 lg:gap-16 xl:gap-24 py-8 sm:py-10">
-        <img src="{% static 'img/services/reformas_integrales.jpg' %}"
+        <img src="{% static 'img/services/reformas_integrales.webp' %}"
          alt="Reformas integrales"
          class="reveal from-left w-full lg:w-[55%] rounded-lg object-cover aspect-video lg:aspect-[4/3]"
-         data-delay="0">
+         data-delay="0" width="1200" height="798" loading="lazy">
         <div class="reveal from-right lg:w-[45%]" data-delay="150">
           <h2 class="text-2xl sm:text-3xl font-bold text-azul-oscuro mb-3 sm:mb-4">Reformas integrales</h2>
           <p class="text-sm sm:text-base text-gris-oscuro mb-4 sm:mb-6">
@@ -153,10 +154,10 @@
 
       <!-- Article proyectos realizados -->
       <div class="max-w-7xl mx-auto flex flex-col lg:flex-row-reverse items-center gap-8 lg:gap-16 xl:gap-24 py-8 sm:py-10">
-        <img src="{% static 'img/services/handhshake.jpg' %}"
+        <img src="{% static 'img/services/handhshake.webp' %}"
             alt="Experiencia y calidad"
             class="reveal from-right w-full lg:w-[55%] rounded-lg object-cover aspect-video lg:aspect-[4/3]"
-            data-delay="0">
+            data-delay="0" width="1200" height="1800" loading="lazy">
         <div class="reveal from-left lg:w-[45%]" data-delay="150">
           <h2 class="text-2xl sm:text-3xl font-bold text-azul-oscuro mb-3 sm:mb-4">Experiencia demostrable. Calidad garantizada</h2>
           <p class="text-sm sm:text-base text-gris-oscuro mb-4 sm:mb-6">
@@ -176,10 +177,10 @@
 
       <!-- Article sobre nosotros -->
       <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-8 lg:gap-16 xl:gap-24 py-8 sm:py-10">
-        <img src="{% static 'img/services/logotipo.png' %}"
+        <img src="{% static 'img/services/logotipo.webp' %}"
             alt="Sobre nosotros"
             class="reveal from-left w-full lg:w-[55%] rounded-lg object-cover aspect-video lg:aspect-[4/3]"
-            data-delay="0">
+            data-delay="0" width="800" height="533" loading="lazy">
         <div class="reveal from-right lg:w-[45%]" data-delay="150">
           <h2 class="text-2xl sm:text-3xl font-bold text-azul-oscuro mb-3 sm:mb-4">Sobre nosotros</h2>
           <p class="text-sm sm:text-base text-gris-oscuro mb-3 sm:mb-4">
@@ -199,6 +200,7 @@
       </div>
 
     </section>
+    </main>
 
     {% include 'components/footer.html' %}
 
