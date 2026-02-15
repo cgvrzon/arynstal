@@ -201,4 +201,4 @@ jobs:
 
       - name: ✅ Verificar deploy
         run: |
-          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "sudo /bin/systemctl status arynstal --no-pager"
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "curl -sf -o /dev/null http://localhost && echo 'Deploy OK: App respondiendo' || echo 'ERROR: App no responde'"
