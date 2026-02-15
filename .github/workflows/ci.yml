@@ -177,3 +177,28 @@ jobs:
           python manage.py collectstatic --noinput
         env:
           SECRET_KEY: 'test-secret-key-for-ci-only'
+
+  # ===========================================================================
+  # JOB 5: DEPLOY - Deploy automatico a produccion
+  # ===========================================================================
+  deploy:
+    name: 🚀 Deploy
+    runs-on: ubuntu-latest
+    needs: [test, build]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+      - name: 🔑 Configurar SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          echo "${{ secrets.SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+
+      - name: 🚀 Deploy a produccion
+        run: |
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd /var/www/arynstal/app && git pull origin main && sudo /var/www/arynstal/app/venv/bin/python manage.py collectstatic --noinput && sudo /bin/systemctl restart arynstal"
+
+      - name: ✅ Verificar deploy
+        run: |
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "sudo /bin/systemctl status arynstal --no-pager"

@@ -24,7 +24,7 @@ VARIABLES DE ENTORNO REQUERIDAS:
 
     OPCIONALES (tienen valores por defecto):
     - DB_NAME: Nombre de la BD (default: 'arynstal')
-    - DB_USER: Usuario de la BD (default: 'arynstal_user')
+    - DB_USER: Usuario de la BD
     - DB_HOST: Host de la BD (default: 'localhost')
     - DB_PORT: Puerto de la BD (default: '5432')
     - EMAIL_HOST: Servidor SMTP (default: 'smtp.gmail.com')
@@ -105,8 +105,8 @@ DATABASES = {
         'NAME': os.environ.get('DB_NAME', 'arynstal'),
         # Nombre de la base de datos
 
-        'USER': os.environ.get('DB_USER', 'arynstal_user'),
-        # Usuario de la base de datos (NO usar root/postgres)
+        'USER': os.environ.get('DB_USER', ''),
+        # Usuario de la base de datos (OBLIGATORIO en .env, NO usar root/postgres)
 
         'PASSWORD': os.environ.get('DB_PASSWORD'),
         # Contraseña (OBLIGATORIA en producción)
@@ -155,9 +155,9 @@ DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'Arynstal <noreply@ary
 NOTIFICATIONS = {
     'LEAD': {
         'ENABLED': True,
-        'ADMIN_EMAIL': os.environ.get('LEAD_NOTIFICATION_EMAIL', 'garzoncl01@gmail.com'),
+        'ADMIN_EMAIL': os.environ.get('LEAD_NOTIFICATION_EMAIL', ''),
         # Email que recibe notificaciones de nuevos leads.
-        # Configurable via variable de entorno para facilitar cambios.
+        # OBLIGATORIO: Configurar LEAD_NOTIFICATION_EMAIL en .env
         'SEND_CUSTOMER_CONFIRMATION': True,
     },
 }

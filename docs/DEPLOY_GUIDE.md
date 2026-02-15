@@ -253,17 +253,17 @@ apt update && apt upgrade -y
 
 ```bash
 # Crear usuario
-adduser --disabled-password --gecos "" arynstal
+adduser --disabled-password --gecos "" YOUR_USER
 
 # Añadir a grupo sudo (por si acaso)
-usermod -aG sudo arynstal
+usermod -aG sudo YOUR_USER
 
 # Configurar SSH para el nuevo usuario
-mkdir -p /home/arynstal/.ssh
-cp ~/.ssh/authorized_keys /home/arynstal/.ssh/
-chown -R arynstal:arynstal /home/arynstal/.ssh
-chmod 700 /home/arynstal/.ssh
-chmod 600 /home/arynstal/.ssh/authorized_keys
+mkdir -p /home/YOUR_USER/.ssh
+cp ~/.ssh/authorized_keys /home/YOUR_USER/.ssh/
+chown -R YOUR_USER:YOUR_USER /home/YOUR_USER/.ssh
+chmod 700 /home/YOUR_USER/.ssh
+chmod 600 /home/YOUR_USER/.ssh/authorized_keys
 ```
 
 ### 4.4 Configurar Firewall
@@ -319,13 +319,13 @@ sudo -u postgres psql
 
 ```sql
 -- Crear usuario
-CREATE USER arynstal_user WITH PASSWORD 'CONTRASEÑA_SEGURA_AQUI';
+CREATE USER YOUR_DB_USER WITH PASSWORD 'CONTRASEÑA_SEGURA_AQUI';
 
 -- Crear base de datos
-CREATE DATABASE arynstal OWNER arynstal_user;
+CREATE DATABASE arynstal OWNER YOUR_DB_USER;
 
 -- Dar permisos
-GRANT ALL PRIVILEGES ON DATABASE arynstal TO arynstal_user;
+GRANT ALL PRIVILEGES ON DATABASE arynstal TO YOUR_DB_USER;
 
 -- Salir
 \q
@@ -334,7 +334,7 @@ GRANT ALL PRIVILEGES ON DATABASE arynstal TO arynstal_user;
 ### 6.2 Verificar conexión
 
 ```bash
-psql -U arynstal_user -d arynstal -h localhost
+psql -U YOUR_DB_USER -d arynstal -h localhost
 # Introducir contraseña cuando pregunte
 # Si conecta, escribir \q para salir
 ```
@@ -349,14 +349,14 @@ psql -U arynstal_user -d arynstal -h localhost
 mkdir -p /var/www/arynstal
 mkdir -p /var/www/arynstal/logs
 mkdir -p /var/www/arynstal/backups
-chown -R arynstal:arynstal /var/www/arynstal
+chown -R YOUR_USER:YOUR_USER /var/www/arynstal
 ```
 
 ### 7.2 Clonar repositorio
 
 ```bash
-# Cambiar al usuario arynstal
-su - arynstal
+# Cambiar al usuario de la aplicación
+su - YOUR_USER
 
 # Clonar
 cd /var/www/arynstal
@@ -394,7 +394,7 @@ CSRF_TRUSTED_ORIGINS=arynstal.es,www.arynstal.es
 
 # Base de datos
 DB_NAME=arynstal
-DB_USER=arynstal_user
+DB_USER=YOUR_DB_USER
 DB_PASSWORD=CONTRASEÑA_DE_POSTGRESQL
 DB_HOST=localhost
 DB_PORT=5432
@@ -407,7 +407,7 @@ EMAIL_HOST_PASSWORD=tu-api-key-de-brevo
 DEFAULT_FROM_EMAIL=Arynstal <noreply@arynstal.es>
 
 # Notificaciones
-LEAD_NOTIFICATION_EMAIL=garzoncl01@gmail.com
+LEAD_NOTIFICATION_EMAIL=your-email@example.com
 ```
 
 ### 7.5 Aplicar migraciones y collectstatic
@@ -489,8 +489,8 @@ Description=Arynstal Django Application
 After=network.target postgresql.service
 
 [Service]
-User=arynstal
-Group=arynstal
+User=YOUR_USER
+Group=YOUR_USER
 WorkingDirectory=/var/www/arynstal/app
 Environment="PATH=/var/www/arynstal/app/venv/bin"
 EnvironmentFile=/var/www/arynstal/app/.env
@@ -690,7 +690,7 @@ send_mail(
     'Test desde Arynstal',
     'Este es un email de prueba del servidor de producción.',
     'Arynstal <noreply@arynstal.es>',
-    ['garzoncl01@gmail.com'],
+    ['your-email@example.com'],
     fail_silently=False,
 )
 ```
@@ -737,7 +737,7 @@ Contenido:
 # Configuración
 BACKUP_DIR="/var/www/arynstal/backups"
 DB_NAME="arynstal"
-DB_USER="arynstal_user"
+DB_USER="YOUR_DB_USER"
 RETENTION_DAYS=7
 
 # Crear backup con fecha
@@ -931,7 +931,7 @@ source venv/bin/activate
 python manage.py collectstatic --noinput
 
 # Verificar permisos
-sudo chown -R arynstal:arynstal /var/www/arynstal/app/staticfiles/
+sudo chown -R YOUR_USER:YOUR_USER /var/www/arynstal/app/staticfiles/
 ```
 
 ### Problema: Error de base de datos
@@ -941,7 +941,7 @@ sudo chown -R arynstal:arynstal /var/www/arynstal/app/staticfiles/
 sudo systemctl status postgresql
 
 # Verificar conexión
-psql -U arynstal_user -d arynstal -h localhost
+psql -U YOUR_DB_USER -d arynstal -h localhost
 
 # Verificar variables de entorno
 cat /var/www/arynstal/app/.env | grep DB_
