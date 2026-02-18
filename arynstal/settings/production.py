@@ -93,6 +93,15 @@ CSRF_TRUSTED_ORIGINS = [
 
 
 # =============================================================================
+# RATE LIMITING - IP detrás de reverse proxy
+# =============================================================================
+
+RATELIMIT_IP_META_KEY = 'HTTP_X_FORWARDED_FOR'
+# Gunicorn usa Unix socket → REMOTE_ADDR viene vacío.
+# Nginx pone la IP real del cliente en X-Forwarded-For.
+
+
+# =============================================================================
 # DATABASE - PostgreSQL para producción
 # =============================================================================
 
