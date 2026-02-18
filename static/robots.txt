@@ -6,10 +6,6 @@
 User-agent: *
 Allow: /
 
-# Bloquear acceso a los paneles de administración
-Disallow: /admynstal/
-Disallow: /offynstal/
-
 # Bloquear archivos de media privados
 Disallow: /media/leads/
 Disallow: /media/budgets/

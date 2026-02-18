@@ -88,7 +88,7 @@
 |----|------------|-----------|-------------------------|
 | US-7.1 | Protección Formulario | M | CSRF, honeypot, rate limiting, validación magic bytes |
 | US-7.2 | Headers de Seguridad | M | SSL, HSTS, CSP, X-Frame-Options, X-Content-Type |
-| US-7.3 | URL Admin Personalizada | S | Admin en /admynstal/ en vez de /admin/ |
+| US-7.3 | URL Admin Personalizada | S | Admin en /ADMIN_URL/ en vez de /admin/ |
 
 ---
 
@@ -107,7 +107,7 @@
 
 | ID | User Story | Prioridad | Criterios de Aceptación |
 |----|------------|-----------|-------------------------|
-| US-9.1 | AdminSite Separado | M | URL /offynstal/ funcional e independiente |
+| US-9.1 | AdminSite Separado | M | URL /ADMIN_URL_2/ funcional e independiente |
 | US-9.2 | Restricción por Rol | M | Solo usuarios con rol 'office' y 'admin' pueden acceder |
 | US-9.3 | Lead Simplificado | M | Campos básicos sin RGPD/metadatos técnicos |
 | US-9.4 | Budget Simplificado | M | CRUD básico con archivo PDF |
