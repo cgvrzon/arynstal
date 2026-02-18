@@ -232,6 +232,20 @@ dig _dmarc.arynstal.es TXT +short
 1. Ir a Security → Settings
 2. Security Level: **Medium**
 3. Challenge Passage: **30 minutes**
+4. Bot Fight Mode: **Activado**
+5. Block AI Bots: **Activado**
+
+### 3.10 WAF - Custom Rules
+
+Configurar en Security → WAF → Custom Rules:
+
+| # | Nombre | Expression | Acción |
+|---|--------|-----------|--------|
+| 1 | Block SQL/Command Injection | Patrones SQLi (`union select`, `exec(`, `/bin/`, etc.) | Block |
+| 2 | Block XSS | Patrones XSS (`<script`, `javascript:`, `onerror=`, etc.) | Block |
+| 3 | Block Path Traversal | `../`, `.env`, `.git/`, `wp-admin`, `phpmyadmin`, etc. | Block |
+| 4 | Block Malicious User Agents | `sqlmap`, `nikto`, `nmap`, `masscan`, `dirbuster`, etc. | Block |
+| 5 | Protect Admin Panel | URI contiene `/ADMIN_URL/` o `/ADMIN_URL_2/` | Managed Challenge |
 
 ---
 
@@ -240,8 +254,10 @@ dig _dmarc.arynstal.es TXT +short
 ### 4.1 Conectar por SSH
 
 ```bash
-ssh root@IP_DEL_VPS
+ssh root@IP_DEL_VPS -p XXXXX
 ```
+
+> **Nota**: El puerto SSH es XXXXX (no el estándar 22) para reducir escaneos de bots.
 
 ### 4.2 Actualizar sistema
 
@@ -269,19 +285,38 @@ chmod 600 /home/YOUR_USER/.ssh/authorized_keys
 ### 4.4 Configurar Firewall
 
 ```bash
-ufw allow OpenSSH
-ufw allow 'Nginx Full'
+ufw allow XXXXX/tcp comment 'SSH'
+ufw allow 80/tcp
+ufw allow 443/tcp
 ufw enable
 ufw status
 ```
 
-### 4.5 (Opcional) Configurar Fail2ban
+> **Nota**: No usar `ufw allow OpenSSH` ya que SSH está en puerto no estándar (XXXXX).
+
+### 4.5 Configurar Fail2ban
 
 ```bash
 apt install fail2ban -y
 systemctl enable fail2ban
 systemctl start fail2ban
 ```
+
+### 4.6 Cambiar puerto SSH
+
+```bash
+# Editar configuración SSH
+sudo nano /etc/ssh/sshd_config
+# Descomentar y cambiar: Port XXXXX
+
+# Reiniciar SSH
+sudo systemctl restart ssh
+
+# Verificar
+sudo ss -tlnp | grep XXXXX
+```
+
+> **Importante**: Abrir el nuevo puerto en UFW **antes** de cambiar la config SSH para no perder acceso.
 
 ---
 
@@ -406,8 +441,8 @@ EMAIL_HOST_USER=tu-email@dominio.com
 EMAIL_HOST_PASSWORD=tu-api-key-de-brevo
 DEFAULT_FROM_EMAIL=Arynstal <noreply@arynstal.es>
 
-# Notificaciones
-LEAD_NOTIFICATION_EMAIL=your-email@example.com
+# Notificaciones (separar múltiples emails por coma)
+LEAD_NOTIFICATION_EMAILS=admin@arynstal.es,info@arynstal.es
 ```
 
 ### 7.5 Aplicar migraciones y collectstatic
@@ -795,7 +830,7 @@ ls -la /var/www/arynstal/backups/
 - [ ] Formulario de contacto funciona
 - [ ] Se recibe email de notificación (via Brevo)
 - [ ] Email corporativo funciona (Zoho: info@arynstal.es)
-- [ ] Panel admin accesible en /admynstal/
+- [ ] Panel admin accesible en /ADMIN_URL/
 - [ ] Archivos estáticos cargan (CSS, JS, imágenes)
 - [ ] No hay errores en logs
 
@@ -899,7 +934,7 @@ docker run -d \
 
 Configurar para monitorizar:
 - `https://arynstal.es` (HTTP 200)
-- `https://arynstal.es/admynstal/` (HTTP 200/302)
+- `https://arynstal.es/ADMIN_URL/` (HTTP 200/302)
 
 ---
 
@@ -974,6 +1009,7 @@ Ver sección [11.6 Troubleshooting Email](#116-troubleshooting-email) para diagn
 | 1.1 | 2026-01-26 | Añadida sección de historial |
 | 1.2 | 2026-02-10 | Sección 0 (decisiones técnicas), Zoho Mail Free, DNS completa (MX, SPF, DKIM, DMARC), sección 11 reescrita (email corporativo + transaccional) |
 | 1.3 | 2026-02-11 | Sección 0 migrada a INFRAESTRUCTURA.md — DEPLOY_GUIDE queda puramente procedimental |
+| 1.4 | 2026-02-16 | SSH puerto XXXXX, firewall actualizado, WAF Cloudflare (5 reglas), Fail2ban obligatorio |
 
 ---
 

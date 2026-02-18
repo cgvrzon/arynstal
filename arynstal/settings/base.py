@@ -319,15 +319,15 @@ NOTIFICATIONS = {
     # Notificaciones de nuevos leads desde el formulario de contacto
     'LEAD': {
         'ENABLED': True,
-        # Email(s) que reciben notificación cuando llega un nuevo lead
-        'ADMIN_EMAIL': 'admin@arynstal.es',
+        # Emails que reciben notificación cuando llega un nuevo lead
+        'ADMIN_EMAILS': ['admin@arynstal.es', 'info@arynstal.es'],
         # Enviar confirmación automática al cliente
         'SEND_CUSTOMER_CONFIRMATION': True,
     },
     # Preparado para futuras notificaciones:
     # 'BUDGET_REQUEST': {
     #     'ENABLED': True,
-    #     'ADMIN_EMAIL': 'presupuestos@arynstal.es',
+    #     'ADMIN_EMAILS': ['presupuestos@arynstal.es'],
     # },
 }
 

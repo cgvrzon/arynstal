@@ -32,7 +32,7 @@ VARIABLES DE ENTORNO REQUERIDAS:
     - EMAIL_HOST_USER: Usuario SMTP
     - EMAIL_HOST_PASSWORD: Contraseña SMTP
     - DEFAULT_FROM_EMAIL: Remitente (default: 'Arynstal <noreply@arynstal.es>')
-    - LEAD_NOTIFICATION_EMAIL: Email para notificaciones de leads
+    - LEAD_NOTIFICATION_EMAILS: Emails para notificaciones de leads (CSV)
 
 DESPLIEGUE:
     Ver docs/DEPLOY_GUIDE.md para instrucciones detalladas de configuración.
@@ -155,9 +155,9 @@ DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'Arynstal <noreply@ary
 NOTIFICATIONS = {
     'LEAD': {
         'ENABLED': True,
-        'ADMIN_EMAIL': os.environ.get('LEAD_NOTIFICATION_EMAIL', ''),
-        # Email que recibe notificaciones de nuevos leads.
-        # OBLIGATORIO: Configurar LEAD_NOTIFICATION_EMAIL en .env
+        'ADMIN_EMAILS': os.environ.get('LEAD_NOTIFICATION_EMAILS', ''),
+        # Emails que reciben notificaciones de nuevos leads (separados por coma).
+        # OBLIGATORIO: Configurar LEAD_NOTIFICATION_EMAILS en .env
         'SEND_CUSTOMER_CONFIRMATION': True,
     },
 }

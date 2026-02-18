@@ -539,12 +539,12 @@ class NotificationConfigTest(TestCase):
         config = get_notification_config()
         self.assertIsInstance(config, dict)
 
-    @override_settings(NOTIFICATIONS={'LEAD': {'ENABLED': True, 'ADMIN_EMAIL': 'test@test.com'}})
+    @override_settings(NOTIFICATIONS={'LEAD': {'ENABLED': True, 'ADMIN_EMAILS': ['test@test.com']}})
     def test_config_returns_correct_values(self):
         """Test: Configuración retorna valores correctos."""
         config = get_notification_config()
         self.assertTrue(config.get('ENABLED'))
-        self.assertEqual(config.get('ADMIN_EMAIL'), 'test@test.com')
+        self.assertEqual(config.get('ADMIN_EMAILS'), ['test@test.com'])
 
 
 class AdminNotificationTest(TestCase):
@@ -560,7 +560,7 @@ class AdminNotificationTest(TestCase):
         )
 
     @override_settings(
-        NOTIFICATIONS={'LEAD': {'ENABLED': True, 'ADMIN_EMAIL': 'admin@test.com'}},
+        NOTIFICATIONS={'LEAD': {'ENABLED': True, 'ADMIN_EMAILS': ['admin@test.com']}},
         DEFAULT_FROM_EMAIL='noreply@test.com',
     )
     @patch('apps.leads.notifications.EmailMultiAlternatives')
@@ -577,7 +577,7 @@ class AdminNotificationTest(TestCase):
         mock_email.send.assert_called_once_with(fail_silently=False)
 
     @override_settings(
-        NOTIFICATIONS={'LEAD': {'ENABLED': True, 'ADMIN_EMAIL': 'admin@test.com'}},
+        NOTIFICATIONS={'LEAD': {'ENABLED': True, 'ADMIN_EMAILS': ['admin@test.com']}},
     )
     @patch('apps.leads.notifications.EmailMultiAlternatives')
     def test_admin_notification_contains_lead_data(self, mock_email_class):
@@ -598,7 +598,7 @@ class AdminNotificationTest(TestCase):
         self.assertFalse(result)
 
     @override_settings(
-        NOTIFICATIONS={'LEAD': {'ENABLED': True, 'ADMIN_EMAIL': 'admin@test.com'}},
+        NOTIFICATIONS={'LEAD': {'ENABLED': True, 'ADMIN_EMAILS': ['admin@test.com']}},
     )
     @patch('apps.leads.notifications.EmailMultiAlternatives')
     def test_admin_notification_handles_error(self, mock_email_class):
@@ -610,6 +610,51 @@ class AdminNotificationTest(TestCase):
         result = send_admin_notification(self.lead)
 
         self.assertFalse(result)
+
+    @override_settings(
+        NOTIFICATIONS={'LEAD': {'ENABLED': True, 'ADMIN_EMAILS': ['admin@test.com', 'info@test.com']}},
+    )
+    @patch('apps.leads.notifications.EmailMultiAlternatives')
+    def test_admin_notification_multiple_recipients(self, mock_email_class):
+        """Test: Notificación se envía a múltiples destinatarios."""
+        mock_email = MagicMock()
+        mock_email_class.return_value = mock_email
+
+        result = send_admin_notification(self.lead)
+
+        self.assertTrue(result)
+        call_kwargs = mock_email_class.call_args.kwargs
+        self.assertEqual(call_kwargs['to'], ['admin@test.com', 'info@test.com'])
+
+    @override_settings(
+        NOTIFICATIONS={'LEAD': {'ENABLED': True, 'ADMIN_EMAILS': 'admin@test.com, info@test.com'}},
+    )
+    @patch('apps.leads.notifications.EmailMultiAlternatives')
+    def test_admin_notification_csv_string(self, mock_email_class):
+        """Test: Parsing de string CSV (formato env var)."""
+        mock_email = MagicMock()
+        mock_email_class.return_value = mock_email
+
+        result = send_admin_notification(self.lead)
+
+        self.assertTrue(result)
+        call_kwargs = mock_email_class.call_args.kwargs
+        self.assertEqual(call_kwargs['to'], ['admin@test.com', 'info@test.com'])
+
+    @override_settings(
+        NOTIFICATIONS={'LEAD': {'ENABLED': True, 'ADMIN_EMAIL': 'legacy@test.com'}},
+    )
+    @patch('apps.leads.notifications.EmailMultiAlternatives')
+    def test_admin_notification_backward_compat(self, mock_email_class):
+        """Test: ADMIN_EMAIL legacy sigue funcionando."""
+        mock_email = MagicMock()
+        mock_email_class.return_value = mock_email
+
+        result = send_admin_notification(self.lead)
+
+        self.assertTrue(result)
+        call_kwargs = mock_email_class.call_args.kwargs
+        self.assertEqual(call_kwargs['to'], ['legacy@test.com'])
 
 
 class CustomerConfirmationTest(TestCase):
@@ -695,7 +740,7 @@ class NotifyNewLeadTest(TestCase):
     @override_settings(
         NOTIFICATIONS={'LEAD': {
             'ENABLED': True,
-            'ADMIN_EMAIL': 'admin@test.com',
+            'ADMIN_EMAILS': ['admin@test.com'],
             'SEND_CUSTOMER_CONFIRMATION': True,
         }},
         DEFAULT_FROM_EMAIL='noreply@test.com',
@@ -716,7 +761,7 @@ class NotifyNewLeadTest(TestCase):
     @override_settings(
         NOTIFICATIONS={'LEAD': {
             'ENABLED': True,
-            'ADMIN_EMAIL': 'admin@test.com',
+            'ADMIN_EMAILS': ['admin@test.com'],
             'SEND_CUSTOMER_CONFIRMATION': False,
         }},
     )

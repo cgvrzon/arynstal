@@ -25,7 +25,7 @@ FLUJO EN LA APLICACIÓN:
 CONFIGURACIÓN:
     Los emails se configuran en settings.NOTIFICATIONS['LEAD']:
     - ENABLED: Activa/desactiva notificaciones
-    - ADMIN_EMAIL: Email del administrador
+    - ADMIN_EMAILS: Lista de emails o string CSV (soporta ADMIN_EMAIL legacy)
     - SEND_CUSTOMER_CONFIRMATION: Activa confirmación al cliente
 
 TEMPLATES DE EMAIL:
@@ -85,6 +85,39 @@ def get_notification_config() -> dict:
     return settings.NOTIFICATIONS.get('LEAD', {})
 
 
+def _parse_admin_emails(config: dict) -> list[str]:
+    """
+    Extrae la lista de emails de administrador desde la configuración.
+
+    Soporta dos formatos:
+    - ADMIN_EMAILS: lista Python o string CSV (preferido)
+    - ADMIN_EMAIL: string con un solo email (retrocompatibilidad)
+
+    PARÁMETROS:
+        config (dict): Configuración LEAD de NOTIFICATIONS.
+
+    RETORNA:
+        list[str]: Lista de emails válidos (sin espacios, sin vacíos).
+
+    EJEMPLOS:
+        >>> _parse_admin_emails({'ADMIN_EMAILS': ['a@b.com', 'c@d.com']})
+        ['a@b.com', 'c@d.com']
+        >>> _parse_admin_emails({'ADMIN_EMAILS': 'a@b.com,c@d.com'})
+        ['a@b.com', 'c@d.com']
+        >>> _parse_admin_emails({'ADMIN_EMAIL': 'a@b.com'})
+        ['a@b.com']
+    """
+    # Prioridad: ADMIN_EMAILS > ADMIN_EMAIL (legacy)
+    raw = config.get('ADMIN_EMAILS') or config.get('ADMIN_EMAIL', '')
+
+    if isinstance(raw, (list, tuple)):
+        emails = raw
+    else:
+        emails = raw.split(',')
+
+    return [e.strip() for e in emails if e.strip()]
+
+
 # =============================================================================
 # FUNCIÓN: NOTIFICACIÓN AL ADMINISTRADOR
 # =============================================================================
@@ -106,7 +139,7 @@ def send_admin_notification(lead) -> bool:
 
     FLUJO:
         1. Verificar si las notificaciones están habilitadas
-        2. Obtener email del admin desde configuración
+        2. Obtener emails de admin desde configuración (múltiples destinatarios)
         3. Renderizar template HTML con datos del lead
         4. Crear versión texto plano (strip_tags)
         5. Enviar email con ambas versiones (HTML + texto)
@@ -135,8 +168,10 @@ def send_admin_notification(lead) -> bool:
         )
         return False
 
-    # Obtener email destino (con fallback por defecto)
-    admin_email = config.get('ADMIN_EMAIL', 'info@arynstal.es')
+    # Obtener emails destino (soporta múltiples destinatarios)
+    admin_emails = _parse_admin_emails(config)
+    if not admin_emails:
+        admin_emails = ['info@arynstal.es']
 
     # -------------------------------------------------------------------------
     # Preparar contexto para el template
@@ -173,13 +208,13 @@ def send_admin_notification(lead) -> bool:
             subject=subject,
             body=text_content,  # Versión texto plano
             from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', None),
-            to=[admin_email],
+            to=admin_emails,
         )
         email.attach_alternative(html_content, 'text/html')
         email.send(fail_silently=False)
 
         logger.info(
-            f'Notificación de admin enviada para Lead {lead.id} a {admin_email}'
+            f'Notificación de admin enviada para Lead {lead.id} a {admin_emails}'
         )
         return True
 
@@ -315,8 +350,10 @@ def notify_note_added(lead, added_by) -> bool:
         )
         return False
 
-    # Obtener email del admin desde configuración
-    admin_email = config.get('ADMIN_EMAIL', 'info@arynstal.es')
+    # Obtener emails de admin desde configuración (múltiples destinatarios)
+    admin_emails = _parse_admin_emails(config)
+    if not admin_emails:
+        admin_emails = ['info@arynstal.es']
 
     # Preparar contexto
     path = reverse('admin:leads_lead_change', args=[lead.id])
@@ -342,13 +379,13 @@ def notify_note_added(lead, added_by) -> bool:
             subject=subject,
             body=text_content,
             from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', None),
-            to=[admin_email],
+            to=admin_emails,
         )
         email.attach_alternative(html_content, 'text/html')
         email.send(fail_silently=False)
 
         logger.info(
-            f'Notificación de nota enviada a {admin_email} para Lead {lead.id}'
+            f'Notificación de nota enviada a {admin_emails} para Lead {lead.id}'
         )
         return True
 

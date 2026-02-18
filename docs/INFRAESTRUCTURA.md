@@ -2,7 +2,7 @@
 
 > Análisis técnico, decisiones de arquitectura y estrategia de escalabilidad.
 >
-> Última actualización: Enero 2026
+> Última actualización: Febrero 2026
 
 ---
 
@@ -210,15 +210,18 @@ Se evaluaron tres categorías de hosting:
 | Nginx | 80, 443 | Proxy reverso, SSL, estáticos | systemd |
 | Gunicorn | socket | Servidor WSGI | systemd |
 | PostgreSQL | 5432 (local) | Base de datos | systemd |
+| SSH | XXXXX | Acceso remoto | systemd |
 | UFW | - | Firewall | ufw |
 | Certbot | - | Renovación SSL | cron/timer |
 | Backup | - | Backup diario | cron |
+| Logrotate | - | Rotación de logs | cron |
+| Alertas disco | - | Monitorización espacio | cron (cada 6h) |
 
 ### 3.4 Seguridad
 
 #### Firewall (UFW)
 ```
-22/tcp     ALLOW   # SSH (considerar cambiar puerto)
+XXXXX/tcp  ALLOW   # SSH (puerto no estándar)
 80/tcp     ALLOW   # HTTP (redirige a HTTPS)
 443/tcp    ALLOW   # HTTPS
 ```
@@ -230,9 +233,22 @@ Se evaluaron tres categorías de hosting:
 - `Content-Security-Policy` (básico)
 
 #### Acceso SSH
+- Puerto no estándar (XXXXX) para reducir ruido de bots
 - Autenticación por clave pública (sin contraseña)
 - Fail2ban para protección contra fuerza bruta
-- Usuario no-root para la aplicación
+- Root SSH deshabilitado, solo usuario `arynstal` con sudo
+
+#### WAF Cloudflare (Custom Rules)
+
+| # | Regla | Acción |
+|---|-------|--------|
+| 1 | Bloquear SQL y Command Injection | Block |
+| 2 | Bloquear XSS | Block |
+| 3 | Bloquear Path Traversal y archivos sensibles | Block |
+| 4 | Bloquear User Agents maliciosos (sqlmap, nikto, nmap...) | Block |
+| 5 | Proteger paneles admin (/ADMIN_URL/, /ADMIN_URL_2/) | Managed Challenge |
+
+Además: Bot Fight Mode y Block AI Bots activados.
 
 ---
 
@@ -244,15 +260,18 @@ Se evaluaron tres categorías de hosting:
 
 **Configuración**:
 - Proxy habilitado para el dominio principal
-- SSL/TLS: Full (strict)
+- SSL/TLS: Full (strict) con Let's Encrypt en origen
 - Caché de archivos estáticos
-- Reglas de página para excluir `/admynstal/` del caché
+- Reglas de página para excluir `/ADMIN_URL/` del caché
+- WAF: 5 custom rules (SQLi, XSS, Path Traversal, User Agents, Admin Panel)
+- Bot Fight Mode + Block AI Bots activados
 
 **Beneficios**:
 - SSL gestionado automáticamente
 - Protección DDoS básica
 - CDN global (mejora velocidad)
 - Analytics de tráfico
+- WAF con bloqueo de ataques comunes
 
 **Descartado**: DNS del registrador (funcionalidad limitada, sin CDN)
 
@@ -261,7 +280,7 @@ Se evaluaron tres categorías de hosting:
 **Plan**: Gratuito (300 emails/día)
 
 **Uso previsto**:
-- Notificaciones de nuevos leads (~10/mes)
+- Notificaciones de nuevos leads a admin@ e info@ (~10/mes, 2 destinatarios cada una)
 - Confirmaciones a clientes (~10/mes)
 - Total: <50 emails/mes (muy por debajo del límite)
 
@@ -287,11 +306,12 @@ DEFAULT_FROM_EMAIL = 'Arynstal <noreply@arynstal.es>'
 - Buzones personales para el equipo
 
 **Buzones**:
-- `info@arynstal.es` - email principal (gestiona Carlos + administrativa)
-- `carlos@arynstal.es` - IT/admin
-- 3 buzones personales adicionales
+- `admin@arynstal.es` - Carlos supervisa el circuito completo de leads
+- `info@arynstal.es` - Gestión de contacto con clientes (filtro Zoho mueve notificaciones de leads a carpeta "Leads nuevos")
+- 3 buzones personales adicionales disponibles
 
 **Nota**: Zoho NO envía los emails automáticos de Django. Eso lo hace Brevo (sección 4.2).
+Las notificaciones de Brevo llegan también a los buzones Zoho (admin@ e info@) como destinatarios.
 
 **Descartado**: Google Workspace (6€/usuario/mes, innecesario), Outlook.com (no soporta dominio propio gratis)
 
@@ -301,7 +321,7 @@ DEFAULT_FROM_EMAIL = 'Arynstal <noreply@arynstal.es>'
 |---------|------------------------|---------------------------|
 | **Propósito** | Comunicación humana | Emails automáticos |
 | **Ejemplos** | Responder clientes, presupuestos | Notificaciones leads, confirmaciones |
-| **Buzones** | info@, carlos@, personales | noreply@ |
+| **Buzones** | admin@, info@, personales | noreply@ (remitente) → admin@ + info@ (destino) |
 | **Enviado por** | Personas (webmail/IMAP) | Django (`send_mail()`) |
 | **Volumen** | Variable | <50/mes |
 | **Autenticación** | DKIM Zoho + SPF | DKIM Brevo + SPF |
@@ -505,7 +525,7 @@ Para empezar, configurar alertas de:
 - [ ] SESSION_COOKIE_SECURE=True
 - [ ] SECURE_SSL_REDIRECT=True
 - [ ] SECURE_HSTS_SECONDS configurado
-- [ ] Admin URL ofuscada (/admynstal/)
+- [ ] Admin URL ofuscada (/ADMIN_URL/)
 
 ### 9.3 Base de Datos
 - [ ] PostgreSQL instalado y configurado
@@ -558,6 +578,7 @@ La arquitectura seleccionada (Hetzner + Cloudflare + Brevo) ofrece:
 | 1.0 | 2026-01-15 | Documento inicial |
 | 1.1 | 2026-02-10 | Añadir Zoho Mail Free, actualizar costes y diagrama |
 | 1.2 | 2026-02-11 | Integrar decisiones técnicas desde DEPLOY_GUIDE (prioridades, alternativas descartadas, tabla separación email) |
+| 1.3 | 2026-02-16 | Seguridad: WAF Cloudflare (5 reglas), SSH puerto XXXXX, root deshabilitado, logrotate, alertas disco |
 
 ---
 
