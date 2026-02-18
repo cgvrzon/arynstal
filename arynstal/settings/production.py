@@ -96,9 +96,12 @@ CSRF_TRUSTED_ORIGINS = [
 # RATE LIMITING - IP detrás de reverse proxy
 # =============================================================================
 
-RATELIMIT_IP_META_KEY = 'HTTP_X_FORWARDED_FOR'
+RATELIMIT_IP_META_KEY = lambda request: request.META.get(
+    'HTTP_X_FORWARDED_FOR', ''
+).split(',')[0].strip() or request.META.get('REMOTE_ADDR', '')
 # Gunicorn usa Unix socket → REMOTE_ADDR viene vacío.
-# Nginx pone la IP real del cliente en X-Forwarded-For.
+# Nginx/Cloudflare ponen múltiples IPs en X-Forwarded-For (cliente, proxy).
+# Extraemos solo la primera (IP real del cliente).
 
 
 # =============================================================================
