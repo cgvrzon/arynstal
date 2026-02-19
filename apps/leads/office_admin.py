@@ -302,3 +302,38 @@ class OfficeBudgetAdmin(ModelAdmin):
 
 office_site.register(Lead, OfficeLeadAdmin)
 office_site.register(Budget, OfficeBudgetAdmin)
+
+
+# =============================================================================
+# ADMIN DE PROYECTOS SIMPLIFICADO
+# =============================================================================
+
+from apps.projects.models import Project
+
+
+class OfficeProjectAdmin(ModelAdmin):
+    """Admin simplificado de Proyectos para usuarios de oficina."""
+
+    list_display = ('title', 'service', 'year', 'is_active', 'order')
+    list_filter = ('is_active', 'service', 'year')
+    search_fields = ('title', 'description')
+    list_per_page = 20
+    ordering = ('-is_featured', 'order', '-year')
+
+    fieldsets = (
+        ('Proyecto', {
+            'fields': ('title', 'description', 'service', 'cover_image'),
+        }),
+        ('Detalles', {
+            'fields': ('area', 'duration', 'year', 'client'),
+        }),
+        ('Visibilidad', {
+            'fields': ('is_active', 'is_featured', 'order'),
+        }),
+    )
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+
+office_site.register(Project, OfficeProjectAdmin)

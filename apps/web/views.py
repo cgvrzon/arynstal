@@ -64,10 +64,13 @@ from django.shortcuts import render, redirect
 from django.conf import settings
 from django_ratelimit.decorators import ratelimit
 
+import json
+
 from apps.leads.forms import LeadForm
 from apps.leads.models import LeadImage
 from apps.leads.notifications import notify_new_lead
 from apps.leads.validators import validate_image_file
+from apps.projects.models import Project
 
 
 # =============================================================================
@@ -114,10 +117,44 @@ def projects(request):
     TEMPLATE: templates/pages/projects.html
 
     CONTENIDO:
-        - Galería de proyectos completados
-        - Testimonios de clientes
+        - Galería de proyectos completados con filtros por servicio
+        - Modal con carousel de imágenes
+        - Datos servidos desde BD via json_script
     """
-    return render(request, 'pages/projects.html')
+    projects_list = (
+        Project.objects.filter(is_active=True)
+        .select_related('service')
+        .prefetch_related('images')
+    )
+
+    # Categorías de filtro: servicios que tienen proyectos activos
+    filter_categories = (
+        projects_list
+        .exclude(service__isnull=True)
+        .values_list('service__name', 'service__slug')
+        .distinct()
+        .order_by('service__order', 'service__name')
+    )
+    filter_categories = [
+        {'name': name, 'slug': slug}
+        for name, slug in filter_categories
+    ]
+
+    # Serializar datos para el JS (modal + carousel)
+    projects_data = {}
+    for project in projects_list:
+        projects_data[str(project.id)] = {
+            'title': project.title,
+            'description': project.description,
+            'details': project.get_details_list(),
+            'images': project.get_all_image_urls(),
+        }
+
+    return render(request, 'pages/projects.html', {
+        'projects_list': projects_list,
+        'filter_categories': filter_categories,
+        'projects_data_json': json.dumps(projects_data),
+    })
 
 
 def about_us(request):

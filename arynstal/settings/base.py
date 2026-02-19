@@ -71,6 +71,7 @@ INSTALLED_APPS = [
     # Apps del proyecto Arynstal
     'apps.leads.apps.LeadsConfig',        # CRM: Leads, presupuestos, auditoría
     'apps.services.apps.ServicesConfig',  # Catálogo de servicios
+    'apps.projects.apps.ProjectsConfig',  # Galería de proyectos realizados
     'apps.users.apps.UsersConfig',        # Perfiles de usuario con roles
     'apps.web.apps.WebConfig',            # Vistas públicas del frontend
 ]
