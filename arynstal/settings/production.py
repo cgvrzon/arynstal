@@ -329,7 +329,8 @@ if SENTRY_DSN:
         environment=os.environ.get('SENTRY_ENVIRONMENT', 'production'),
 
         # Release/versión para tracking de deploys
-        # release=os.environ.get('SENTRY_RELEASE', 'arynstal@1.0.0'),
+        # Permite ver qué versión del código causó cada error
+        release=os.environ.get('SENTRY_RELEASE', 'unknown'),
     )
 
 
@@ -400,8 +401,7 @@ CSP_FONT_SRC = (
 # connect-src: Conexiones (fetch, WebSocket, etc.)
 CSP_CONNECT_SRC = (
     "'self'",
-    # Añadir Sentry si lo usas:
-    # "https://*.ingest.sentry.io",
+    "https://*.ingest.sentry.io",
 )
 
 # frame-src: Iframes

@@ -197,7 +197,14 @@ jobs:
 
       - name: 🚀 Deploy a produccion
         run: |
-          ssh -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd /var/www/arynstal/app && git pull origin main && sudo /var/www/arynstal/app/venv/bin/python manage.py collectstatic --noinput && sudo /bin/systemctl restart arynstal"
+          ssh -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "\
+            cd /var/www/arynstal/app && \
+            git pull origin main && \
+            sed -i '/^SENTRY_RELEASE=/d' .env && \
+            echo 'SENTRY_RELEASE=${{ github.sha }}' >> .env && \
+            sudo /var/www/arynstal/app/venv/bin/python manage.py migrate && \
+            sudo /var/www/arynstal/app/venv/bin/python manage.py collectstatic --noinput && \
+            sudo /bin/systemctl restart arynstal"
 
       - name: ✅ Verificar deploy
         run: |
