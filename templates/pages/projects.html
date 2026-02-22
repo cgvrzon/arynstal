@@ -38,7 +38,7 @@
       <div class="container mx-auto px-4 sm:px-6 max-w-7xl">
 
         <!-- Grid de proyectos -->
-        <div id="projects-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+        <div id="projects-grid" class="grid grid-cols-1 gap-4 sm:gap-6 lg:gap-8 justify-items-center">
 
           {% for project in projects_list %}
           <article class="project-card reveal group relative overflow-hidden rounded-lg shadow-lg cursor-pointer transition-transform duration-300 hover:scale-105" data-category="{{ project.service.slug }}" data-project="{{ project.id }}" data-delay="{{ forloop.counter0|divisibleby:3|yesno:'0,100,200' }}">
@@ -109,11 +109,45 @@
     {% include 'components/footer.html' %}
 
     <!-- Datos de proyectos para JS -->
-    {{ projects_data_json|json_script:"projects-data" }}
+    {{ projects_data|json_script:"projects-data" }}
 
-    <!-- Contador de imágenes del carrusel -->
+    <!-- Grid dinámico + Contador de imágenes del carrusel -->
     <script>
     (function() {
+      // --- Grid dinámico: ajusta columnas según proyectos visibles ---
+      var grid = document.getElementById('projects-grid');
+      if (grid) {
+        function adjustGrid() {
+          var visible = grid.querySelectorAll('.project-card:not(.hidden)');
+          var count = visible.length;
+          // Limpiar clases de columnas previas
+          grid.classList.remove('sm:grid-cols-1', 'sm:grid-cols-2', 'sm:grid-cols-3',
+                                'lg:grid-cols-1', 'lg:grid-cols-2', 'lg:grid-cols-3');
+          // Reset max-width en todas las cards
+          grid.querySelectorAll('.project-card').forEach(function(c) {
+            c.style.maxWidth = '';
+          });
+
+          if (count === 1) {
+            grid.classList.add('sm:grid-cols-1', 'lg:grid-cols-1');
+            visible[0].style.maxWidth = '32rem';
+          } else if (count === 2) {
+            grid.classList.add('sm:grid-cols-2', 'lg:grid-cols-2');
+          } else {
+            grid.classList.add('sm:grid-cols-2', 'lg:grid-cols-3');
+          }
+        }
+
+        // Observar cambios en el grid (las cards se ocultan/muestran con clase hidden)
+        new MutationObserver(function() {
+          adjustGrid();
+        }).observe(grid, { childList: false, subtree: true, attributes: true, attributeFilter: ['class'] });
+
+        // Ajuste inicial tras un breve delay (el filtro inicial se aplica al cargar)
+        setTimeout(adjustGrid, 200);
+      }
+
+      // --- Contador de imágenes del carrusel ---
       var counter = document.getElementById('carousel-counter');
       var modal = document.getElementById('project-modal');
       var prev = document.getElementById('carousel-prev');
@@ -128,11 +162,6 @@
 
       new MutationObserver(function() {
         if (!modal.classList.contains('hidden')) {
-          var openCard = document.querySelector('.project-card[data-active]');
-          if (!openCard) {
-            var cards = document.querySelectorAll('.project-card');
-            cards.forEach(function(c) { if (c.dataset.project) openCard = openCard || c; });
-          }
           var projectId = modal.dataset.currentProject;
           if (projectId && projectsData[projectId]) {
             total = projectsData[projectId].images.length;

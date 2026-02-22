@@ -1,5 +1,4 @@
 import io
-import json
 from datetime import date
 
 from PIL import Image
@@ -191,7 +190,7 @@ class ProjectViewTest(TestCase):
         response = self.client.get(reverse('projects'))
         self.assertIn('projects_list', response.context)
         self.assertIn('filter_categories', response.context)
-        self.assertIn('projects_data_json', response.context)
+        self.assertIn('projects_data', response.context)
 
     def test_inactive_excluded(self):
         self._create_project(title='Activo', slug='activo', is_active=True)
@@ -214,7 +213,7 @@ class ProjectViewTest(TestCase):
             area='100 m²', duration='2 meses', client='Test Client'
         )
         response = self.client.get(reverse('projects'))
-        data = json.loads(response.context['projects_data_json'])
+        data = response.context['projects_data']
         self.assertIn(str(project.id), data)
         entry = data[str(project.id)]
         self.assertEqual(entry['title'], 'Proyecto Vista')

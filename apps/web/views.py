@@ -64,8 +64,6 @@ from django.shortcuts import render, redirect
 from django.conf import settings
 from django_ratelimit.decorators import ratelimit
 
-import json
-
 from apps.leads.forms import LeadForm
 from apps.leads.models import LeadImage
 from apps.leads.notifications import notify_new_lead
@@ -153,7 +151,7 @@ def projects(request):
     return render(request, 'pages/projects.html', {
         'projects_list': projects_list,
         'filter_categories': filter_categories,
-        'projects_data_json': json.dumps(projects_data),
+        'projects_data': projects_data,
     })
 
 
