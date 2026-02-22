@@ -117,13 +117,18 @@
       // --- Grid dinámico: ajusta columnas según proyectos visibles ---
       var grid = document.getElementById('projects-grid');
       if (grid) {
+        var adjusting = false;
+        var debounceTimer = null;
+
         function adjustGrid() {
+          if (adjusting) return;
+          adjusting = true;
+
           var visible = grid.querySelectorAll('.project-card:not(.hidden)');
           var count = visible.length;
-          // Limpiar clases de columnas previas
+
           grid.classList.remove('sm:grid-cols-1', 'sm:grid-cols-2', 'sm:grid-cols-3',
                                 'lg:grid-cols-1', 'lg:grid-cols-2', 'lg:grid-cols-3');
-          // Reset max-width en todas las cards
           grid.querySelectorAll('.project-card').forEach(function(c) {
             c.style.maxWidth = '';
           });
@@ -136,15 +141,18 @@
           } else {
             grid.classList.add('sm:grid-cols-2', 'lg:grid-cols-3');
           }
+
+          setTimeout(function() { adjusting = false; }, 50);
         }
 
-        // Observar cambios en el grid (las cards se ocultan/muestran con clase hidden)
+        // Observar cambios en las cards (hidden/visible) con debounce
         new MutationObserver(function() {
-          adjustGrid();
-        }).observe(grid, { childList: false, subtree: true, attributes: true, attributeFilter: ['class'] });
+          if (adjusting) return;
+          clearTimeout(debounceTimer);
+          debounceTimer = setTimeout(adjustGrid, 100);
+        }).observe(grid, { subtree: true, attributes: true, attributeFilter: ['class'] });
 
-        // Ajuste inicial tras un breve delay (el filtro inicial se aplica al cargar)
-        setTimeout(adjustGrid, 200);
+        setTimeout(adjustGrid, 300);
       }
 
       // --- Contador de imágenes del carrusel ---
