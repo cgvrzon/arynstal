@@ -149,9 +149,12 @@
           visible.forEach(function(card) {
             newVisible.add(card);
             if (!prevVisible.has(card)) {
+              // Limpiar estilos inline del JS compilado (evita conflicto con CSS animation)
+              card.style.opacity = '';
+              card.style.transform = '';
+              card.style.transition = '';
               card.classList.remove('card-enter');
               card.style.animationDelay = (staggerIndex * 150) + 'ms';
-              // Forzar reflow para reiniciar animación
               void card.offsetWidth;
               card.classList.add('card-enter');
               staggerIndex++;
@@ -162,7 +165,7 @@
           setTimeout(function() { adjusting = false; }, 50);
         }
 
-        // Limpiar animación al terminar
+        // Limpiar estilos de animación al terminar
         grid.addEventListener('animationend', function(e) {
           if (e.target.classList.contains('card-enter')) {
             e.target.classList.remove('card-enter');
@@ -174,10 +177,11 @@
         new MutationObserver(function() {
           if (adjusting) return;
           clearTimeout(debounceTimer);
-          debounceTimer = setTimeout(adjustGrid, 100);
+          debounceTimer = setTimeout(adjustGrid, 150);
         }).observe(grid, { subtree: true, attributes: true, attributeFilter: ['class'] });
 
-        setTimeout(adjustGrid, 300);
+        // Delay inicial mayor: esperar a que el filtro del JS compilado termine
+        setTimeout(adjustGrid, 800);
       }
 
       // --- Contador de imágenes del carrusel ---
