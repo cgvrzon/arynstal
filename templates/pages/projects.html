@@ -114,12 +114,11 @@
     <!-- Grid dinámico + Contador de imágenes del carrusel -->
     <script>
     (function() {
-      // --- Grid dinámico + animación de entrada ---
+      // --- Ajuste dinámico de columnas del grid ---
       var grid = document.getElementById('projects-grid');
       if (grid) {
         var adjusting = false;
         var debounceTimer = null;
-        var prevVisible = new Set();
 
         function adjustGrid() {
           if (adjusting) return;
@@ -143,29 +142,10 @@
             grid.classList.add('sm:grid-cols-2', 'lg:grid-cols-3');
           }
 
-          // Animación de entrada staggered para cards nuevas
-          var newVisible = new Set();
-          var staggerIndex = 0;
-          visible.forEach(function(card) {
-            newVisible.add(card);
-            if (!prevVisible.has(card)) {
-              // Limpiar estilos inline del JS compilado (evita conflicto con CSS animation)
-              card.style.opacity = '';
-              card.style.transform = '';
-              card.style.transition = '';
-              card.classList.remove('card-enter');
-              card.style.animationDelay = (staggerIndex * 150) + 'ms';
-              void card.offsetWidth;
-              card.classList.add('card-enter');
-              staggerIndex++;
-            }
-          });
-          prevVisible = newVisible;
-
           setTimeout(function() { adjusting = false; }, 50);
         }
 
-        // Limpiar estilos de animación al terminar
+        // Limpiar clases de animación al terminar
         grid.addEventListener('animationend', function(e) {
           if (e.target.classList.contains('card-enter')) {
             e.target.classList.remove('card-enter');
@@ -180,7 +160,6 @@
           debounceTimer = setTimeout(adjustGrid, 150);
         }).observe(grid, { subtree: true, attributes: true, attributeFilter: ['class'] });
 
-        // Delay inicial mayor: esperar a que el filtro del JS compilado termine
         setTimeout(adjustGrid, 800);
       }
 
