@@ -41,7 +41,7 @@
         <div id="projects-grid" class="grid grid-cols-1 gap-4 sm:gap-6 lg:gap-8 justify-items-center">
 
           {% for project in projects_list %}
-          <article class="project-card reveal group relative overflow-hidden rounded-lg shadow-lg cursor-pointer transition-transform duration-300 hover:scale-105" data-category="{{ project.service.slug }}" data-project="{{ project.id }}" data-delay="{{ forloop.counter0|divisibleby:3|yesno:'0,100,200' }}">
+          <article class="project-card reveal group relative overflow-hidden rounded-lg shadow-lg cursor-pointer transition-transform duration-300 hover:scale-105 hidden" data-category="{{ project.service.slug }}" data-project="{{ project.id }}" data-delay="{{ forloop.counter0|divisibleby:3|yesno:'0,100,200' }}">
             <img src="{{ project.cover_image.url }}" alt="{{ project.title }}" class="w-full h-64 sm:h-72 lg:h-80 object-cover" width="600" height="400" loading="lazy">
             <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-0 group-hover:opacity-90 transition-opacity duration-300"></div>
             <div class="absolute bottom-0 left-0 p-4 sm:p-6 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
