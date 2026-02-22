@@ -8,6 +8,30 @@
     <title>Proyectos Realizados - Arynstal SL</title>
     <script type="module" crossorigin src="{% static 'assets/index-DF00Qz-B.js' %}"></script>
     <link rel="stylesheet" crossorigin href="{% static 'assets/index-CupctwwV.css' %}">
+    <style>
+      @keyframes cardEntrance {
+        0% {
+          opacity: 0;
+          transform: translateY(60px) scale(0.85);
+          filter: blur(4px);
+        }
+        50% {
+          opacity: 0.7;
+          filter: blur(1px);
+        }
+        80% {
+          transform: translateY(-8px) scale(1.02);
+        }
+        100% {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+          filter: blur(0);
+        }
+      }
+      .card-enter {
+        animation: cardEntrance 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+      }
+    </style>
   </head>
 
   <body class="flex flex-col min-h-screen bg-white">
@@ -114,11 +138,12 @@
     <!-- Grid dinámico + Contador de imágenes del carrusel -->
     <script>
     (function() {
-      // --- Grid dinámico: ajusta columnas según proyectos visibles ---
+      // --- Grid dinámico + animación de entrada ---
       var grid = document.getElementById('projects-grid');
       if (grid) {
         var adjusting = false;
         var debounceTimer = null;
+        var prevVisible = new Set();
 
         function adjustGrid() {
           if (adjusting) return;
@@ -142,8 +167,32 @@
             grid.classList.add('sm:grid-cols-2', 'lg:grid-cols-3');
           }
 
+          // Animación de entrada staggered para cards nuevas
+          var newVisible = new Set();
+          var staggerIndex = 0;
+          visible.forEach(function(card) {
+            newVisible.add(card);
+            if (!prevVisible.has(card)) {
+              card.classList.remove('card-enter');
+              card.style.animationDelay = (staggerIndex * 150) + 'ms';
+              // Forzar reflow para reiniciar animación
+              void card.offsetWidth;
+              card.classList.add('card-enter');
+              staggerIndex++;
+            }
+          });
+          prevVisible = newVisible;
+
           setTimeout(function() { adjusting = false; }, 50);
         }
+
+        // Limpiar animación al terminar
+        grid.addEventListener('animationend', function(e) {
+          if (e.target.classList.contains('card-enter')) {
+            e.target.classList.remove('card-enter');
+            e.target.style.animationDelay = '';
+          }
+        });
 
         // Observar cambios en las cards (hidden/visible) con debounce
         new MutationObserver(function() {
