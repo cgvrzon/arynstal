@@ -341,6 +341,61 @@ Las notificaciones de Brevo llegan también a los buzones Zoho (admin@ e info@) 
 
 ---
 
+## 4b. Entorno de Desarrollo Docker
+
+### 4b.1 Celery + Redis (solo desarrollo)
+
+> Integrado como ejercicio de aprendizaje del stack de procesamiento asíncrono.
+> El circuito completo (Producer → Broker → Worker) funciona en Docker dev.
+> Producción mantiene ejecución síncrona (`CELERY_TASK_ALWAYS_EAGER = True`).
+
+**Arquitectura Docker dev:**
+
+```
+                    Docker Compose (6 servicios)
+┌─────────────────────────────────────────────────────────────┐
+│                                                             │
+│  ┌──────────┐    ┌──────────┐    ┌──────────┐             │
+│  │  Django   │───▶│  Redis   │───▶│  Worker  │             │
+│  │  (web)    │    │ (broker) │    │ (Celery) │             │
+│  │ :8000     │    │ :6379    │    │          │             │
+│  └──────────┘    └──────────┘    └──────────┘             │
+│       │                               │                    │
+│       ▼                               ▼                    │
+│  ┌──────────┐    ┌──────────┐    Procesa emails           │
+│  │PostgreSQL│    │  Flower  │    en background             │
+│  │  (db)    │    │ (monitor)│                              │
+│  │ :5432    │    │ :5555    │    ┌──────────┐             │
+│  └──────────┘    └──────────┘    │   Beat   │             │
+│                                  │(scheduler)│             │
+│                                  └──────────┘             │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**Configuración por entorno:**
+
+| Setting | development.py | docker.py | production.py |
+|---------|---------------|-----------|---------------|
+| `CELERY_TASK_ALWAYS_EAGER` | `True` | `False` | `True` |
+| Redis necesario | No | Sí (contenedor) | No |
+| Circuito Celery | Síncrono | **Real** | Síncrono |
+| Uso | Tests/local | Aprendizaje | Protegido |
+
+**Tareas Celery implementadas:**
+- `send_new_lead_notifications` — emails de nuevo lead (admin + cliente)
+- `send_lead_assigned_notification` — email al técnico asignado
+- `send_note_added_notification` — email a admins por nota de técnico
+- `log_unassigned_leads` — tarea periódica (cada hora), loguea leads sin asignar
+
+**Para activar en producción** (5 pasos documentados en `production.py`):
+1. Instalar Redis en el servidor
+2. Añadir `CELERY_BROKER_URL` al `.env` de producción
+3. Cambiar `CELERY_TASK_ALWAYS_EAGER` a `False`
+4. Crear servicios systemd para worker y beat
+5. Verificar funcionamiento y retirar fallback síncrono si procede
+
+---
+
 ## 5. Estrategia de Escalabilidad
 
 ### 5.1 Escenarios de Crecimiento
@@ -394,7 +449,7 @@ Si el negocio crece significativamente:
 2. **Base de datos gestionada**: Hetzner Managed PostgreSQL o Amazon RDS
 3. **Almacenamiento de media**: Cloudflare R2 o Amazon S3
 4. **Caché**: Redis para sesiones y caché de queries
-5. **Cola de tareas**: Celery + Redis para emails asíncronos
+5. **Cola de tareas**: Celery + Redis para emails asíncronos (ya integrado en Docker dev, ver sección 4b)
 
 ### 5.4 Optimizaciones Antes de Escalar
 
@@ -579,6 +634,7 @@ La arquitectura seleccionada (Hetzner + Cloudflare + Brevo) ofrece:
 | 1.1 | 2026-02-10 | Añadir Zoho Mail Free, actualizar costes y diagrama |
 | 1.2 | 2026-02-11 | Integrar decisiones técnicas desde DEPLOY_GUIDE (prioridades, alternativas descartadas, tabla separación email) |
 | 1.3 | 2026-02-16 | Seguridad: WAF Cloudflare (5 reglas), SSH puerto XXXXX, root deshabilitado, logrotate, alertas disco |
+| 1.4 | 2026-02-26 | Celery + Redis: sección 4b (entorno Docker dev), actualización escalabilidad |
 
 ---
 
