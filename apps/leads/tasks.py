@@ -1,3 +1,4 @@
+# [STACK-ORPHEUS:CELERY] Archivo didáctico completo — eliminar para cleanup
 import logging
 
 from celery import shared_task

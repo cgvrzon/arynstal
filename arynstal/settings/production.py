@@ -334,6 +334,7 @@ if SENTRY_DSN:
     )
 
 
+# [STACK-ORPHEUS:CELERY] >>>
 # =============================================================================
 # CELERY - Tareas asíncronas (DESACTIVADO en producción por ahora)
 # =============================================================================
@@ -350,6 +351,7 @@ if SENTRY_DSN:
 
 CELERY_TASK_ALWAYS_EAGER = True
 CELERY_TASK_EAGER_PROPAGATES = True
+# [STACK-ORPHEUS:CELERY] <<<
 
 
 # =============================================================================

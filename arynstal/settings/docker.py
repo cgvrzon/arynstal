@@ -104,8 +104,22 @@ SENTRY_DSN = None
 # Docker es el ÚNICO entorno donde Celery funciona con Redis real.
 # production.py y development.py usan ALWAYS_EAGER (ejecución síncrona).
 
+# [STACK-ORPHEUS:DRF] >>>
+# =============================================================================
+# REST FRAMEWORK — BrowsableAPI en Docker dev
+# =============================================================================
+
+REST_FRAMEWORK['DEFAULT_RENDERER_CLASSES'] = [
+    'rest_framework.renderers.JSONRenderer',
+    'rest_framework.renderers.BrowsableAPIRenderer',
+]
+# [STACK-ORPHEUS:DRF] <<<
+
+
+# [STACK-ORPHEUS:CELERY] >>>
 CELERY_TASK_ALWAYS_EAGER = False
 CELERY_TASK_EAGER_PROPAGATES = False
+# [STACK-ORPHEUS:CELERY] <<<
 
 
 # =============================================================================

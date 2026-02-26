@@ -157,6 +157,7 @@ class Lead(models.Model):
 
     SOURCE_CHOICES = [
         ('web', 'Formulario web'),       # Enviado desde la página de contacto
+        ('api', 'API REST'),             # [STACK-ORPHEUS:DRF] Eliminar esta línea para cleanup
         ('telefono', 'Llamada telefónica'),  # Recibido por teléfono
         ('recomendacion', 'Recomendación'),  # Cliente referido por otro
         ('otro', 'Otro'),                # Otros canales (ferias, redes sociales, etc.)
