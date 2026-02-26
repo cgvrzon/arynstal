@@ -103,6 +103,20 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 
 # =============================================================================
+# CELERY - Ejecución síncrona en desarrollo/tests
+# =============================================================================
+
+CELERY_TASK_ALWAYS_EAGER = True
+# Ejecuta las tareas Celery síncronamente (sin necesitar Redis).
+# .delay() y .apply_async() ejecutan la tarea inmediatamente en el mismo proceso.
+# Ideal para desarrollo y tests: mismo comportamiento, sin infraestructura extra.
+
+CELERY_TASK_EAGER_PROPAGATES = True
+# Propaga excepciones de tareas eager al caller.
+# Permite que los errores en tareas sean visibles durante desarrollo/tests.
+
+
+# =============================================================================
 # DEBUG TOOLBAR (Opcional)
 # =============================================================================
 # Descomentar estas líneas si instalas django-debug-toolbar:

@@ -1,0 +1,181 @@
+# =============================================================================
+# docker-compose.yml — Arynstal: Entorno de desarrollo local
+# =============================================================================
+#
+# Levanta Django + PostgreSQL + Celery + Redis con un solo comando:
+#   docker compose up
+#
+# Servicios:
+#   db     → PostgreSQL 16 (base de datos, misma version que produccion)
+#   redis  → Redis 7 (broker de mensajes para Celery)
+#   web    → Django con runserver (autoreload para desarrollo)
+#   worker → Celery worker (procesa tareas asincronas)
+#   beat   → Celery beat (programador de tareas periodicas)
+#   flower → Flower (panel web de monitoreo Celery en localhost:5555)
+#
+# Volumenes:
+#   postgres_data → Datos de BD persistentes entre reinicios
+#   redis_data    → Datos de Redis persistentes entre reinicios
+#   .:/app        → Bind mount: codigo local sincronizado con el contenedor
+#
+# =============================================================================
+
+services:
+
+  # ── Base de datos PostgreSQL ──────────────────────────────────────────────
+  db:
+    image: postgres:16-alpine
+    # postgres:16-alpine: Version ligera (~80 MB vs ~400 MB de la normal)
+    # Misma version que produccion (PostgreSQL 16)
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      # Named volume: los datos de la BD persisten aunque destruyas el contenedor
+      # docker compose down    → datos se mantienen
+      # docker compose down -v → datos se BORRAN (resetear BD)
+
+    environment:
+      POSTGRES_DB: arynstal
+      POSTGRES_USER: arynstal
+      POSTGRES_PASSWORD: arynstal_dev
+      # Credenciales locales de desarrollo (no son secretas)
+      # PostgreSQL crea automaticamente la BD y el usuario al arrancar
+
+    ports:
+      - "5432:5432"
+      # Exponer para conectarse desde herramientas del host (pgAdmin, DBeaver)
+      # Si tu host ya usa el puerto 5432, cambia a "5433:5432"
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U arynstal"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      # Healthcheck: verifica que PostgreSQL acepta conexiones
+      # El servicio web espera a que este healthcheck pase antes de arrancar
+
+  # ── Redis (broker para Celery) ──────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    # redis:7-alpine: Version ligera del broker de mensajes
+    # Celery usa Redis para recibir y distribuir tareas
+
+    volumes:
+      - redis_data:/data
+      # Persistir datos de Redis entre reinicios
+
+    ports:
+      - "6379:6379"
+      # Exponer para debug desde el host (redis-cli, RedisInsight)
+
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ── Aplicacion Django ─────────────────────────────────────────────────────
+  web:
+    build: .
+    # Construir imagen desde el Dockerfile en el directorio actual
+
+    command: python manage.py runserver 0.0.0.0:8000
+    # Override del CMD del Dockerfile (gunicorn → runserver)
+    # runserver tiene autoreload: detecta cambios y reinicia automaticamente
+    # 0.0.0.0 permite acceso desde fuera del contenedor (tu navegador)
+
+    volumes:
+      - .:/app
+      # Bind mount: tu directorio local se monta en /app del contenedor
+      # Editas en VS Code → el contenedor ve los cambios al instante
+      # Sin esto, tendrias que reconstruir la imagen con cada cambio
+
+      - static_data:/app/staticfiles
+      # Named volume para staticfiles (evita conflictos con bind mount)
+
+      - media_data:/app/media
+      # Named volume para archivos subidos por usuarios
+
+    ports:
+      - "8000:8000"
+      # Acceder a la web desde http://localhost:8000
+
+    env_file:
+      - .env.docker
+      # Variables de entorno desde archivo (DJANGO_ENV, DB_HOST, etc.)
+
+    depends_on:
+      db:
+        condition: service_healthy
+        # Esperar a que PostgreSQL pase el healthcheck antes de arrancar Django
+        # Sin esto: Django intenta conectarse → "connection refused" → error
+      redis:
+        condition: service_healthy
+
+  # ── Celery Worker (procesa tareas) ──────────────────────────────────────
+  worker:
+    build: .
+    entrypoint: []
+    command: celery -A arynstal worker --loglevel=info
+    # entrypoint: [] salta el entrypoint.sh (migrate/collectstatic no necesarios)
+    # El worker solo necesita conectarse a Redis y la BD para ejecutar tareas
+
+    volumes:
+      - .:/app
+      - media_data:/app/media
+
+    env_file:
+      - .env.docker
+
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  # ── Celery Beat (programador de tareas periodicas) ──────────────────────
+  beat:
+    build: .
+    entrypoint: []
+    command: celery -A arynstal beat --loglevel=info --schedule=/tmp/celerybeat-schedule
+    # Beat solo envia tareas al broker, no necesita migrate ni collectstatic
+    # --schedule=/tmp/ evita conflictos de permisos con el bind mount
+
+    volumes:
+      - .:/app
+
+    env_file:
+      - .env.docker
+
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  # ── Flower (panel web de monitoreo) ─────────────────────────────────────
+  flower:
+    build: .
+    entrypoint: []
+    command: celery -A arynstal flower --port=5555
+    # Panel web para monitorear workers, tareas y colas
+    # Accesible en http://localhost:5555
+
+    ports:
+      - "5555:5555"
+
+    env_file:
+      - .env.docker
+
+    depends_on:
+      redis:
+        condition: service_healthy
+
+# ── Volumenes nombrados ───────────────────────────────────────────────────
+volumes:
+  postgres_data:
+    # Datos de PostgreSQL — persisten entre docker compose down/up
+  redis_data:
+    # Datos de Redis — persisten entre docker compose down/up
+  static_data:
+    # Archivos estaticos recopilados por collectstatic
+  media_data:
+    # Archivos subidos por usuarios (imagenes de proyectos, leads)

@@ -335,6 +335,24 @@ if SENTRY_DSN:
 
 
 # =============================================================================
+# CELERY - Tareas asíncronas (DESACTIVADO en producción por ahora)
+# =============================================================================
+# Celery está integrado pero NO activo en producción todavía.
+# CELERY_TASK_ALWAYS_EAGER = True ejecuta las tareas síncronamente,
+# como si Celery no existiera. No necesita Redis ni worker.
+#
+# PARA ACTIVAR CELERY EN PRODUCCIÓN:
+#   1. Instalar Redis en el servidor (apt install redis-server)
+#   2. Añadir CELERY_BROKER_URL=redis://localhost:6379/0 al .env de producción
+#   3. Cambiar CELERY_TASK_ALWAYS_EAGER a False (o borrar esta línea)
+#   4. Crear servicios systemd para worker y beat (ver docs/)
+#   5. Verificar que el fallback síncrono ya no es necesario
+
+CELERY_TASK_ALWAYS_EAGER = True
+CELERY_TASK_EAGER_PROPAGATES = True
+
+
+# =============================================================================
 # WHITENOISE - Archivos estáticos sin Nginx
 # =============================================================================
 # Whitenoise sirve archivos estáticos directamente desde Django.

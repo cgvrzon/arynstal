@@ -590,7 +590,11 @@ class LeadAdmin(admin.ModelAdmin):
                 )
                 # Notificar al nuevo técnico asignado por email
                 if obj.assigned_to:
-                    notify_lead_assigned(obj, obj.assigned_to)
+                    try:
+                        from apps.leads.tasks import send_lead_assigned_notification
+                        send_lead_assigned_notification.delay(obj.id, obj.assigned_to.id)
+                    except Exception:
+                        notify_lead_assigned(obj, obj.assigned_to)
 
             # Detectar cambio de notas por técnico de campo
             if old_obj.notes != obj.notes and obj.notes:
@@ -604,7 +608,11 @@ class LeadAdmin(admin.ModelAdmin):
                 )
                 # Notificar a admin si es técnico de campo
                 if hasattr(request.user, 'profile') and request.user.profile.is_field():
-                    notify_note_added(obj, request.user)
+                    try:
+                        from apps.leads.tasks import send_note_added_notification
+                        send_note_added_notification.delay(obj.id, request.user.id)
+                    except Exception:
+                        notify_note_added(obj, request.user)
         else:
             # Nuevo lead creado desde el admin
             LeadLog.objects.create(

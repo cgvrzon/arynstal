@@ -58,6 +58,7 @@ ENV/
 .env
 .env.local
 .env.*.local
+.env.docker
 
 # Coverage reports #
 htmlcov/

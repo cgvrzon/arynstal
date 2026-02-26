@@ -11,5 +11,9 @@ Pillow>=10.0
 # Seguridad - Rate limiting
 django-ratelimit>=4.1.0
 
+# Tareas asíncronas
+celery[redis]>=5.4
+flower>=2.0
+
 # Base de datos (común)
 sqlparse>=0.5.0

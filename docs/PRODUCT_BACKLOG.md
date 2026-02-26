@@ -73,6 +73,27 @@
 
 ---
 
+## EPIC 5b: Notificaciones Asíncronas (Celery)
+
+> Integrado como ejercicio de aprendizaje del stack (Celery + Redis + Docker).
+> Activo solo en Docker dev; producción mantiene ejecución síncrona.
+
+| ID | User Story | Prioridad | Estado | Criterios de Aceptación |
+|----|------------|-----------|--------|-------------------------|
+| US-5b.1 | Cola de tareas Celery | C | Hecho | Instancia Celery con autodiscover, configuración por entorno |
+| US-5b.2 | Tareas de notificación asíncronas | C | Hecho | 3 tareas wrapping funciones existentes, retry con backoff |
+| US-5b.3 | Tarea periódica | C | Hecho | log_unassigned_leads cada hora via Celery Beat |
+| US-5b.4 | Fallback síncrono | C | Hecho | Si Redis no está disponible, ejecutar notificación síncrona |
+| US-5b.5 | Monitorización Flower | C | Hecho | Dashboard en localhost:5555, workers y tareas visibles |
+| US-5b.6 | Infraestructura Docker | C | Hecho | 4 servicios nuevos: redis, worker, beat, flower |
+
+**Nota**: Las funciones de notificación originales (`notifications.py`) no se modificaron.
+Las tareas Celery las llaman — no las reemplazan. Los 128 tests existentes siguen pasando.
+
+**Para activar en producción**: ver comentarios en `production.py` (5 pasos documentados).
+
+---
+
 ## EPIC 6: Catálogo de Servicios
 
 | ID | User Story | Prioridad | Criterios de Aceptación |
@@ -122,7 +143,7 @@
 |-----------|-------|-------------|
 | Must Have | 19 | Funcionalidades imprescindibles para MVP |
 | Should Have | 10 | Importantes para completar el producto |
-| Could Have | 3 | Deseables si hay tiempo |
+| Could Have | 9 | Deseables si hay tiempo (incluye 6 de Celery) |
 
 ---
 

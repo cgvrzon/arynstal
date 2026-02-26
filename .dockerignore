@@ -1,0 +1,67 @@
+# =============================================================================
+# .dockerignore — Excluir archivos del contexto de build de Docker
+# =============================================================================
+# Funciona igual que .gitignore pero para Docker.
+# Todo lo listado aqui NO se copia a la imagen durante "docker build".
+# Objetivo: contexto de build ligero, sin archivos innecesarios ni secretos.
+# =============================================================================
+
+# -- Control de versiones --
+.git
+.gitignore
+
+# -- Entornos virtuales (las deps se instalan DENTRO del contenedor) --
+venv/
+.venv/
+env/
+
+# -- Cache de Python --
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# -- Variables de entorno (se pasan en runtime, NUNCA en la imagen) --
+.env
+.env.*
+
+# -- Base de datos de desarrollo --
+db.sqlite3
+
+# -- Archivos generados por Django --
+staticfiles/
+logs/
+*.log
+
+# -- Node (assets ya compilados en static/) --
+node_modules/
+
+# -- Docker (evitar recursion) --
+Dockerfile
+docker-compose*.yml
+.dockerignore
+
+# -- CI/CD y documentacion (no necesarios en la imagen) --
+.github/
+docs/
+*.md
+LICENSE
+
+# -- IDE y herramientas --
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# -- Testing y coverage --
+.pytest_cache/
+htmlcov/
+.coverage
+coverage.xml
+
+# -- Claude Code --
+.claude/
+
+# -- Media (se monta como volumen, no se copia en la imagen) --
+media/
