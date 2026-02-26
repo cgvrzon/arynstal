@@ -25,23 +25,3 @@
     <a href="{% url 'contact_us' %}" class="menu-link max-w-none lg:max-w-[300px]">CONTÁCTANOS</a>
   </nav>
 </header>
-
-<!-- Fix para el menú móvil: añade 'flex' cuando se quita 'hidden' -->
-<script>
-(function() {
-  const toggle = document.getElementById('menuToggle');
-  const menu = document.getElementById('mobileMenu');
-  if (toggle && menu) {
-    toggle.addEventListener('click', function() {
-      // Después de que el JS principal toggle 'hidden', nosotros toggle 'flex'
-      setTimeout(function() {
-        if (!menu.classList.contains('hidden')) {
-          menu.classList.add('flex');
-        } else {
-          menu.classList.remove('flex');
-        }
-      }, 0);
-    });
-  }
-})();
-</script>
