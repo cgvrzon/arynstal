@@ -47,6 +47,32 @@ done
 
 echo "PostgreSQL disponible."
 
+# ─── Paso 1b: Esperar a Redis (si Celery esta configurado) ────────────────
+# Solo espera si CELERY_BROKER_URL esta definido (worker, beat, flower, web)
+if [ -n "$CELERY_BROKER_URL" ]; then
+    # Extraer host y puerto de la URL redis://host:port/db
+    REDIS_HOST=$(echo "$CELERY_BROKER_URL" | sed -E 's|redis://([^:]+):([0-9]+).*|\1|')
+    REDIS_PORT=$(echo "$CELERY_BROKER_URL" | sed -E 's|redis://([^:]+):([0-9]+).*|\2|')
+
+    echo "Esperando a Redis en ${REDIS_HOST}:${REDIS_PORT}..."
+
+    while ! python -c "
+import socket
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+try:
+    s.connect(('${REDIS_HOST}', int('${REDIS_PORT}')))
+    s.close()
+    exit(0)
+except Exception:
+    exit(1)
+" 2>/dev/null; do
+        echo "  Redis no disponible, reintentando en 1s..."
+        sleep 1
+    done
+
+    echo "Redis disponible."
+fi
+
 # ─── Paso 2: Migraciones ────────────────────────────────────────────────────
 # Ejecutar migraciones pendientes automaticamente.
 # En desarrollo esto es comodo: cambias un modelo, reinicias el contenedor,

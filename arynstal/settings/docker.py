@@ -99,6 +99,16 @@ SENTRY_DSN = None
 
 
 # =============================================================================
+# CELERY — Activo con Redis (docker-compose levanta el contenedor Redis)
+# =============================================================================
+# Docker es el ÚNICO entorno donde Celery funciona con Redis real.
+# production.py y development.py usan ALWAYS_EAGER (ejecución síncrona).
+
+CELERY_TASK_ALWAYS_EAGER = False
+CELERY_TASK_EAGER_PROPAGATES = False
+
+
+# =============================================================================
 # LOGGING — Consola en vez de archivo
 # =============================================================================
 # En Docker, los logs deben ir a stdout/stderr para que

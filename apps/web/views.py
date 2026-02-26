@@ -428,10 +428,13 @@ def contact_us(request):
                 )
 
             # -----------------------------------------------------------------
-            # PASO 2.8: Enviar notificaciones
+            # PASO 2.8: Enviar notificaciones (async con fallback síncrono)
             # -----------------------------------------------------------------
-            # notify_new_lead maneja errores internamente, no bloquea
-            notify_new_lead(lead)
+            try:
+                from apps.leads.tasks import send_new_lead_notifications
+                send_new_lead_notifications.delay(lead.id)
+            except Exception:
+                notify_new_lead(lead)
 
             # -----------------------------------------------------------------
             # PASO 2.9: Mensaje de éxito y redirect

@@ -41,6 +41,7 @@ SECCIONES EN ESTE ARCHIVO:
 ===============================================================================
 """
 
+import os
 from pathlib import Path
 
 
@@ -334,7 +335,35 @@ NOTIFICATIONS = {
 
 
 # =============================================================================
-# 15. COMPANY_INFO - INFORMACIÓN DE LA EMPRESA
+# 15. CELERY - TAREAS ASÍNCRONAS
+# =============================================================================
+
+CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL', 'redis://localhost:6379/0')
+CELERY_RESULT_BACKEND = None
+# Desactivado: las tareas son fire-and-forget (enviar email y olvidar).
+# La monitorización se hace via logs del worker y Flower (eventos), no requiere result backend.
+#
+# PARA ACTIVAR RESULT BACKEND (si necesitas consultar resultados con result.get()):
+#   CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND', 'redis://localhost:6379/0')
+#   Añadir CELERY_RESULT_BACKEND=redis://redis:6379/0 a .env.docker
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TIMEZONE = 'Europe/Madrid'
+CELERY_TASK_ACKS_LATE = True
+CELERY_TASK_REJECT_ON_WORKER_LOST = True
+CELERY_TASK_TIME_LIMIT = 300
+CELERY_TASK_SOFT_TIME_LIMIT = 240
+
+CELERY_BEAT_SCHEDULE = {
+    'log-unassigned-leads-every-hour': {
+        'task': 'apps.leads.tasks.log_unassigned_leads',
+        'schedule': 3600,  # cada hora (en segundos)
+    },
+}
+
+
+# =============================================================================
+# 16. COMPANY_INFO - INFORMACIÓN DE LA EMPRESA
 # =============================================================================
 # Datos de contacto y empresa para usar en templates y emails.
 # Centralizado aquí para facilitar su actualización.
