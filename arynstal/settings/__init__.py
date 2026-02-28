@@ -1,13 +1,11 @@
 """
 Selector de configuración según el entorno.
 
-Por defecto usa 'development'. Para otros entornos, establecer:
-    export DJANGO_ENV=production    # Servidor de producción
-    export DJANGO_ENV=docker        # Desarrollo local con Docker
+Por defecto usa 'development'. Para producción, establecer:
+    export DJANGO_ENV=production
 
-O en el archivo .env correspondiente:
+O en el archivo .env:
     DJANGO_ENV=production
-    DJANGO_ENV=docker
 """
 
 import os
@@ -19,9 +17,6 @@ environment = os.environ.get('DJANGO_ENV', 'development')
 if environment == 'production':
     from .production import *  # noqa: F403
     print('🚀 Django running in PRODUCTION mode')
-elif environment == 'docker':
-    from .docker import *  # noqa: F403
-    print('🐳 Django running in DOCKER mode')
 else:
     from .development import *  # noqa: F403
     print('🔧 Django running in DEVELOPMENT mode')

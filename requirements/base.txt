@@ -11,18 +11,5 @@ Pillow>=10.0
 # Seguridad - Rate limiting
 django-ratelimit>=4.1.0
 
-# [STACK-ORPHEUS:CELERY] >>>
-# Tareas asíncronas
-celery[redis]>=5.4
-flower>=2.0
-# [STACK-ORPHEUS:CELERY] <<<
-
-# [STACK-ORPHEUS:DRF] >>>
-# API REST
-djangorestframework>=3.15
-django-filter>=24.0
-django-cors-headers>=4.0
-# [STACK-ORPHEUS:DRF] <<<
-
 # Base de datos (común)
 sqlparse>=0.5.0

@@ -32,7 +32,6 @@ urlpatterns = [
     path('admynstal/', admin.site.urls),
     # Panel simplificado para oficina (usuarios con rol 'office' y 'admin')
     path('offynstal/', office_site.urls),
-    path('api/v1/', include('arynstal.api_urls')),  # [STACK-ORPHEUS:DRF] Eliminar esta línea para cleanup
 ]
 
 # Servir archivos media en desarrollo

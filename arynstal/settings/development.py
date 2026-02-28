@@ -103,34 +103,6 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 
 # =============================================================================
-# CELERY - Ejecución síncrona en desarrollo/tests
-# =============================================================================
-
-# [STACK-ORPHEUS:DRF] >>>
-# =============================================================================
-# REST FRAMEWORK - BrowsableAPI en desarrollo
-# =============================================================================
-
-REST_FRAMEWORK['DEFAULT_RENDERER_CLASSES'] = [
-    'rest_framework.renderers.JSONRenderer',
-    'rest_framework.renderers.BrowsableAPIRenderer',
-]
-# [STACK-ORPHEUS:DRF] <<<
-
-
-# [STACK-ORPHEUS:CELERY] >>>
-CELERY_TASK_ALWAYS_EAGER = True
-# Ejecuta las tareas Celery síncronamente (sin necesitar Redis).
-# .delay() y .apply_async() ejecutan la tarea inmediatamente en el mismo proceso.
-# Ideal para desarrollo y tests: mismo comportamiento, sin infraestructura extra.
-
-CELERY_TASK_EAGER_PROPAGATES = True
-# Propaga excepciones de tareas eager al caller.
-# Permite que los errores en tareas sean visibles durante desarrollo/tests.
-# [STACK-ORPHEUS:CELERY] <<<
-
-
-# =============================================================================
 # DEBUG TOOLBAR (Opcional)
 # =============================================================================
 # Descomentar estas líneas si instalas django-debug-toolbar:

@@ -69,13 +69,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',        # Framework de mensajes flash
     'django.contrib.staticfiles',     # Manejo de archivos estáticos
 
-    # [STACK-ORPHEUS:DRF] >>>
-    # Apps de terceros
-    'rest_framework',                         # Django REST Framework
-    'django_filters',                         # Filtros para DRF y Django
-    'corsheaders',                            # CORS headers para APIs
-    # [STACK-ORPHEUS:DRF] <<<
-
     # Apps del proyecto Arynstal
     'apps.leads.apps.LeadsConfig',        # CRM: Leads, presupuestos, auditoría
     'apps.services.apps.ServicesConfig',  # Catálogo de servicios
@@ -92,11 +85,6 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     # Añade headers de seguridad (X-Content-Type-Options, etc.)
-
-    # [STACK-ORPHEUS:DRF] >>>
-    'corsheaders.middleware.CorsMiddleware',
-    # CORS: debe ir antes de CommonMiddleware
-    # [STACK-ORPHEUS:DRF] <<<
 
     'django.contrib.sessions.middleware.SessionMiddleware',
     # Habilita el sistema de sesiones
@@ -346,38 +334,8 @@ NOTIFICATIONS = {
 }
 
 
-# [STACK-ORPHEUS:CELERY] >>>
 # =============================================================================
-# 15. CELERY - TAREAS ASÍNCRONAS
-# =============================================================================
-
-CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL', 'redis://localhost:6379/0')
-CELERY_RESULT_BACKEND = None
-# Desactivado: las tareas son fire-and-forget (enviar email y olvidar).
-# La monitorización se hace via logs del worker y Flower (eventos), no requiere result backend.
-#
-# PARA ACTIVAR RESULT BACKEND (si necesitas consultar resultados con result.get()):
-#   CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND', 'redis://localhost:6379/0')
-#   Añadir CELERY_RESULT_BACKEND=redis://redis:6379/0 a .env.docker
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TIMEZONE = 'Europe/Madrid'
-CELERY_TASK_ACKS_LATE = True
-CELERY_TASK_REJECT_ON_WORKER_LOST = True
-CELERY_TASK_TIME_LIMIT = 300
-CELERY_TASK_SOFT_TIME_LIMIT = 240
-
-CELERY_BEAT_SCHEDULE = {
-    'log-unassigned-leads-every-hour': {
-        'task': 'apps.leads.tasks.log_unassigned_leads',
-        'schedule': 3600,  # cada hora (en segundos)
-    },
-}
-# [STACK-ORPHEUS:CELERY] <<<
-
-
-# =============================================================================
-# 16. COMPANY_INFO - INFORMACIÓN DE LA EMPRESA
+# 15. COMPANY_INFO - INFORMACIÓN DE LA EMPRESA
 # =============================================================================
 # Datos de contacto y empresa para usar en templates y emails.
 # Centralizado aquí para facilitar su actualización.
@@ -391,48 +349,3 @@ COMPANY_INFO = {
     'WEBSITE': 'https://arynstal.es',          # URL del sitio
     'DESCRIPTION': 'Instalaciones y reformas', # Descripción breve
 }
-
-
-# [STACK-ORPHEUS:DRF] >>>
-# =============================================================================
-# 17. REST FRAMEWORK - CONFIGURACIÓN DE LA API
-# =============================================================================
-
-REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
-    ],
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.SessionAuthentication',
-    ],
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 20,
-    'DEFAULT_THROTTLE_CLASSES': [
-        'rest_framework.throttling.AnonRateThrottle',
-        'rest_framework.throttling.UserRateThrottle',
-        'rest_framework.throttling.ScopedRateThrottle',
-    ],
-    'DEFAULT_THROTTLE_RATES': {
-        'anon': '60/hour',
-        'user': '200/hour',
-        'lead_create': '5/hour',
-    },
-    'DEFAULT_FILTER_BACKENDS': [
-        'django_filters.rest_framework.DjangoFilterBackend',
-        'rest_framework.filters.OrderingFilter',
-    ],
-    'DEFAULT_RENDERER_CLASSES': [
-        'rest_framework.renderers.JSONRenderer',
-    ],
-}
-
-
-# =============================================================================
-# 18. CORS - CROSS-ORIGIN RESOURCE SHARING
-# =============================================================================
-
-CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3000',
-    'http://localhost:5173',
-]
-# [STACK-ORPHEUS:DRF] <<<

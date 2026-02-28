@@ -90,7 +90,7 @@ def log_lead_creation(sender, instance, created, **kwargs):
         No se registra el usuario porque desde el formulario web
         no hay usuario autenticado (es anónimo).
     """
-    if created and instance.source in ('web', 'api'):  # [STACK-ORPHEUS:DRF] Revertir a: == 'web'
+    if created and instance.source == 'web':
         LeadLog.objects.create(
             lead=instance,
             action='created',
