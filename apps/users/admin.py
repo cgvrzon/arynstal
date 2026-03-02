@@ -10,11 +10,16 @@ DESCRIPCIÓN:
     Usa django-unfold con doble herencia (UnfoldModelAdmin + BaseUserAdmin)
     para mantener la funcionalidad nativa de auth y el tema moderno.
 
+    Formulario de creación personalizado que incluye datos personales y rol
+    en un solo paso (sin necesidad de editar después).
+
 ===============================================================================
 """
 
+from django import forms
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.utils.html import format_html
 
@@ -23,6 +28,46 @@ from unfold.admin import StackedInline as UnfoldStackedInline
 from unfold.decorators import display
 
 from .models import UserProfile
+
+
+# =============================================================================
+# FORMULARIO DE CREACIÓN PERSONALIZADO
+# =============================================================================
+
+class ArynstalUserCreationForm(UserCreationForm):
+    """
+    Extiende UserCreationForm para incluir datos personales y rol
+    en el formulario de creación (un solo paso).
+    """
+    first_name = forms.CharField(
+        max_length=150,
+        required=False,
+        label='Nombre',
+    )
+    last_name = forms.CharField(
+        max_length=150,
+        required=False,
+        label='Apellidos',
+    )
+    email = forms.EmailField(
+        required=False,
+        label='Email',
+    )
+    role = forms.ChoiceField(
+        choices=UserProfile.ROLE_CHOICES,
+        initial='field',
+        label='Rol en Arynstal',
+        help_text='Administrador: acceso total. Oficina: gestión de leads. Técnico: acceso limitado.',
+    )
+    phone = forms.CharField(
+        max_length=20,
+        required=False,
+        label='Teléfono directo',
+    )
+
+    class Meta(UserCreationForm.Meta):
+        model = User
+        fields = ('username',)
 
 
 # =============================================================================
@@ -48,14 +93,23 @@ class UserAdmin(UnfoldModelAdmin, BaseUserAdmin):
 
     UnfoldModelAdmin PRIMERO en MRO para que el tema se aplique,
     BaseUserAdmin SEGUNDO para heredar fieldsets, filtros y lógica de auth.
+
+    El formulario de creación incluye datos personales y rol en un solo paso.
     """
 
-    # add_fieldsets explícito: Django 6 añade 'usable_password' que Unfold
-    # no renderiza correctamente. Mantenemos solo username + passwords.
+    add_form = ArynstalUserCreationForm
+
     add_fieldsets = (
-        (None, {
-            'classes': ('wide',),
+        ('Credenciales', {
             'fields': ('username', 'password1', 'password2'),
+            'description': 'Datos de acceso al sistema',
+        }),
+        ('Información personal', {
+            'fields': ('first_name', 'last_name', 'email'),
+        }),
+        ('Rol y contacto', {
+            'fields': ('role', 'phone'),
+            'description': 'Configuración del perfil de Arynstal',
         }),
     )
 
@@ -124,18 +178,30 @@ class UserAdmin(UnfoldModelAdmin, BaseUserAdmin):
     # -------------------------------------------------------------------------
 
     def save_model(self, request, obj, form, change):
+        if not change:
+            # En creación: guardar first_name, last_name, email del form
+            obj.first_name = form.cleaned_data.get('first_name', '')
+            obj.last_name = form.cleaned_data.get('last_name', '')
+            obj.email = form.cleaned_data.get('email', '')
+            # Todos los usuarios del admin necesitan is_staff para poder loguearse
+            obj.is_staff = True
+
         super().save_model(request, obj, form, change)
 
-        if not hasattr(obj, 'profile'):
-            UserProfile.objects.get_or_create(user=obj)
-
         if not change:
-            from django.contrib import messages
-            messages.info(
-                request,
-                f'Usuario creado correctamente. Edítalo ahora para configurar '
-                f'su rol y teléfono en la sección "Perfil de Arynstal".'
-            )
+            # Signal ya creó el perfil con rol 'field' por defecto.
+            # Actualizamos con los datos del formulario.
+            obj.refresh_from_db()
+            if hasattr(obj, 'profile'):
+                obj.profile.role = form.cleaned_data.get('role', 'field')
+                obj.profile.phone = form.cleaned_data.get('phone', '')
+                obj.profile.save(update_fields=['role', 'phone'])
+            else:
+                UserProfile.objects.create(
+                    user=obj,
+                    role=form.cleaned_data.get('role', 'field'),
+                    phone=form.cleaned_data.get('phone', ''),
+                )
 
 
 # =============================================================================
