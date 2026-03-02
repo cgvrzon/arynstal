@@ -7,35 +7,13 @@ AUTOR: @cgvrzon
 
 DESCRIPCIÓN:
     Configura el panel de administración de Django para la gestión de leads.
-    Define cómo se visualizan, filtran y editan los leads, imágenes,
-    presupuestos y logs desde el backend /admynstal/.
+    Usa django-unfold para una interfaz moderna con badges, iconos y sidebar.
 
 FUNCIONES PRINCIPALES:
     - LeadAdmin: Administración completa de leads con inlines
     - LeadImageAdmin: Gestión de imágenes adjuntas
     - BudgetAdmin: Gestión de presupuestos
     - LeadLogAdmin: Visualización de auditoría (solo lectura)
-
-FLUJO EN LA APLICACIÓN:
-    1. Usuario admin accede a /admynstal/
-    2. Ve listado de leads con filtros, badges y contadores
-    3. Accede al detalle de un lead (fieldsets organizados)
-    4. Gestiona imágenes y presupuestos desde inlines
-    5. Los cambios se registran automáticamente en LeadLog
-
-CARACTERÍSTICAS UX DEL ADMIN:
-    - Badges de colores para estados y urgencias
-    - Iconos para origen del lead
-    - Contadores de imágenes y presupuestos
-    - Fieldsets colapsables para datos técnicos
-    - Autocomplete en campos relacionales
-    - Optimización de queries (select_related, prefetch_related)
-
-PRINCIPIOS DE DISEÑO:
-    - DRY: Métodos de badge reutilizables
-    - Optimización: Evitar N+1 queries en listados
-    - UX: Información visual rápida con badges e iconos
-    - Seguridad: Logs de auditoría automáticos
 
 ===============================================================================
 """
@@ -45,7 +23,10 @@ import csv
 from django.contrib import admin
 from django.http import HttpResponse
 from django.utils.html import format_html
-from django.utils.safestring import mark_safe
+
+from unfold.admin import ModelAdmin as UnfoldModelAdmin
+from unfold.admin import TabularInline as UnfoldTabularInline
+from unfold.decorators import display
 
 from .models import Lead, LeadImage, Budget, LeadLog
 from .notifications import notify_lead_assigned, notify_note_added
@@ -54,46 +35,17 @@ from .notifications import notify_lead_assigned, notify_note_added
 # =============================================================================
 # INLINES - MODELOS RELACIONADOS EDITABLES DENTRO DEL LEAD
 # =============================================================================
-# Los inlines permiten editar modelos relacionados (imágenes, presupuestos, logs)
-# directamente desde la página de edición del lead padre.
 
-
-class LeadImageInline(admin.TabularInline):
-    """
-    Inline para gestionar imágenes adjuntas a un lead.
-
-    DESCRIPCIÓN:
-        Muestra las imágenes del lead en formato tabla con vista previa.
-        Permite añadir, ver y eliminar imágenes sin salir del lead.
-
-    CARACTERÍSTICAS:
-        - Vista previa en miniatura (150x150px)
-        - Máximo 5 imágenes por lead (validado también en modelo)
-        - Fecha de subida en solo lectura
-
-    UBICACIÓN:
-        Se muestra en la página de edición del Lead (LeadAdmin).
-    """
+class LeadImageInline(UnfoldTabularInline):
+    """Inline para gestionar imágenes adjuntas a un lead."""
     model = LeadImage
-    extra = 0  # No mostrar filas vacías adicionales
+    extra = 0
     readonly_fields = ('uploaded_at', 'image_preview')
     fields = ('image_preview', 'image', 'uploaded_at')
     can_delete = True
-    max_num = 5  # Límite máximo de imágenes
+    max_num = 5
 
     def image_preview(self, obj):
-        """
-        Genera HTML para mostrar miniatura de la imagen.
-
-        PARÁMETROS:
-            obj (LeadImage): Instancia de la imagen a previsualizar.
-
-        RETORNA:
-            str: HTML seguro con la etiqueta <img> o texto "Sin imagen".
-
-        USO:
-            Se muestra automáticamente en la columna 'Vista previa' del inline.
-        """
         if obj.image:
             return format_html(
                 '<img src="{}" style="max-width: 150px; max-height: 150px; '
@@ -104,22 +56,8 @@ class LeadImageInline(admin.TabularInline):
     image_preview.short_description = 'Vista previa'
 
 
-class BudgetInline(admin.TabularInline):
-    """
-    Inline para gestionar presupuestos asociados a un lead.
-
-    DESCRIPCIÓN:
-        Permite ver y crear presupuestos directamente desde el lead.
-        La referencia se genera automáticamente al guardar.
-
-    CARACTERÍSTICAS:
-        - Referencia y fecha en solo lectura
-        - No permite eliminar (integridad de datos)
-        - Optimizado con select_related para el creador
-
-    UBICACIÓN:
-        Se muestra en la página de edición del Lead (LeadAdmin).
-    """
+class BudgetInline(UnfoldTabularInline):
+    """Inline para gestionar presupuestos asociados a un lead."""
     model = Budget
     extra = 0
     readonly_fields = ('reference', 'created_at', 'created_by')
@@ -127,92 +65,33 @@ class BudgetInline(admin.TabularInline):
         'reference', 'description', 'amount', 'status',
         'valid_until', 'file', 'created_at', 'created_by'
     )
-    can_delete = False  # Preservar historial de presupuestos
+    can_delete = False
 
     def get_queryset(self, request):
-        """
-        Optimiza las consultas añadiendo select_related.
-
-        PROPÓSITO:
-            Evitar N+1 queries al cargar el campo created_by.
-
-        RETORNA:
-            QuerySet: Presupuestos con usuario precargado.
-        """
         queryset = super().get_queryset(request)
         return queryset.select_related('created_by')
 
 
-class LeadLogInline(admin.TabularInline):
-    """
-    Inline para visualizar el historial de acciones del lead.
-
-    DESCRIPCIÓN:
-        Muestra los logs de auditoría en formato cronológico.
-        Es completamente de solo lectura (no añadir, no eliminar).
-
-    CARACTERÍSTICAS:
-        - Solo lectura total (auditoría no modificable)
-        - Máximo 20 entradas visibles (las más recientes)
-        - No permite añadir logs manualmente
-
-    PROPÓSITO:
-        Permitir al admin ver el historial de cambios sin salir del lead.
-
-    UBICACIÓN:
-        Se muestra al final de la página de edición del Lead.
-    """
+class LeadLogInline(UnfoldTabularInline):
+    """Inline para visualizar el historial de acciones del lead (read-only)."""
     model = LeadLog
     extra = 0
     readonly_fields = ('action', 'user', 'old_value', 'new_value', 'created_at')
     fields = ('action', 'user', 'old_value', 'new_value', 'created_at')
     can_delete = False
-    max_num = 20  # Limitar para no sobrecargar la página
+    max_num = 20
 
     def has_add_permission(self, request, obj=None):
-        """
-        Deshabilita la creación manual de logs.
-
-        PROPÓSITO:
-            Los logs se crean automáticamente mediante signals.
-            Crearlos manualmente rompería la integridad de la auditoría.
-
-        RETORNA:
-            bool: Siempre False.
-        """
         return False
 
 
 # =============================================================================
 # ADMIN: LEAD (MODELO PRINCIPAL)
 # =============================================================================
-# Configuración principal del panel de administración para leads.
-# Es el modelo central del CRM y tiene la configuración más compleja.
 
 @admin.register(Lead)
-class LeadAdmin(admin.ModelAdmin):
-    """
-    Panel de administración para el modelo Lead.
-
-    DESCRIPCIÓN:
-        Configuración completa para la gestión de leads desde el admin.
-        Incluye listado optimizado, filtros, búsqueda, fieldsets organizados
-        e inlines para modelos relacionados.
-
-    CARACTERÍSTICAS PRINCIPALES:
-        - Listado con badges visuales de estado, urgencia y origen
-        - Filtros por estado, origen, urgencia, fecha, asignado y servicio
-        - Búsqueda por nombre, email, teléfono, mensaje y ubicación
-        - Fieldsets organizados por categoría (colapsables)
-        - Inlines para imágenes, presupuestos y logs
-        - Autocomplete para servicio y usuario asignado
-        - Auditoría automática de cambios
-
-    OPTIMIZACIONES:
-        - select_related: servicio y asignado
-        - prefetch_related: imágenes y presupuestos
-        - date_hierarchy: navegación rápida por fechas
-    """
+class LeadAdmin(UnfoldModelAdmin):
+    """Panel de administración completo para leads."""
 
     # -------------------------------------------------------------------------
     # CONFIGURACIÓN DEL LISTADO
@@ -224,11 +103,11 @@ class LeadAdmin(admin.ModelAdmin):
         'phone',
         'email',
         'service',
-        'status_badge',      # Badge de color para estado
-        'urgency_badge',     # Badge para urgencia
-        'source_badge',      # Icono de origen
-        'images_count',      # Contador de imágenes
-        'budgets_count',     # Contador de presupuestos
+        'display_status',
+        'display_urgency',
+        'display_source',
+        'images_count',
+        'budgets_count',
         'created_at',
         'assigned_to'
     )
@@ -270,20 +149,6 @@ class LeadAdmin(admin.ModelAdmin):
 
     @admin.action(description='Exportar leads seleccionados a CSV')
     def export_to_csv(self, request, queryset):
-        """
-        Exporta los leads seleccionados a un archivo CSV.
-
-        PARÁMETROS:
-            request: Request HTTP
-            queryset: QuerySet de leads seleccionados
-
-        RETORNA:
-            HttpResponse: Archivo CSV para descarga
-
-        CAMPOS EXPORTADOS:
-            ID, Nombre, Email, Teléfono, Servicio, Estado, Urgencia,
-            Origen, Fecha creación, Asignado a, Ubicación
-        """
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename="leads_export.csv"'
         response.write('\ufeff')  # BOM para Excel
@@ -314,10 +179,8 @@ class LeadAdmin(admin.ModelAdmin):
         return response
 
     # -------------------------------------------------------------------------
-    # FIELDSETS - ORGANIZACIÓN DEL FORMULARIO DE EDICIÓN
+    # FIELDSETS
     # -------------------------------------------------------------------------
-    # Los fieldsets agrupan campos relacionados y permiten colapsar secciones
-    # que no se usan frecuentemente (RGPD, metadatos).
 
     fieldsets = (
         ('Información del cliente', {
@@ -336,7 +199,7 @@ class LeadAdmin(admin.ModelAdmin):
                 'urgency',
                 'source'
             ),
-            'classes': ('wide',)  # Campos más anchos
+            'classes': ('wide',)
         }),
         ('Gestión interna', {
             'fields': (
@@ -352,7 +215,7 @@ class LeadAdmin(admin.ModelAdmin):
                 'ip_address',
                 'user_agent'
             ),
-            'classes': ('collapse',)  # Colapsado por defecto
+            'classes': ('collapse',)
         }),
         ('Metadatos', {
             'fields': (
@@ -364,108 +227,36 @@ class LeadAdmin(admin.ModelAdmin):
     )
 
     # -------------------------------------------------------------------------
-    # MÉTODOS DE VISUALIZACIÓN - BADGES E ICONOS
+    # MÉTODOS DE VISUALIZACIÓN - BADGES CON UNFOLD @display
     # -------------------------------------------------------------------------
-    # Estos métodos generan HTML para mostrar información visual en el listado.
 
-    def status_badge(self, obj):
-        """
-        Genera un badge de color según el estado del lead.
+    @display(description="Estado", label={
+        "nuevo": "success",
+        "contactado": "info",
+        "presupuestado": "warning",
+        "cerrado": None,
+        "descartado": "danger",
+    })
+    def display_status(self, obj):
+        return obj.status
 
-        PARÁMETROS:
-            obj (Lead): Instancia del lead.
+    @display(description="Urgencia", label={
+        "urgente": "danger",
+        "normal": None,
+    })
+    def display_urgency(self, obj):
+        return obj.urgency
 
-        RETORNA:
-            str: HTML seguro con span estilizado.
-
-        COLORES:
-            - Nuevo: Verde (#10B981)
-            - Contactado: Azul (#3B82F6)
-            - Presupuestado: Naranja (#F59E0B)
-            - Cerrado: Gris (#6B7280)
-            - Descartado: Rojo (#EF4444)
-        """
-        colors = {
-            'nuevo': '#10B981',
-            'contactado': '#3B82F6',
-            'presupuestado': '#F59E0B',
-            'cerrado': '#6B7280',
-            'descartado': '#EF4444',
-        }
-        color = colors.get(obj.status, '#6B7280')
-        return format_html(
-            '<span style="background-color: {}; color: white; padding: 3px 10px; '
-            'border-radius: 3px; font-weight: bold; font-size: 11px;">{}</span>',
-            color,
-            obj.get_status_display()
-        )
-    status_badge.short_description = 'Estado'
-
-    def urgency_badge(self, obj):
-        """
-        Genera un badge para la urgencia del lead.
-
-        PARÁMETROS:
-            obj (Lead): Instancia del lead.
-
-        RETORNA:
-            str: HTML con badge rojo si urgente, texto gris si normal.
-        """
-        if obj.urgency == 'urgente':
-            return mark_safe(
-                '<span style="background-color: #DC2626; color: white; '
-                'padding: 2px 8px; border-radius: 3px; font-weight: bold; '
-                'font-size: 11px;">URGENTE</span>'
-            )
-        return mark_safe(
-            '<span style="color: #6B7280; font-size: 11px;">Normal</span>'
-        )
-    urgency_badge.short_description = 'Urgencia'
-
-    def source_badge(self, obj):
-        """
-        Genera un icono según el origen del lead.
-
-        PARÁMETROS:
-            obj (Lead): Instancia del lead.
-
-        RETORNA:
-            str: HTML con emoji representativo del origen.
-
-        ICONOS:
-            - Web: Globo
-            - Teléfono: Auricular
-            - Recomendación: Personas
-            - Otro: Documento
-        """
-        icons = {
-            'web': 'WEB',
-            'telefono': 'TEL',
-            'recomendacion': 'REC',
-            'otro': 'OTRO',
-        }
-        icon = icons.get(obj.source, 'OTRO')
-        return format_html(
-            '<span style="font-size: 11px; background-color: #E5E7EB; '
-            'padding: 2px 6px; border-radius: 3px;" title="{}">{}</span>',
-            obj.get_source_display(),
-            icon
-        )
-    source_badge.short_description = 'Origen'
+    @display(description="Origen", label={
+        "web": "info",
+        "telefono": "success",
+        "recomendacion": "warning",
+        "otro": None,
+    })
+    def display_source(self, obj):
+        return obj.source
 
     def images_count(self, obj):
-        """
-        Muestra contador de imágenes adjuntas con badge.
-
-        PARÁMETROS:
-            obj (Lead): Instancia del lead.
-
-        RETORNA:
-            str: Badge con contador o guión si no hay imágenes.
-
-        NOTA:
-            Usa prefetch_related para evitar queries adicionales.
-        """
         count = obj.images.count()
         if count > 0:
             return format_html(
@@ -477,15 +268,6 @@ class LeadAdmin(admin.ModelAdmin):
     images_count.short_description = 'Imágenes'
 
     def budgets_count(self, obj):
-        """
-        Muestra contador de presupuestos con badge.
-
-        PARÁMETROS:
-            obj (Lead): Instancia del lead.
-
-        RETORNA:
-            str: Badge con contador o guión si no hay presupuestos.
-        """
         count = obj.budgets.count()
         if count > 0:
             return format_html(
@@ -501,25 +283,6 @@ class LeadAdmin(admin.ModelAdmin):
     # -------------------------------------------------------------------------
 
     def get_queryset(self, request):
-        """
-        Optimiza las consultas y filtra por rol de usuario.
-
-        PROPÓSITO:
-            1. El listado muestra servicio, asignado, imágenes y presupuestos.
-               Sin optimización, cada fila generaría 4 queries adicionales.
-            2. Los técnicos de campo solo ven leads asignados a ellos.
-
-        OPTIMIZACIONES:
-            - select_related: Carga servicio y asignado en una sola query
-            - prefetch_related: Carga imágenes y presupuestos en 2 queries
-
-        FILTRADO POR ROL:
-            - admin/office: Ven todos los leads
-            - field: Solo ven leads asignados a ellos
-
-        RETORNA:
-            QuerySet: Leads filtrados y con relaciones precargadas.
-        """
         queryset = super().get_queryset(request)
 
         # Filtrar por rol: técnicos de campo solo ven sus leads asignados
@@ -537,39 +300,10 @@ class LeadAdmin(admin.ModelAdmin):
     # -------------------------------------------------------------------------
 
     def save_model(self, request, obj, form, change):
-        """
-        Guarda el lead y registra cambios en LeadLog.
-
-        PROPÓSITO:
-            Mantener un historial de auditoría de todas las modificaciones
-            realizadas desde el panel de administración.
-
-        PARÁMETROS:
-            request: Request HTTP con información del usuario
-            obj (Lead): Instancia del lead a guardar
-            form: Formulario con los datos
-            change (bool): True si es edición, False si es creación
-
-        FLUJO:
-            1. Si es edición, obtener estado anterior
-            2. Comparar campos críticos (status, assigned_to)
-            3. Crear LeadLog por cada cambio detectado
-            4. Si es creación, registrar log de creación
-            5. Guardar el modelo
-
-        NOTA:
-            Los signals (log_lead_changes) también detectan cambios, pero
-            al guardar desde admin usamos _logging_handled_in_admin para
-            que no creen logs: solo los creamos aquí (con request.user).
-            Así evitamos duplicados.
-        """
         if change:
-            # Marcar que los logs se crean aquí (evitar duplicados en signals)
             obj._logging_handled_in_admin = True
-            # Obtener estado anterior para comparar
             old_obj = Lead.objects.get(pk=obj.pk)
 
-            # Detectar cambio de estado
             if old_obj.status != obj.status:
                 LeadLog.objects.create(
                     lead=obj,
@@ -579,7 +313,6 @@ class LeadAdmin(admin.ModelAdmin):
                     new_value=obj.get_status_display()
                 )
 
-            # Detectar cambio de asignación
             if old_obj.assigned_to != obj.assigned_to:
                 LeadLog.objects.create(
                     lead=obj,
@@ -588,13 +321,10 @@ class LeadAdmin(admin.ModelAdmin):
                     old_value=str(old_obj.assigned_to) if old_obj.assigned_to else 'Sin asignar',
                     new_value=str(obj.assigned_to) if obj.assigned_to else 'Sin asignar'
                 )
-                # Notificar al nuevo técnico asignado por email
                 if obj.assigned_to:
                     notify_lead_assigned(obj, obj.assigned_to)
 
-            # Detectar cambio de notas por técnico de campo
             if old_obj.notes != obj.notes and obj.notes:
-                # Registrar en log
                 LeadLog.objects.create(
                     lead=obj,
                     user=request.user,
@@ -602,11 +332,9 @@ class LeadAdmin(admin.ModelAdmin):
                     old_value=old_obj.notes[:100] if old_obj.notes else '',
                     new_value=obj.notes[:100]
                 )
-                # Notificar a admin si es técnico de campo
                 if hasattr(request.user, 'profile') and request.user.profile.is_field():
                     notify_note_added(obj, request.user)
         else:
-            # Nuevo lead creado desde el admin
             LeadLog.objects.create(
                 lead=obj,
                 user=request.user,
@@ -623,28 +351,16 @@ class LeadAdmin(admin.ModelAdmin):
 # =============================================================================
 # ADMIN: LEADIMAGE
 # =============================================================================
-# Panel separado para gestión de imágenes (opcional, principalmente se usan inlines)
 
 @admin.register(LeadImage)
-class LeadImageAdmin(admin.ModelAdmin):
-    """
-    Panel de administración para imágenes de leads.
-
-    DESCRIPCIÓN:
-        Permite gestionar imágenes de forma independiente.
-        Útil para ver todas las imágenes del sistema o buscar por lead.
-
-    NOTA:
-        El uso principal es desde el inline en LeadAdmin.
-        Este admin es complementario para casos especiales.
-    """
+class LeadImageAdmin(UnfoldModelAdmin):
+    """Panel de administración para imágenes de leads."""
     list_display = ('id', 'lead', 'image_preview', 'uploaded_at')
     list_filter = ('uploaded_at',)
     readonly_fields = ('uploaded_at', 'image_preview')
     search_fields = ('lead__name', 'lead__email')
 
     def image_preview(self, obj):
-        """Genera miniatura de 200x200px para el listado."""
         if obj.image:
             return format_html(
                 '<img src="{}" style="max-width: 200px; max-height: 200px; '
@@ -658,29 +374,15 @@ class LeadImageAdmin(admin.ModelAdmin):
 # =============================================================================
 # ADMIN: BUDGET
 # =============================================================================
-# Panel completo para gestión de presupuestos
 
 @admin.register(Budget)
-class BudgetAdmin(admin.ModelAdmin):
-    """
-    Panel de administración para presupuestos.
-
-    DESCRIPCIÓN:
-        Gestión completa de presupuestos con filtros por estado,
-        fecha y validez. Permite adjuntar PDFs y asignar automáticamente
-        la referencia única.
-
-    CARACTERÍSTICAS:
-        - Referencia auto-generada (solo lectura)
-        - Badge de color por estado
-        - Navegación por fecha (date_hierarchy)
-        - Autocomplete para selección de lead
-    """
+class BudgetAdmin(UnfoldModelAdmin):
+    """Panel de administración para presupuestos."""
     list_display = (
         'reference',
         'lead',
         'amount',
-        'status_badge',
+        'display_status',
         'valid_until',
         'created_at',
         'created_by'
@@ -711,42 +413,16 @@ class BudgetAdmin(admin.ModelAdmin):
         }),
     )
 
-    def status_badge(self, obj):
-        """
-        Genera badge de color según estado del presupuesto.
-
-        COLORES:
-            - Borrador: Gris (#9CA3AF)
-            - Enviado: Azul (#3B82F6)
-            - Aceptado: Verde (#10B981)
-            - Rechazado: Rojo (#EF4444)
-        """
-        colors = {
-            'borrador': '#9CA3AF',
-            'enviado': '#3B82F6',
-            'aceptado': '#10B981',
-            'rechazado': '#EF4444',
-        }
-        color = colors.get(obj.status, '#6B7280')
-        return format_html(
-            '<span style="background-color: {}; color: white; padding: 3px 10px; '
-            'border-radius: 3px; font-weight: bold; font-size: 11px;">{}</span>',
-            color,
-            obj.get_status_display()
-        )
-    status_badge.short_description = 'Estado'
+    @display(description="Estado", label={
+        "borrador": None,
+        "enviado": "info",
+        "aceptado": "success",
+        "rechazado": "danger",
+    })
+    def display_status(self, obj):
+        return obj.status
 
     def save_model(self, request, obj, form, change):
-        """
-        Asigna automáticamente el usuario creador en nuevos presupuestos.
-
-        PROPÓSITO:
-            Registrar quién creó cada presupuesto para trazabilidad.
-
-        FLUJO:
-            1. Si es nuevo presupuesto, asignar request.user a created_by
-            2. Guardar el modelo (la referencia se genera en Budget.save())
-        """
         if not change:
             obj.created_by = request.user
         super().save_model(request, obj, form, change)
@@ -755,28 +431,10 @@ class BudgetAdmin(admin.ModelAdmin):
 # =============================================================================
 # ADMIN: LEADLOG (AUDITORÍA)
 # =============================================================================
-# Panel de solo lectura para consultar el historial de acciones
 
 @admin.register(LeadLog)
-class LeadLogAdmin(admin.ModelAdmin):
-    """
-    Panel de administración para logs de auditoría.
-
-    DESCRIPCIÓN:
-        Visualización del historial completo de acciones sobre leads.
-        Completamente de solo lectura para preservar la integridad
-        de la auditoría.
-
-    CARACTERÍSTICAS:
-        - No permite crear ni eliminar registros
-        - Filtros por acción, fecha y usuario
-        - Búsqueda por lead y valores
-        - Navegación por fecha
-
-    PROPÓSITO:
-        Permite auditar quién hizo qué y cuándo en el sistema.
-        Útil para resolver disputas o analizar el flujo de trabajo.
-    """
+class LeadLogAdmin(UnfoldModelAdmin):
+    """Panel de administración para logs de auditoría (solo lectura)."""
     list_display = (
         'lead',
         'action',
@@ -794,9 +452,7 @@ class LeadLogAdmin(admin.ModelAdmin):
     date_hierarchy = 'created_at'
 
     def has_add_permission(self, request):
-        """Deshabilita creación manual de logs."""
         return False
 
     def has_delete_permission(self, request, obj=None):
-        """Deshabilita eliminación de logs (preservar auditoría)."""
         return False

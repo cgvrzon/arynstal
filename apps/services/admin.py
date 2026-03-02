@@ -6,31 +6,18 @@ AUTOR: @cgvrzon
 ===============================================================================
 
 DESCRIPCIÓN:
-    Configura el panel de administración de Django para el modelo Service.
-    Permite gestionar el catálogo de servicios que se muestra en la web.
-
-FUNCIONES PRINCIPALES:
-    - ServiceAdmin: Administración completa de servicios
-
-FLUJO EN LA APLICACIÓN:
-    1. Admin accede a /admynstal/services/service/
-    2. Ve listado de servicios con orden editable
-    3. Puede añadir/editar/desactivar servicios
-    4. Los cambios se reflejan automáticamente en la web pública
-
-CARACTERÍSTICAS UX:
-    - Slug auto-generado desde el nombre
-    - Orden editable directamente en el listado
-    - Vista previa de imagen
-    - Badge visual para estado activo/inactivo
-    - Contador de leads por servicio
+    Configura el panel de administración para el modelo Service.
+    Usa django-unfold para interfaz moderna con badges y sidebar.
 
 ===============================================================================
 """
 
 from django.contrib import admin
 from django.utils.html import format_html
-from django.utils.safestring import mark_safe
+
+from unfold.admin import ModelAdmin as UnfoldModelAdmin
+from unfold.decorators import display
+
 from .models import Service
 
 
@@ -39,38 +26,24 @@ from .models import Service
 # =============================================================================
 
 @admin.register(Service)
-class ServiceAdmin(admin.ModelAdmin):
-    """
-    Panel de administración para el catálogo de servicios.
-
-    DESCRIPCIÓN:
-        Permite gestionar los servicios que ofrece Arynstal.
-        Incluye funcionalidades para ordenar, activar/desactivar
-        y asociar imágenes a cada servicio.
-
-    CARACTERÍSTICAS:
-        - Listado con orden editable inline
-        - Slug auto-generado (prepopulated_fields)
-        - Vista previa de imagen
-        - Contador de leads asociados
-        - Filtros por estado y fecha
-    """
+class ServiceAdmin(UnfoldModelAdmin):
+    """Panel de administración para el catálogo de servicios."""
 
     # -------------------------------------------------------------------------
     # CONFIGURACIÓN DEL LISTADO
     # -------------------------------------------------------------------------
 
     list_display = (
-        'order',              # Editable directamente
+        'order',
         'name',
         'slug',
-        'is_active_badge',    # Badge visual de estado
+        'display_is_active',
         'created_at',
-        'leads_count'         # Contador de leads relacionados
+        'leads_count'
     )
 
-    list_display_links = ('name',)  # Solo el nombre es clickable
-    list_editable = ('order',)      # Orden editable en el listado
+    list_display_links = ('name',)
+    list_editable = ('order',)
     list_per_page = 25
 
     list_filter = (
@@ -89,7 +62,6 @@ class ServiceAdmin(admin.ModelAdmin):
     # CAMPOS ESPECIALES
     # -------------------------------------------------------------------------
 
-    # Auto-genera el slug mientras se escribe el nombre
     prepopulated_fields = {
         'slug': ('name',)
     }
@@ -142,43 +114,11 @@ class ServiceAdmin(admin.ModelAdmin):
     # MÉTODOS DE VISUALIZACIÓN
     # -------------------------------------------------------------------------
 
-    def is_active_badge(self, obj) -> str:
-        """
-        Genera badge visual para el estado activo/inactivo.
+    @display(description="Estado", boolean=True)
+    def display_is_active(self, obj):
+        return obj.is_active
 
-        PARÁMETROS:
-            obj (Service): Instancia del servicio.
-
-        RETORNA:
-            str: HTML con badge verde (activo) o rojo (inactivo).
-        """
-        if obj.is_active:
-            return mark_safe(
-                '<span style="background-color: #10B981; color: white; '
-                'padding: 3px 10px; border-radius: 3px; font-weight: bold;">'
-                'Activo</span>'
-            )
-        else:
-            return mark_safe(
-                '<span style="background-color: #EF4444; color: white; '
-                'padding: 3px 10px; border-radius: 3px; font-weight: bold;">'
-                'Inactivo</span>'
-            )
-    is_active_badge.short_description = 'Estado'
-
-    def image_preview(self, obj) -> str:
-        """
-        Genera vista previa de la imagen del servicio.
-
-        PARÁMETROS:
-            obj (Service): Instancia del servicio.
-
-        RETORNA:
-            str: HTML con la imagen o texto "Sin imagen".
-
-        USO:
-            Se muestra en el formulario de edición del servicio.
-        """
+    def image_preview(self, obj):
         if obj.image:
             return format_html(
                 '<img src="{}" style="max-width: 300px; max-height: 300px; '
@@ -188,20 +128,7 @@ class ServiceAdmin(admin.ModelAdmin):
         return "Sin imagen"
     image_preview.short_description = 'Vista previa'
 
-    def leads_count(self, obj) -> str:
-        """
-        Muestra el número de leads asociados al servicio.
-
-        PARÁMETROS:
-            obj (Service): Instancia del servicio.
-
-        RETORNA:
-            str: Badge con contador o guión si no hay leads.
-
-        PROPÓSITO:
-            Permite identificar qué servicios generan más interés.
-            Útil para análisis de demanda y decisiones de marketing.
-        """
+    def leads_count(self, obj):
         count = obj.leads.count()
         if count > 0:
             return format_html(
@@ -217,14 +144,5 @@ class ServiceAdmin(admin.ModelAdmin):
     # -------------------------------------------------------------------------
 
     def get_queryset(self, request):
-        """
-        Optimiza las consultas precargando leads relacionados.
-
-        PROPÓSITO:
-            Evitar N+1 queries al mostrar leads_count en el listado.
-
-        RETORNA:
-            QuerySet: Servicios con leads precargados.
-        """
         queryset = super().get_queryset(request)
         return queryset.prefetch_related('leads')

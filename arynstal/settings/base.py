@@ -61,6 +61,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 # =============================================================================
 
 INSTALLED_APPS = [
+    # Unfold - tema admin moderno (DEBE estar antes de django.contrib.admin)
+    'unfold',
+
     # Apps de Django (framework)
     'django.contrib.admin',           # Panel de administración
     'django.contrib.auth',            # Sistema de autenticación
@@ -348,4 +351,146 @@ COMPANY_INFO = {
     'ADDRESS': 'Barcelona, España',            # Dirección
     'WEBSITE': 'https://arynstal.es',          # URL del sitio
     'DESCRIPTION': 'Instalaciones y reformas', # Descripción breve
+}
+
+
+# =============================================================================
+# 16. UNFOLD - TEMA ADMIN MODERNO
+# =============================================================================
+# Configuracion del tema para el panel de administracion principal (/admynstal/)
+
+UNFOLD = {
+    "SITE_TITLE": "Arynstal CRM",
+    "SITE_HEADER": "Arynstal CRM",
+    "SITE_SYMBOL": "admin_panel_settings",
+    "SHOW_HISTORY": True,
+    "SHOW_VIEW_ON_SITE": False,
+    "THEME": {
+        "light": {
+            "colors": {
+                "primary": {
+                    "50": "240 249 255",
+                    "100": "224 232 242",
+                    "200": "191 219 254",
+                    "300": "147 197 253",
+                    "400": "96 165 250",
+                    "500": "14 77 146",
+                    "600": "13 59 102",
+                    "700": "11 49 87",
+                    "800": "9 40 72",
+                    "900": "7 33 60",
+                    "950": "5 24 44",
+                },
+            },
+        },
+    },
+    "SIDEBAR": {
+        "show_search": True,
+        "navigation": [
+            {
+                "title": "CRM",
+                "items": [
+                    {
+                        "title": "Leads",
+                        "icon": "contact_mail",
+                        "link": "admin:leads_lead_changelist",
+                    },
+                    {
+                        "title": "Presupuestos",
+                        "icon": "request_quote",
+                        "link": "admin:leads_budget_changelist",
+                    },
+                    {
+                        "title": "Imagenes",
+                        "icon": "image",
+                        "link": "admin:leads_leadimage_changelist",
+                    },
+                    {
+                        "title": "Historial",
+                        "icon": "history",
+                        "link": "admin:leads_leadlog_changelist",
+                    },
+                ],
+            },
+            {
+                "title": "Catalogo",
+                "items": [
+                    {
+                        "title": "Servicios",
+                        "icon": "home_repair_service",
+                        "link": "admin:services_service_changelist",
+                    },
+                    {
+                        "title": "Proyectos",
+                        "icon": "photo_library",
+                        "link": "admin:projects_project_changelist",
+                    },
+                ],
+            },
+            {
+                "title": "Sistema",
+                "items": [
+                    {
+                        "title": "Usuarios",
+                        "icon": "group",
+                        "link": "admin:auth_user_changelist",
+                    },
+                    {
+                        "title": "Perfiles",
+                        "icon": "badge",
+                        "link": "admin:users_userprofile_changelist",
+                    },
+                ],
+            },
+        ],
+    },
+}
+
+
+# =============================================================================
+# 17. UNFOLD OFFICE - PANEL DE OFICINA (/offynstal/)
+# =============================================================================
+# Configuracion separada para el panel simplificado de oficina.
+# Se referencia desde OfficeAdminSite con settings_name = "UNFOLD_OFFICE"
+
+UNFOLD_OFFICE = {
+    "SITE_TITLE": "Arynstal CRM - Oficina",
+    "SITE_HEADER": "Arynstal CRM",
+    "SITE_SYMBOL": "storefront",
+    "SHOW_HISTORY": True,
+    "SHOW_VIEW_ON_SITE": False,
+    "THEME": {
+        "light": {
+            "colors": {
+                "primary": {
+                    "50": "240 249 255",
+                    "100": "224 232 242",
+                    "200": "191 219 254",
+                    "300": "147 197 253",
+                    "400": "96 165 250",
+                    "500": "14 77 146",
+                    "600": "13 59 102",
+                    "700": "11 49 87",
+                    "800": "9 40 72",
+                    "900": "7 33 60",
+                    "950": "5 24 44",
+                },
+            },
+        },
+    },
+    "SIDEBAR": {
+        "show_search": True,
+        "navigation": [
+            {
+                "title": "Gestion",
+                "items": [
+                    {
+                        "title": "Leads",
+                        "icon": "contact_mail",
+                        "link": "office:leads_lead_changelist",
+                    },
+                ],
+            },
+        ],
+    },
 }

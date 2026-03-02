@@ -1,11 +1,14 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from django.utils.safestring import mark_safe
+
+from unfold.admin import ModelAdmin as UnfoldModelAdmin
+from unfold.admin import TabularInline as UnfoldTabularInline
+from unfold.decorators import display
 
 from .models import Project, ProjectImage
 
 
-class ProjectImageInline(admin.TabularInline):
+class ProjectImageInline(UnfoldTabularInline):
     model = ProjectImage
     extra = 1
     max_num = ProjectImage.MAX_IMAGES_PER_PROJECT
@@ -23,14 +26,14 @@ class ProjectImageInline(admin.TabularInline):
 
 
 @admin.register(Project)
-class ProjectAdmin(admin.ModelAdmin):
+class ProjectAdmin(UnfoldModelAdmin):
     list_display = (
         'order',
         'title',
         'service',
         'year',
-        'is_active_badge',
-        'is_featured_badge',
+        'display_is_active',
+        'display_is_featured',
         'images_count',
         'updated_at',
     )
@@ -76,29 +79,16 @@ class ProjectAdmin(admin.ModelAdmin):
         return 'Sin imagen'
     cover_preview.short_description = 'Vista previa portada'
 
-    def is_active_badge(self, obj):
-        if obj.is_active:
-            return mark_safe(
-                '<span style="background-color: #10B981; color: white; '
-                'padding: 3px 10px; border-radius: 3px; font-weight: bold;">'
-                'Activo</span>'
-            )
-        return mark_safe(
-            '<span style="background-color: #EF4444; color: white; '
-            'padding: 3px 10px; border-radius: 3px; font-weight: bold;">'
-            'Inactivo</span>'
-        )
-    is_active_badge.short_description = 'Estado'
+    @display(description="Estado", boolean=True)
+    def display_is_active(self, obj):
+        return obj.is_active
 
-    def is_featured_badge(self, obj):
-        if obj.is_featured:
-            return mark_safe(
-                '<span style="background-color: #F59E0B; color: white; '
-                'padding: 3px 8px; border-radius: 3px; font-weight: 600; '
-                'font-size: 11px;">DESTACADO</span>'
-            )
-        return '-'
-    is_featured_badge.short_description = 'Destacado'
+    @display(description="Destacado", label={
+        True: "warning",
+        False: None,
+    })
+    def display_is_featured(self, obj):
+        return obj.is_featured
 
     def images_count(self, obj):
         count = obj.images.count() + 1  # +1 por la portada

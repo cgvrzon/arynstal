@@ -8,17 +8,14 @@ AUTOR: @cgvrzon
 DESCRIPCIÓN:
     Panel de administración SIMPLIFICADO para usuarios de oficina.
     Accesible desde /offynstal/ (office + arynstal).
-
-    Este panel está diseñado para ser intuitivo y fácil de usar,
-    mostrando solo las funcionalidades esenciales para gestionar
-    leads y presupuestos.
+    Usa django-unfold para una interfaz moderna e intuitiva.
 
 CARACTERÍSTICAS:
-    - Solo muestra Lead y Budget (sin logs, imágenes, servicios, usuarios)
+    - Solo muestra Lead con inlines de imágenes y logs
     - Campos simplificados (sin RGPD, metadatos técnicos)
     - No permite eliminar registros
     - Acceso restringido a roles 'office' y 'admin'
-    - UI estándar de Django (simple y funcional)
+    - Interfaz moderna con django-unfold
 
 ACCESO:
     URL: /offynstal/
@@ -27,69 +24,92 @@ ACCESO:
 ===============================================================================
 """
 
-from django.contrib import admin
-from django.contrib.admin import AdminSite, ModelAdmin
-from django.utils.html import format_html
-from django.utils.safestring import mark_safe
+from unfold.admin import ModelAdmin as UnfoldModelAdmin
+from unfold.admin import TabularInline as UnfoldTabularInline
+from unfold.decorators import display
+from unfold.sites import UnfoldAdminSite
 
-from .models import Lead, Budget
+from django.utils.html import format_html
+
+from .models import Lead, LeadImage, LeadLog
 
 
 # =============================================================================
 # ADMIN SITE PERSONALIZADO PARA OFICINA
 # =============================================================================
 
-class OfficeAdminSite(AdminSite):
+class OfficeAdminSite(UnfoldAdminSite):
     """
-    AdminSite separado para usuarios de oficina.
+    AdminSite separado para usuarios de oficina con tema Unfold.
 
-    CARACTERÍSTICAS:
-        - URL independiente (/offynstal/)
-        - Títulos personalizados
-        - Restricción de acceso por rol
+    Usa settings_name = "UNFOLD_OFFICE" para cargar su propia
+    configuración visual desde settings/base.py.
     """
-    site_header = "Arynstal - Panel de Oficina"
-    site_title = "Offynstal"
-    index_title = "Gestión de Leads y Presupuestos"
+    settings_name = "UNFOLD_OFFICE"
 
     def has_permission(self, request):
-        """
-        Verifica si el usuario tiene permiso para acceder al panel.
-
-        Solo permite acceso a usuarios con rol 'office' o 'admin'.
-        Los técnicos de campo ('field') no pueden acceder.
-
-        RETORNA:
-            bool: True si el usuario puede acceder.
-        """
+        """Solo permite acceso a usuarios con rol 'office' o 'admin'."""
         if not request.user.is_active or not request.user.is_authenticated:
             return False
 
-        # Verificar rol del usuario
         if hasattr(request.user, 'profile'):
             return request.user.profile.role in ['office', 'admin']
 
-        # Superusuarios siempre pueden acceder
         return request.user.is_superuser
 
 
-# Instancia del AdminSite para oficina
 office_site = OfficeAdminSite(name='office')
+
+
+# =============================================================================
+# INLINES PARA EL PANEL DE OFICINA
+# =============================================================================
+
+class OfficeLeadImageInline(UnfoldTabularInline):
+    """Inline de imágenes adjuntas al lead (max 5, con preview)."""
+    model = LeadImage
+    extra = 0
+    max_num = 5
+    readonly_fields = ('uploaded_at', 'image_preview')
+    fields = ('image_preview', 'image', 'uploaded_at')
+    can_delete = True
+    tab = True
+
+    def image_preview(self, obj):
+        if obj.image:
+            return format_html(
+                '<img src="{}" style="max-width: 150px; max-height: 150px; '
+                'border-radius: 4px;" />',
+                obj.image.url
+            )
+        return "Sin imagen"
+    image_preview.short_description = 'Vista previa'
+
+
+class OfficeLeadLogInline(UnfoldTabularInline):
+    """Inline de historial de acciones del lead (read-only, max 10)."""
+    model = LeadLog
+    extra = 0
+    max_num = 10
+    readonly_fields = ('action', 'user', 'old_value', 'new_value', 'created_at')
+    fields = ('action', 'user', 'old_value', 'new_value', 'created_at')
+    can_delete = False
+    tab = True
+
+    def has_add_permission(self, request, obj=None):
+        return False
 
 
 # =============================================================================
 # ADMIN DE LEADS SIMPLIFICADO
 # =============================================================================
 
-class OfficeLeadAdmin(ModelAdmin):
+class OfficeLeadAdmin(UnfoldModelAdmin):
     """
     Admin simplificado de Leads para usuarios de oficina.
 
-    SIMPLIFICACIONES:
-        - Solo campos esenciales (sin IP, user-agent, RGPD)
-        - Sin inlines de imágenes ni logs
-        - No permite eliminar
-        - Listado limpio con badges de estado
+    Incluye inlines de imágenes y logs en pestañas separadas.
+    Badges de estado y urgencia con el sistema de labels de Unfold.
     """
 
     # -------------------------------------------------------------------------
@@ -102,8 +122,9 @@ class OfficeLeadAdmin(ModelAdmin):
         'phone',
         'email',
         'service',
-        'status_badge',
-        'urgency_badge',
+        'display_status',
+        'display_urgency',
+        'images_count',
         'created_at',
     )
 
@@ -118,6 +139,7 @@ class OfficeLeadAdmin(ModelAdmin):
     # -------------------------------------------------------------------------
 
     readonly_fields = ('created_at', 'updated_at')
+    inlines = [OfficeLeadImageInline, OfficeLeadLogInline]
 
     fieldsets = (
         ('Datos del Cliente', {
@@ -142,158 +164,52 @@ class OfficeLeadAdmin(ModelAdmin):
     # MÉTODOS DE VISUALIZACIÓN
     # -------------------------------------------------------------------------
 
-    def status_badge(self, obj):
-        """Badge de color para el estado del lead."""
-        colors = {
-            'nuevo': '#10B981',
-            'contactado': '#3B82F6',
-            'presupuestado': '#F59E0B',
-            'cerrado': '#6B7280',
-            'descartado': '#EF4444',
-        }
-        color = colors.get(obj.status, '#6B7280')
-        return format_html(
-            '<span style="background-color: {}; color: white; padding: 4px 12px; '
-            'border-radius: 4px; font-weight: 600; font-size: 12px;">{}</span>',
-            color,
-            obj.get_status_display()
-        )
-    status_badge.short_description = 'Estado'
+    @display(description="Estado", label={
+        "nuevo": "success",
+        "contactado": "info",
+        "presupuestado": "warning",
+        "cerrado": None,
+        "descartado": "danger",
+    })
+    def display_status(self, obj):
+        return obj.status
 
-    def urgency_badge(self, obj):
-        """Badge para la urgencia."""
-        if obj.urgency == 'urgente':
-            return mark_safe(
-                '<span style="background-color: #DC2626; color: white; '
-                'padding: 3px 8px; border-radius: 4px; font-weight: 600; '
-                'font-size: 11px;">URGENTE</span>'
+    @display(description="Urgencia", label={
+        "urgente": "danger",
+        "normal": None,
+    })
+    def display_urgency(self, obj):
+        return obj.urgency
+
+    def images_count(self, obj):
+        count = obj.images.count()
+        if count > 0:
+            return format_html(
+                '<span style="background-color: #E0E8F2; padding: 2px 8px; '
+                'border-radius: 3px; font-size: 11px;">IMG {}</span>',
+                count
             )
-        return mark_safe(
-            '<span style="color: #6B7280; font-size: 12px;">Normal</span>'
-        )
-    urgency_badge.short_description = 'Urgencia'
+        return '-'
+    images_count.short_description = 'Imágenes'
+
+    # -------------------------------------------------------------------------
+    # OPTIMIZACIÓN
+    # -------------------------------------------------------------------------
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related(
+            'service', 'assigned_to'
+        ).prefetch_related('images')
 
     # -------------------------------------------------------------------------
     # PERMISOS
     # -------------------------------------------------------------------------
 
     def has_delete_permission(self, request, obj=None):
-        """Oficina no puede eliminar leads."""
         return False
 
     def has_add_permission(self, request):
-        """Oficina puede crear leads (aunque normalmente vienen del formulario)."""
         return True
-
-
-# =============================================================================
-# ADMIN DE PRESUPUESTOS SIMPLIFICADO
-# =============================================================================
-
-class OfficeBudgetAdmin(ModelAdmin):
-    """
-    Admin simplificado de Presupuestos para usuarios de oficina.
-
-    FUNCIONALIDADES:
-        - Crear y editar presupuestos
-        - Adjuntar archivo PDF
-        - Ver referencia auto-generada
-    """
-
-    # -------------------------------------------------------------------------
-    # CONFIGURACIÓN DEL LISTADO
-    # -------------------------------------------------------------------------
-
-    list_display = (
-        'reference',
-        'lead_name',
-        'amount_display',
-        'status_badge',
-        'valid_until',
-        'created_at',
-    )
-
-    list_filter = ('status', 'created_at', 'valid_until')
-    search_fields = ('reference', 'lead__name', 'lead__email', 'description')
-    list_per_page = 20
-    date_hierarchy = 'created_at'
-    ordering = ('-created_at',)
-
-    # -------------------------------------------------------------------------
-    # CONFIGURACIÓN DEL FORMULARIO
-    # -------------------------------------------------------------------------
-
-    readonly_fields = ('reference', 'created_at', 'created_by')
-    autocomplete_fields = ['lead']
-
-    fieldsets = (
-        ('Presupuesto', {
-            'fields': ('reference', 'lead', 'description'),
-            'description': 'Información básica del presupuesto'
-        }),
-        ('Importe y Estado', {
-            'fields': ('amount', 'status', 'valid_until'),
-        }),
-        ('Documento', {
-            'fields': ('file',),
-            'description': 'Adjuntar PDF del presupuesto'
-        }),
-        ('Metadatos', {
-            'fields': ('created_at', 'created_by'),
-            'classes': ('collapse',),
-        }),
-    )
-
-    # -------------------------------------------------------------------------
-    # MÉTODOS DE VISUALIZACIÓN
-    # -------------------------------------------------------------------------
-
-    def lead_name(self, obj):
-        """Nombre del cliente asociado."""
-        return obj.lead.name if obj.lead else '-'
-    lead_name.short_description = 'Cliente'
-
-    def amount_display(self, obj):
-        """Importe formateado con símbolo de euro."""
-        if obj.amount:
-            formatted = '{:,.2f}'.format(obj.amount)
-            return format_html(
-                '<span style="font-weight: 600;">{} €</span>',
-                formatted
-            )
-        return '-'
-    amount_display.short_description = 'Importe'
-
-    def status_badge(self, obj):
-        """Badge de color para el estado del presupuesto."""
-        colors = {
-            'borrador': '#9CA3AF',
-            'enviado': '#3B82F6',
-            'aceptado': '#10B981',
-            'rechazado': '#EF4444',
-        }
-        color = colors.get(obj.status, '#6B7280')
-        return format_html(
-            '<span style="background-color: {}; color: white; padding: 4px 12px; '
-            'border-radius: 4px; font-weight: 600; font-size: 12px;">{}</span>',
-            color,
-            obj.get_status_display()
-        )
-    status_badge.short_description = 'Estado'
-
-    # -------------------------------------------------------------------------
-    # PERMISOS Y HOOKS
-    # -------------------------------------------------------------------------
-
-    def has_delete_permission(self, request, obj=None):
-        """Oficina no puede eliminar presupuestos."""
-        return False
-
-    def save_model(self, request, obj, form, change):
-        """Asigna el usuario creador automáticamente."""
-        if not change:
-            obj.created_by = request.user
-        super().save_model(request, obj, form, change)
 
 
 # =============================================================================
@@ -301,39 +217,3 @@ class OfficeBudgetAdmin(ModelAdmin):
 # =============================================================================
 
 office_site.register(Lead, OfficeLeadAdmin)
-office_site.register(Budget, OfficeBudgetAdmin)
-
-
-# =============================================================================
-# ADMIN DE PROYECTOS SIMPLIFICADO
-# =============================================================================
-
-from apps.projects.models import Project
-
-
-class OfficeProjectAdmin(ModelAdmin):
-    """Admin simplificado de Proyectos para usuarios de oficina."""
-
-    list_display = ('title', 'service', 'year', 'is_active', 'order')
-    list_filter = ('is_active', 'service', 'year')
-    search_fields = ('title', 'description')
-    list_per_page = 20
-    ordering = ('-is_featured', 'order', '-year')
-
-    fieldsets = (
-        ('Proyecto', {
-            'fields': ('title', 'description', 'service', 'cover_image'),
-        }),
-        ('Detalles', {
-            'fields': ('area', 'duration', 'year', 'client'),
-        }),
-        ('Visibilidad', {
-            'fields': ('is_active', 'is_featured', 'order'),
-        }),
-    )
-
-    def has_delete_permission(self, request, obj=None):
-        return False
-
-
-office_site.register(Project, OfficeProjectAdmin)

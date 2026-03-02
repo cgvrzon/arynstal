@@ -21,11 +21,6 @@ from django.conf.urls.static import static
 
 from apps.leads.office_admin import office_site
 
-# Personalización del sitio admin
-admin.site.site_header = "Arynstal SL - Administración"
-admin.site.site_title = "Arynstal Admin"
-admin.site.index_title = "Panel de control"
-
 urlpatterns = [
     path('', include('apps.web.urls')),
     # URL del admin ofuscada por seguridad (en lugar del /admin/ predeterminado)

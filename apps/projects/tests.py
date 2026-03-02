@@ -250,9 +250,9 @@ class ProjectAdminTest(TestCase):
         response = self.client.get('/admynstal/projects/project/add/')
         self.assertEqual(response.status_code, 200)
 
-    def test_office_admin_changelist(self):
-        # El office admin requiere rol 'office' o 'admin' en profile
+    def test_office_admin_no_projects(self):
+        # Projects ya no está registrado en el panel de oficina
         self.admin_user.profile.role = 'admin'
         self.admin_user.profile.save()
         response = self.client.get('/offynstal/projects/project/')
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 404)
