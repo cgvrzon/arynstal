@@ -358,6 +358,9 @@ COMPANY_INFO = {
 # 16. UNFOLD - TEMA ADMIN MODERNO
 # =============================================================================
 # Configuracion del tema para el panel de administracion principal (/admynstal/)
+# Unfold requiere reverse_lazy() o lambdas para los links del sidebar.
+
+from django.urls import reverse_lazy
 
 UNFOLD = {
     "SITE_TITLE": "Arynstal CRM",
@@ -393,22 +396,22 @@ UNFOLD = {
                     {
                         "title": "Leads",
                         "icon": "contact_mail",
-                        "link": "admin:leads_lead_changelist",
+                        "link": reverse_lazy("admin:leads_lead_changelist"),
                     },
                     {
                         "title": "Presupuestos",
                         "icon": "request_quote",
-                        "link": "admin:leads_budget_changelist",
+                        "link": reverse_lazy("admin:leads_budget_changelist"),
                     },
                     {
                         "title": "Imagenes",
                         "icon": "image",
-                        "link": "admin:leads_leadimage_changelist",
+                        "link": reverse_lazy("admin:leads_leadimage_changelist"),
                     },
                     {
                         "title": "Historial",
                         "icon": "history",
-                        "link": "admin:leads_leadlog_changelist",
+                        "link": reverse_lazy("admin:leads_leadlog_changelist"),
                     },
                 ],
             },
@@ -418,12 +421,12 @@ UNFOLD = {
                     {
                         "title": "Servicios",
                         "icon": "home_repair_service",
-                        "link": "admin:services_service_changelist",
+                        "link": reverse_lazy("admin:services_service_changelist"),
                     },
                     {
                         "title": "Proyectos",
                         "icon": "photo_library",
-                        "link": "admin:projects_project_changelist",
+                        "link": reverse_lazy("admin:projects_project_changelist"),
                     },
                 ],
             },
@@ -433,12 +436,12 @@ UNFOLD = {
                     {
                         "title": "Usuarios",
                         "icon": "group",
-                        "link": "admin:auth_user_changelist",
+                        "link": reverse_lazy("admin:auth_user_changelist"),
                     },
                     {
                         "title": "Perfiles",
                         "icon": "badge",
-                        "link": "admin:users_userprofile_changelist",
+                        "link": reverse_lazy("admin:users_userprofile_changelist"),
                     },
                 ],
             },
@@ -487,7 +490,7 @@ UNFOLD_OFFICE = {
                     {
                         "title": "Leads",
                         "icon": "contact_mail",
-                        "link": "office:leads_lead_changelist",
+                        "link": reverse_lazy("office:leads_lead_changelist"),
                     },
                 ],
             },

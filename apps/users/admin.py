@@ -50,6 +50,15 @@ class UserAdmin(UnfoldModelAdmin, BaseUserAdmin):
     BaseUserAdmin SEGUNDO para heredar fieldsets, filtros y lógica de auth.
     """
 
+    # add_fieldsets explícito: Django 6 añade 'usable_password' que Unfold
+    # no renderiza correctamente. Mantenemos solo username + passwords.
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide',),
+            'fields': ('username', 'password1', 'password2'),
+        }),
+    )
+
     inlines = (UserProfileInline,)
 
     # -------------------------------------------------------------------------
