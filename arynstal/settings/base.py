@@ -368,6 +368,9 @@ UNFOLD = {
     "SITE_SYMBOL": "admin_panel_settings",
     "SHOW_HISTORY": True,
     "SHOW_VIEW_ON_SITE": False,
+    "STYLES": [
+        "/static/css/admin/unfold-custom.css",
+    ],
     "THEME": {
         "light": {
             "colors": {
@@ -462,6 +465,9 @@ UNFOLD_OFFICE = {
     "SITE_SYMBOL": "storefront",
     "SHOW_HISTORY": True,
     "SHOW_VIEW_ON_SITE": False,
+    "STYLES": [
+        "/static/css/admin/unfold-custom.css",
+    ],
     "THEME": {
         "light": {
             "colors": {

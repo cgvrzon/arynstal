@@ -1,0 +1,140 @@
+/* =============================================================================
+   UNFOLD CUSTOM STYLES - Arynstal CRM
+   =============================================================================
+   Personalización visual del panel admin sobre django-unfold.
+   Usa CSS vanilla + variables de Tailwind ya compiladas por Unfold.
+   Se inyecta via UNFOLD["STYLES"] en settings/base.py.
+   ============================================================================= */
+
+/* ---------------------------------------------------------------------------
+   VARIABLES CORPORATIVAS
+   --------------------------------------------------------------------------- */
+
+:root {
+    --arynstal-primary: #0E4D92;
+    --arynstal-primary-light: #1a6bc4;
+    --arynstal-primary-ring: rgba(14, 77, 146, 0.3);
+    --arynstal-border: #cbd5e1;
+    --arynstal-border-hover: #94a3b8;
+}
+
+/* ---------------------------------------------------------------------------
+   INPUTS DE TEXTO, EMAIL, PASSWORD, NUMBER, URL
+   --------------------------------------------------------------------------- */
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="url"],
+input[type="tel"],
+textarea {
+    border: 1.5px solid var(--arynstal-border) !important;
+    border-radius: 8px !important;
+    padding: 10px 14px !important;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+input[type="text"]:hover,
+input[type="email"]:hover,
+input[type="password"]:hover,
+input[type="number"]:hover,
+input[type="url"]:hover,
+input[type="tel"]:hover,
+textarea:hover {
+    border-color: var(--arynstal-border-hover) !important;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="number"]:focus,
+input[type="url"]:focus,
+input[type="tel"]:focus,
+textarea:focus {
+    border-color: var(--arynstal-primary) !important;
+    box-shadow: 0 0 0 3px var(--arynstal-primary-ring) !important;
+    outline: none !important;
+}
+
+/* ---------------------------------------------------------------------------
+   SELECT / DROPDOWN
+   --------------------------------------------------------------------------- */
+
+select {
+    border: 1.5px solid var(--arynstal-border) !important;
+    border-radius: 8px !important;
+    padding: 10px 40px 10px 14px !important;
+    background-color: #fff !important;
+    cursor: pointer !important;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+select:hover {
+    border-color: var(--arynstal-border-hover) !important;
+}
+
+select:focus {
+    border-color: var(--arynstal-primary) !important;
+    box-shadow: 0 0 0 3px var(--arynstal-primary-ring) !important;
+    outline: none !important;
+}
+
+/* ---------------------------------------------------------------------------
+   CHECKBOXES
+   --------------------------------------------------------------------------- */
+
+input[type="checkbox"]:checked {
+    background-color: var(--arynstal-primary) !important;
+    border-color: var(--arynstal-primary) !important;
+}
+
+input[type="checkbox"]:focus {
+    box-shadow: 0 0 0 3px var(--arynstal-primary-ring) !important;
+}
+
+/* ---------------------------------------------------------------------------
+   FIELDSET HEADERS (secciones del formulario)
+   --------------------------------------------------------------------------- */
+
+fieldset > h2,
+.module > h2 {
+    font-weight: 600 !important;
+}
+
+/* ---------------------------------------------------------------------------
+   BOTÓN GUARDAR (refuerzo color corporativo)
+   --------------------------------------------------------------------------- */
+
+.submit-row input[type="submit"],
+button[type="submit"].bg-primary-600 {
+    background-color: var(--arynstal-primary) !important;
+    transition: background-color 0.2s ease !important;
+}
+
+.submit-row input[type="submit"]:hover,
+button[type="submit"].bg-primary-600:hover {
+    background-color: var(--arynstal-primary-light) !important;
+}
+
+/* ---------------------------------------------------------------------------
+   HELP TEXT (más legible)
+   --------------------------------------------------------------------------- */
+
+.help,
+.helptext,
+p.help {
+    font-size: 0.8rem !important;
+    color: #64748b !important;
+    margin-top: 4px !important;
+}
+
+/* ---------------------------------------------------------------------------
+   REDUCED MOTION
+   --------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+    input, select, textarea, button {
+        transition: none !important;
+    }
+}
