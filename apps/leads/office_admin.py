@@ -53,7 +53,7 @@ class OfficeAdminSite(UnfoldAdminSite):
             return False
 
         if hasattr(request.user, 'profile'):
-            return request.user.profile.role in ['office', 'admin']
+            return request.user.profile.role in ['office', 'admin', 'field']
 
         return request.user.is_superuser
 
@@ -197,7 +197,11 @@ class OfficeLeadAdmin(UnfoldModelAdmin):
     # -------------------------------------------------------------------------
 
     def get_queryset(self, request):
-        return super().get_queryset(request).select_related(
+        queryset = super().get_queryset(request)
+        # Técnicos de campo solo ven leads asignados (mismo patrón que LeadAdmin)
+        if hasattr(request.user, 'profile') and request.user.profile.is_field():
+            queryset = queryset.filter(assigned_to=request.user)
+        return queryset.select_related(
             'service', 'assigned_to'
         ).prefetch_related('images')
 

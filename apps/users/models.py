@@ -42,6 +42,7 @@ RELACIÓN CON OTROS MODELOS:
 
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 
 # =============================================================================
@@ -206,3 +207,68 @@ class UserProfile(models.Model):
             bool: True si puede crear presupuestos.
         """
         return self.role in ['admin', 'office']
+
+
+# =============================================================================
+# MODELO: LOGINATTEMPT
+# =============================================================================
+
+class LoginAttempt(models.Model):
+    """
+    Registro de intentos de login fallidos para auditoría y seguridad.
+
+    Almacena cada intento fallido con información suficiente para
+    detectar ataques de fuerza bruta y notificar al administrador.
+
+    NOTA: username es CharField (no FK) porque el intento puede ser
+    con un nombre de usuario que no existe en el sistema.
+    """
+
+    username = models.CharField(
+        max_length=150,
+        db_index=True,
+        verbose_name='Usuario intentado',
+    )
+
+    ip_address = models.GenericIPAddressField(
+        db_index=True,
+        verbose_name='Dirección IP',
+    )
+
+    user_agent = models.TextField(
+        blank=True,
+        default='',
+        verbose_name='User-Agent',
+    )
+
+    path = models.CharField(
+        max_length=255,
+        blank=True,
+        default='',
+        verbose_name='URL del intento',
+        help_text='Distingue entre paneles (admynstal, offynstal)',
+    )
+
+    timestamp = models.DateTimeField(
+        default=timezone.now,
+        db_index=True,
+        verbose_name='Fecha y hora',
+    )
+
+    class Meta:
+        verbose_name = 'Intento de login fallido'
+        verbose_name_plural = 'Intentos de login fallidos'
+        ordering = ['-timestamp']
+        indexes = [
+            models.Index(
+                fields=['username', 'timestamp'],
+                name='idx_login_user_time',
+            ),
+            models.Index(
+                fields=['ip_address', 'timestamp'],
+                name='idx_login_ip_time',
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.username} desde {self.ip_address} - {self.timestamp:%d/%m/%Y %H:%M}"

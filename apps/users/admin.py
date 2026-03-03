@@ -16,8 +16,10 @@ DESCRIPCIÓN:
 ===============================================================================
 """
 
+import logging
+
 from django import forms
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
@@ -27,7 +29,10 @@ from unfold.admin import ModelAdmin as UnfoldModelAdmin
 from unfold.admin import StackedInline as UnfoldStackedInline
 from unfold.decorators import display
 
-from .models import UserProfile
+from .models import LoginAttempt, UserProfile
+from .notifications import send_welcome_email
+
+logger = logging.getLogger(__name__)
 
 
 # =============================================================================
@@ -50,8 +55,9 @@ class ArynstalUserCreationForm(UserCreationForm):
         label='Apellidos',
     )
     email = forms.EmailField(
-        required=False,
+        required=True,
         label='Email',
+        help_text='Obligatorio. Se enviará email de activación.',
     )
     role = forms.ChoiceField(
         choices=UserProfile.ROLE_CHOICES,
@@ -179,12 +185,13 @@ class UserAdmin(UnfoldModelAdmin, BaseUserAdmin):
 
     def save_model(self, request, obj, form, change):
         if not change:
-            # En creación: guardar first_name, last_name, email del form
+            # En creación: guardar datos personales del formulario
             obj.first_name = form.cleaned_data.get('first_name', '')
             obj.last_name = form.cleaned_data.get('last_name', '')
             obj.email = form.cleaned_data.get('email', '')
-            # Todos los usuarios del admin necesitan is_staff para poder loguearse
             obj.is_staff = True
+            # Cuenta inactiva hasta que el usuario active via email
+            obj.is_active = False
 
         super().save_model(request, obj, form, change)
 
@@ -201,6 +208,20 @@ class UserAdmin(UnfoldModelAdmin, BaseUserAdmin):
                     user=obj,
                     role=form.cleaned_data.get('role', 'field'),
                     phone=form.cleaned_data.get('phone', ''),
+                )
+
+            # Enviar email de bienvenida con link de activación
+            sent = send_welcome_email(obj)
+            if sent:
+                messages.success(
+                    request,
+                    f'Email de activación enviado a {obj.email}.',
+                )
+            else:
+                messages.warning(
+                    request,
+                    f'No se pudo enviar email de activación a {obj.email}. '
+                    f'Puedes activar la cuenta manualmente.',
                 )
 
 
@@ -239,4 +260,28 @@ class UserProfileAdmin(UnfoldModelAdmin):
         return obj.role
 
     def has_add_permission(self, request):
+        return False
+
+
+# =============================================================================
+# ADMIN: LOGIN ATTEMPT (AUDITORÍA)
+# =============================================================================
+
+@admin.register(LoginAttempt)
+class LoginAttemptAdmin(UnfoldModelAdmin):
+    """
+    Panel de auditoría para intentos de login fallidos.
+    Solo lectura. Solo admin puede borrar registros (limpieza manual).
+    """
+
+    list_display = ('username', 'ip_address', 'path', 'timestamp')
+    list_filter = ('path', 'timestamp')
+    search_fields = ('username', 'ip_address')
+    readonly_fields = ('username', 'ip_address', 'user_agent', 'path', 'timestamp')
+    ordering = ('-timestamp',)
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
         return False

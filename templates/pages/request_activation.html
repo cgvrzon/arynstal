@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solicitar activación - Arynstal</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            color: #333;
+        }
+        .card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 40px;
+            max-width: 480px;
+            width: 100%;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h1 { color: #0E4D92; font-size: 24px; margin: 0 0 8px; text-align: center; }
+        .subtitle { color: #666; text-align: center; margin: 0 0 24px; font-size: 14px; }
+        label {
+            display: block;
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 6px;
+            color: #333;
+        }
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 15px;
+            margin-bottom: 16px;
+            box-sizing: border-box;
+        }
+        input:focus {
+            outline: none;
+            border-color: #0E4D92;
+            box-shadow: 0 0 0 3px rgba(14, 77, 146, 0.15);
+        }
+        .btn {
+            display: block;
+            width: 100%;
+            background: #0E4D92;
+            color: #fff;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 15px;
+            border: none;
+            cursor: pointer;
+            box-sizing: border-box;
+        }
+        .btn-link {
+            display: inline-block;
+            background: #0E4D92;
+            color: #fff;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+        .alert {
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .alert-error {
+            background-color: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+        }
+        .alert-success {
+            background-color: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #166534;
+        }
+        .alert-info {
+            background-color: #f0f9ff;
+            border: 1px solid #bae6fd;
+            color: #0c4a6e;
+        }
+        .link-back {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+            font-size: 13px;
+            text-decoration: none;
+        }
+        .link-back:hover { color: #0E4D92; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Solicitar activación</h1>
+        <p class="subtitle">Introduce tus credenciales para recibir un nuevo email de activación.</p>
+
+        {% if error %}
+            <div class="alert alert-error">{{ error }}</div>
+        {% endif %}
+
+        {% if success %}
+            <div class="alert alert-success">{{ success }}</div>
+        {% endif %}
+
+        {% if info %}
+            <div class="alert alert-info">
+                {{ info }}
+                {% if login_url %}
+                    <div style="text-align: center; margin-top: 12px;">
+                        <a href="{{ login_url }}" class="btn-link">Iniciar sesión</a>
+                    </div>
+                {% endif %}
+            </div>
+        {% endif %}
+
+        {% if not success and not info %}
+            <form method="post">
+                {% csrf_token %}
+                <label for="username">Usuario</label>
+                <input type="text" id="username" name="username" autocomplete="username" required>
+
+                <label for="password">Contraseña</label>
+                <input type="password" id="password" name="password" autocomplete="current-password" required>
+
+                <button type="submit" class="btn">Solicitar activación</button>
+            </form>
+        {% endif %}
+
+        <a href="/" class="link-back">Volver al inicio</a>
+    </div>
+</body>
+</html>

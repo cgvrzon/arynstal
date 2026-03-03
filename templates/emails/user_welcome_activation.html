@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bienvenido a Arynstal</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header {
+            border-bottom: 3px solid #2563eb;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+        .header h1 {
+            color: #2563eb;
+            margin: 0;
+            font-size: 24px;
+        }
+        .info-box {
+            background-color: #f0f9ff;
+            border: 1px solid #bae6fd;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .label {
+            font-weight: 600;
+            color: #666;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+        .value {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 16px;
+            padding: 10px;
+            background-color: #f8fafc;
+            border-radius: 4px;
+            border-left: 3px solid #2563eb;
+        }
+        .btn {
+            display: inline-block;
+            background-color: #2563eb;
+            color: #ffffff !important;
+            text-decoration: none;
+            padding: 14px 32px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 16px;
+            margin: 20px 0;
+        }
+        .warning {
+            background-color: #fffbeb;
+            border: 1px solid #fde68a;
+            border-radius: 6px;
+            padding: 12px;
+            margin: 20px 0;
+            font-size: 13px;
+            color: #92400e;
+        }
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Bienvenido a Arynstal</h1>
+        </div>
+
+        <p>Hola {{ user.get_full_name|default:user.username }},</p>
+
+        <p>Se ha creado tu cuenta en el sistema de gestión de Arynstal.
+        Para activar tu cuenta, haz clic en el siguiente botón:</p>
+
+        <div style="text-align: center;">
+            <a href="{{ activation_url }}" class="btn">Activar mi cuenta</a>
+        </div>
+
+        <div class="info-box">
+            <div class="label">Tu usuario</div>
+            <div style="font-size: 16px; font-weight: 600;">{{ user.username }}</div>
+        </div>
+
+        <div class="warning">
+            Este enlace expira en {{ expiry_hours }} horas.
+            Si no solicitaste esta cuenta, puedes ignorar este mensaje.
+        </div>
+
+        <p style="font-size: 13px; color: #666;">
+            Si tu enlace de activación expira, puedes solicitar uno nuevo en:<br>
+            <a href="{{ resend_url }}" style="color: #2563eb;">{{ resend_url }}</a>
+        </p>
+
+        <p style="font-size: 13px; color: #666;">
+            Si el botón no funciona, copia y pega esta URL en tu navegador:<br>
+            <span style="word-break: break-all; color: #2563eb;">{{ activation_url }}</span>
+        </p>
+
+        <div class="footer">
+            <p>Este es un mensaje automático del sistema de Arynstal.</p>
+            <p>No respondas a este email.</p>
+        </div>
+    </div>
+</body>
+</html>

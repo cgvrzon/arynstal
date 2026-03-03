@@ -101,6 +101,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     # Asocia el usuario a cada request
 
+    'apps.users.middleware.RoleSessionExpiryMiddleware',
+    # Configura expiración de sesión según rol del usuario
+
     'django.contrib.messages.middleware.MessageMiddleware',
     # Habilita mensajes flash entre requests
 
@@ -256,7 +259,23 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024  # 10MB
 
 
 # =============================================================================
-# 12. DEFAULT PRIMARY KEY TYPE
+# 12. SESSION SECURITY - EXPIRACIÓN POR ROL
+# =============================================================================
+# Configuración de duración de sesión por rol de usuario.
+# Usada por apps.users.middleware.RoleSessionExpiryMiddleware.
+
+SESSION_SECURITY = {
+    'ADMIN_SESSION_DURATION': 8 * 60 * 60,   # 8 horas
+    'OFFICE_SESSION_DURATION': 4 * 60 * 60,  # 4 horas
+    'FIELD_SESSION_DURATION': 2 * 60 * 60,   # 2 horas
+}
+
+SESSION_SAVE_EVERY_REQUEST = True
+# Sliding window: cada request renueva la expiración de la sesión.
+
+
+# =============================================================================
+# 13. DEFAULT PRIMARY KEY TYPE
 # =============================================================================
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -329,11 +348,21 @@ NOTIFICATIONS = {
         # Enviar confirmación automática al cliente
         'SEND_CUSTOMER_CONFIRMATION': True,
     },
-    # Preparado para futuras notificaciones:
-    # 'BUDGET_REQUEST': {
-    #     'ENABLED': True,
-    #     'ADMIN_EMAILS': ['presupuestos@arynstal.es'],
-    # },
+
+    # Notificaciones del módulo de usuarios
+    'USER': {
+        # Email de bienvenida con link de activación
+        'WELCOME_EMAIL_ENABLED': True,
+        'ACTIVATION_TOKEN_HOURS': 48,
+
+        # Alerta de intentos de login fallidos
+        'FAILED_LOGIN_ALERT_ENABLED': True,
+        'FAILED_LOGIN_THRESHOLD': 5,          # Alertar al llegar a N intentos
+        'FAILED_LOGIN_WINDOW_MINUTES': 60,    # Ventana temporal en minutos
+
+        # Emails que reciben las alertas de seguridad
+        'ADMIN_EMAILS': ['admin@arynstal.es'],
+    },
 }
 
 
@@ -445,6 +474,11 @@ UNFOLD = {
                         "title": "Perfiles",
                         "icon": "badge",
                         "link": reverse_lazy("admin:users_userprofile_changelist"),
+                    },
+                    {
+                        "title": "Intentos de login",
+                        "icon": "shield",
+                        "link": reverse_lazy("admin:users_loginattempt_changelist"),
                     },
                 ],
             },

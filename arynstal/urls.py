@@ -27,6 +27,8 @@ urlpatterns = [
     path('admynstal/', admin.site.urls),
     # Panel simplificado para oficina (usuarios con rol 'office' y 'admin')
     path('offynstal/', office_site.urls),
+    # Activación de cuentas de usuario
+    path('account/', include('apps.users.urls')),
 ]
 
 # Servir archivos media en desarrollo
