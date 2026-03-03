@@ -209,11 +209,27 @@ class OfficeLeadAdmin(UnfoldModelAdmin):
     # PERMISOS
     # -------------------------------------------------------------------------
 
+    def has_module_permission(self, request):
+        """Acceso al módulo basado en rol (no en permisos de Django)."""
+        if not request.user.is_active or not request.user.is_authenticated:
+            return False
+        if request.user.is_superuser:
+            return True
+        if hasattr(request.user, 'profile'):
+            return request.user.profile.role in ['office', 'admin', 'field']
+        return False
+
+    def has_view_permission(self, request, obj=None):
+        return self.has_module_permission(request)
+
+    def has_change_permission(self, request, obj=None):
+        return self.has_module_permission(request)
+
     def has_delete_permission(self, request, obj=None):
         return False
 
     def has_add_permission(self, request):
-        return True
+        return self.has_module_permission(request)
 
 
 # =============================================================================
