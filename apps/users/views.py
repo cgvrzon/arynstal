@@ -4,8 +4,10 @@ from django.contrib.auth.models import User
 from django.conf import settings
 from django.core.signing import BadSignature, SignatureExpired
 from django.shortcuts import render
+from django.views.decorators.http import require_POST
 from django_ratelimit.decorators import ratelimit
 
+from .forms import SetPasswordAfterActivationForm
 from .notifications import ACTIVATION_SIGNER, send_welcome_email
 
 logger = logging.getLogger(__name__)
@@ -64,10 +66,14 @@ def activate_account(request, token):
         user.save(update_fields=['is_active'])
         logger.info(f'Cuenta activada: {user.username} (pk={user.pk})')
 
+        # Guardar pk en sesión para cambio opcional de contraseña
+        request.session['password_change_user_pk'] = user.pk
+
         return render(request, 'pages/activation_success.html', {
             'user': user,
             'login_url': login_url,
             'already_active': False,
+            'password_form': SetPasswordAfterActivationForm(user=user),
         })
 
     except SignatureExpired:
@@ -165,3 +171,59 @@ def request_activation(request):
             )
 
     return render(request, 'pages/request_activation.html', context)
+
+
+# =============================================================================
+# VISTA: CAMBIO DE CONTRASEÑA POST-ACTIVACIÓN
+# =============================================================================
+
+@require_POST
+def set_password_after_activation(request):
+    """
+    Procesa el cambio de contraseña opcional tras activar la cuenta.
+
+    Usa la sesión para identificar al usuario de forma segura (server-side,
+    no manipulable por el cliente). La clave de sesión se limpia tras uso.
+    """
+    user_pk = request.session.get('password_change_user_pk')
+
+    if not user_pk:
+        return render(request, 'pages/activation_error.html', {
+            'error': 'invalid',
+            'message': (
+                'La sesión ha expirado. Inicia sesión con tu contraseña actual '
+                'para cambiarla desde tu perfil.'
+            ),
+        }, status=400)
+
+    try:
+        user = User.objects.select_related('profile').get(pk=user_pk, is_active=True)
+    except User.DoesNotExist:
+        request.session.pop('password_change_user_pk', None)
+        return render(request, 'pages/activation_error.html', {
+            'error': 'invalid',
+            'message': 'Usuario no encontrado.',
+        }, status=400)
+
+    login_url = _get_login_url_for_user(user)
+    form = SetPasswordAfterActivationForm(user=user, data=request.POST)
+
+    if form.is_valid():
+        user.set_password(form.cleaned_data['new_password1'])
+        user.save(update_fields=['password'])
+        request.session.pop('password_change_user_pk', None)
+        logger.info(f'Contraseña cambiada post-activación: {user.username}')
+
+        return render(request, 'pages/activation_success.html', {
+            'user': user,
+            'login_url': login_url,
+            'password_changed': True,
+        })
+
+    # Formulario inválido → re-renderizar con errores
+    return render(request, 'pages/activation_success.html', {
+        'user': user,
+        'login_url': login_url,
+        'already_active': False,
+        'password_form': form,
+    })

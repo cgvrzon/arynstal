@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% if already_active %}Cuenta ya activa{% else %}Cuenta activada{% endif %} - Arynstal</title>
+    <title>
+        {% if password_changed %}Contraseña actualizada{% elif already_active %}Cuenta ya activa{% else %}Cuenta activada{% endif %} - Arynstal
+    </title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -20,37 +22,159 @@
             border-radius: 8px;
             padding: 40px;
             max-width: 480px;
-            text-align: center;
+            width: 100%;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
-        h1 { color: #16a34a; font-size: 24px; margin: 0 0 16px; }
-        p { color: #666; line-height: 1.6; margin: 0 0 24px; }
+        h1 { color: #16a34a; font-size: 24px; margin: 0 0 16px; text-align: center; }
+        p { color: #666; line-height: 1.6; margin: 0 0 24px; text-align: center; }
         .btn {
-            display: inline-block;
+            display: block;
             background: #0E4D92;
             color: #fff;
             text-decoration: none;
             padding: 12px 24px;
             border-radius: 6px;
             font-weight: 600;
+            font-size: 15px;
+            text-align: center;
+            border: none;
+            cursor: pointer;
+            box-sizing: border-box;
+        }
+        .btn-submit {
+            width: 100%;
+            margin-bottom: 12px;
         }
         .icon {
             font-size: 48px;
             margin-bottom: 16px;
+            text-align: center;
         }
+        /* Separador */
+        .separator {
+            border-top: 1px solid #e5e7eb;
+            margin: 24px 0;
+            padding-top: 20px;
+        }
+        .separator-text {
+            color: #666;
+            font-size: 14px;
+            margin: 0 0 16px;
+            text-align: center;
+        }
+        /* Formulario */
+        label {
+            display: block;
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 6px;
+            color: #333;
+        }
+        input[type="password"] {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 15px;
+            margin-bottom: 16px;
+            box-sizing: border-box;
+        }
+        input:focus {
+            outline: none;
+            border-color: #0E4D92;
+            box-shadow: 0 0 0 3px rgba(14, 77, 146, 0.15);
+        }
+        .help-text {
+            color: #999;
+            font-size: 12px;
+            margin: -12px 0 16px;
+        }
+        /* Alertas */
+        .alert {
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .alert-error {
+            background-color: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+        }
+        .alert-success {
+            background-color: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #166534;
+        }
+        /* Link omitir */
+        .link-skip {
+            display: block;
+            text-align: center;
+            margin-top: 8px;
+            color: #666;
+            font-size: 13px;
+            text-decoration: none;
+        }
+        .link-skip:hover { color: #0E4D92; }
     </style>
 </head>
 <body>
     <div class="card">
         <div class="icon">&#10003;</div>
-        {% if already_active %}
+
+        {% if password_changed %}
+            <h1>Contraseña actualizada</h1>
+            <p>Tu contraseña ha sido cambiada correctamente. Ya puedes iniciar sesión con tu nueva contraseña.</p>
+            <a href="{{ login_url }}" class="btn">Iniciar sesión</a>
+
+        {% elif already_active %}
             <h1>Tu cuenta ya estaba activa</h1>
             <p>Hola {{ user.get_full_name|default:user.username }}, tu cuenta ya se encontraba activada. Puedes iniciar sesión directamente.</p>
+            <a href="{{ login_url }}" class="btn">Iniciar sesión</a>
+
         {% else %}
             <h1>Cuenta activada correctamente</h1>
-            <p>Hola {{ user.get_full_name|default:user.username }}, tu cuenta ha sido activada. Ya puedes iniciar sesión en el sistema.</p>
+            <p>Hola {{ user.get_full_name|default:user.username }}, tu cuenta ha sido activada.</p>
+
+            {% if password_form %}
+                <div class="separator">
+                    <p class="separator-text">Si lo deseas, puedes establecer tu propia contraseña:</p>
+                </div>
+
+                {% if password_form.errors %}
+                    <div class="alert alert-error">
+                        {% for error in password_form.non_field_errors %}
+                            {{ error }}<br>
+                        {% endfor %}
+                        {% for field in password_form %}
+                            {% for error in field.errors %}
+                                {{ error }}<br>
+                            {% endfor %}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <form method="post" action="{% url 'users:set_password_after_activation' %}">
+                    {% csrf_token %}
+
+                    <label for="id_new_password1">Nueva contraseña</label>
+                    <input type="password" name="new_password1" id="id_new_password1"
+                           autocomplete="new-password" required>
+                    <p class="help-text">Mínimo 8 caracteres. No puede ser solo números ni demasiado común.</p>
+
+                    <label for="id_new_password2">Confirmar contraseña</label>
+                    <input type="password" name="new_password2" id="id_new_password2"
+                           autocomplete="new-password" required>
+
+                    <button type="submit" class="btn btn-submit">Cambiar contraseña</button>
+                </form>
+
+                <a href="{{ login_url }}" class="link-skip">Omitir, ir a iniciar sesión &rarr;</a>
+            {% else %}
+                <a href="{{ login_url }}" class="btn">Iniciar sesión</a>
+            {% endif %}
         {% endif %}
-        <a href="{{ login_url }}" class="btn">Iniciar sesión</a>
     </div>
 </body>
 </html>
