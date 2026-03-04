@@ -1,0 +1,83 @@
+{% extends "admin/base.html" %}
+
+{% load i18n %}
+
+{% block title %}Panel de Oficina | {{ site_title|default:"Arynstal CRM" }}{% endblock %}
+
+{% block branding %}
+    {% include "unfold/helpers/site_branding.html" %}
+{% endblock %}
+
+{% block content %}
+<div class="office-dashboard">
+
+    {% comment %}
+    Determinar rol del usuario para mostrar/ocultar secciones.
+    Field: solo ve leads asignados, sin crear, sin presupuestos.
+    Office/Admin: acceso completo.
+    {% endcomment %}
+
+    <div class="office-dashboard__header">
+        <h1 class="office-dashboard__title">
+            <span class="material-symbols-outlined office-dashboard__title-icon">dashboard</span>
+            Panel de Oficina
+        </h1>
+        <p class="office-dashboard__subtitle">Gestiona leads y presupuestos de Arynstal</p>
+    </div>
+
+    {# ── SECCIÓN LEADS ── #}
+    <div class="office-dashboard__section">
+        <div class="office-dashboard__section-header">
+            <span class="material-symbols-outlined office-dashboard__section-icon">contact_mail</span>
+            <h2 class="office-dashboard__section-title">Leads</h2>
+        </div>
+        <div class="office-dashboard__buttons">
+            <a href="{% url 'office:leads_lead_changelist' %}" class="office-btn office-btn--primary">
+                <span class="material-symbols-outlined office-btn__icon">list_alt</span>
+                <span class="office-btn__text">Ver Leads</span>
+            </a>
+            {% if user.is_superuser or user.profile.role == 'office' or user.profile.role == 'admin' %}
+            <a href="{% url 'office:leads_lead_add' %}" class="office-btn office-btn--outline">
+                <span class="material-symbols-outlined office-btn__icon">add_circle</span>
+                <span class="office-btn__text">Crear Lead</span>
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    {# ── SECCIÓN PRESUPUESTOS (solo office/admin) ── #}
+    {% if user.is_superuser or user.profile.role == 'office' or user.profile.role == 'admin' %}
+    <div class="office-dashboard__section">
+        <div class="office-dashboard__section-header">
+            <span class="material-symbols-outlined office-dashboard__section-icon">request_quote</span>
+            <h2 class="office-dashboard__section-title">Presupuestos</h2>
+        </div>
+        <div class="office-dashboard__buttons">
+            <a href="{% url 'office:leads_budget_changelist' %}" class="office-btn office-btn--primary">
+                <span class="material-symbols-outlined office-btn__icon">list_alt</span>
+                <span class="office-btn__text">Ver Presupuestos</span>
+            </a>
+            <a href="{% url 'office:leads_budget_add' %}" class="office-btn office-btn--outline">
+                <span class="material-symbols-outlined office-btn__icon">add_circle</span>
+                <span class="office-btn__text">Crear Presupuesto</span>
+            </a>
+        </div>
+    </div>
+    {% endif %}
+
+    {# ── SECCIÓN HISTORIAL (read-only para todos) ── #}
+    <div class="office-dashboard__section">
+        <div class="office-dashboard__section-header">
+            <span class="material-symbols-outlined office-dashboard__section-icon">history</span>
+            <h2 class="office-dashboard__section-title">Historial</h2>
+        </div>
+        <div class="office-dashboard__buttons office-dashboard__buttons--single">
+            <a href="{% url 'office:leads_leadlog_changelist' %}" class="office-btn office-btn--secondary">
+                <span class="material-symbols-outlined office-btn__icon">manage_search</span>
+                <span class="office-btn__text">Ver Historial</span>
+            </a>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

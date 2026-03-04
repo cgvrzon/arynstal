@@ -24,14 +24,19 @@ ACCESO:
 ===============================================================================
 """
 
+import csv
+
 from unfold.admin import ModelAdmin as UnfoldModelAdmin
 from unfold.admin import TabularInline as UnfoldTabularInline
 from unfold.decorators import display
 from unfold.sites import UnfoldAdminSite
 
+from django.contrib import admin
+from django.http import HttpResponse
+from django.urls import reverse
 from django.utils.html import format_html
 
-from .models import Lead, LeadImage, LeadLog
+from .models import Budget, Lead, LeadImage, LeadLog
 
 
 # =============================================================================
@@ -46,6 +51,7 @@ class OfficeAdminSite(UnfoldAdminSite):
     configuración visual desde settings/base.py.
     """
     settings_name = "UNFOLD_OFFICE"
+    index_template = "admin/office_index.html"
 
     def has_permission(self, request):
         """Solo permite acceso a usuarios con rol 'office' o 'admin'."""
@@ -100,6 +106,23 @@ class OfficeLeadLogInline(UnfoldTabularInline):
         return False
 
 
+class OfficeBudgetInline(UnfoldTabularInline):
+    """Inline de presupuestos del lead (office puede crear/editar, no eliminar)."""
+    model = Budget
+    extra = 0
+    readonly_fields = ('reference', 'created_at', 'created_by')
+    fields = (
+        'reference', 'description', 'amount', 'status',
+        'valid_until', 'file', 'created_at', 'created_by'
+    )
+    can_delete = False
+    tab = True
+
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        return queryset.select_related('created_by')
+
+
 # =============================================================================
 # ADMIN DE LEADS SIMPLIFICADO
 # =============================================================================
@@ -117,7 +140,7 @@ class OfficeLeadAdmin(UnfoldModelAdmin):
     # -------------------------------------------------------------------------
 
     list_display = (
-        'id',
+        'view_detail',
         'name',
         'phone',
         'email',
@@ -127,19 +150,21 @@ class OfficeLeadAdmin(UnfoldModelAdmin):
         'images_count',
         'created_at',
     )
+    list_display_links = None
 
     list_filter = ('status', 'urgency', 'service', 'created_at')
     search_fields = ('name', 'email', 'phone', 'message')
     list_per_page = 20
     date_hierarchy = 'created_at'
     ordering = ('-created_at',)
+    actions = ['export_to_csv']
 
     # -------------------------------------------------------------------------
     # CONFIGURACIÓN DEL FORMULARIO
     # -------------------------------------------------------------------------
 
     readonly_fields = ('created_at', 'updated_at')
-    inlines = [OfficeLeadImageInline, OfficeLeadLogInline]
+    inlines = [OfficeLeadImageInline, OfficeBudgetInline, OfficeLeadLogInline]
 
     fieldsets = (
         ('Datos del Cliente', {
@@ -192,6 +217,58 @@ class OfficeLeadAdmin(UnfoldModelAdmin):
         return '-'
     images_count.short_description = 'Imágenes'
 
+    def view_detail(self, obj):
+        url = reverse('office:leads_lead_change', args=[obj.pk])
+        return format_html(
+            '<a href="{}" title="Ver detalle" class="office-view-detail">'
+            '<span class="material-symbols-outlined">visibility</span>'
+            '</a>',
+            url
+        )
+    view_detail.short_description = ''
+
+    # -------------------------------------------------------------------------
+    # ACCIONES
+    # -------------------------------------------------------------------------
+
+    @admin.action(description='Exportar leads seleccionados a CSV')
+    def export_to_csv(self, request, queryset):
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="leads_export.csv"'
+        response.write('\ufeff')  # BOM para Excel
+
+        writer = csv.writer(response)
+        writer.writerow([
+            'ID', 'Nombre', 'Email', 'Teléfono', 'Servicio',
+            'Estado', 'Urgencia', 'Origen', 'Fecha creación',
+            'Asignado a', 'Ubicación', 'Mensaje'
+        ])
+
+        for lead in queryset.select_related('service', 'assigned_to'):
+            writer.writerow([
+                lead.id,
+                lead.name,
+                lead.email,
+                lead.phone,
+                lead.service.name if lead.service else '',
+                lead.get_status_display(),
+                lead.get_urgency_display(),
+                lead.get_source_display(),
+                lead.created_at.strftime('%d/%m/%Y %H:%M'),
+                str(lead.assigned_to) if lead.assigned_to else '',
+                lead.location or '',
+                lead.message[:100] + '...' if len(lead.message) > 100 else lead.message
+            ])
+
+        return response
+
+    def get_actions(self, request):
+        """Field no puede exportar CSV."""
+        actions = super().get_actions(request)
+        if hasattr(request.user, 'profile') and request.user.profile.is_field():
+            actions.pop('export_to_csv', None)
+        return actions
+
     # -------------------------------------------------------------------------
     # OPTIMIZACIÓN
     # -------------------------------------------------------------------------
@@ -229,7 +306,138 @@ class OfficeLeadAdmin(UnfoldModelAdmin):
         return False
 
     def has_add_permission(self, request):
+        """Office y admin pueden crear leads. Field no."""
+        if hasattr(request.user, 'profile') and request.user.profile.is_field():
+            return False
         return self.has_module_permission(request)
+
+
+# =============================================================================
+# ADMIN: PRESUPUESTOS EN OFFYNSTAL
+# =============================================================================
+
+class OfficeBudgetAdmin(UnfoldModelAdmin):
+    """
+    Admin de presupuestos para el panel de oficina.
+    Office puede ver, crear y editar. No puede eliminar.
+    Field no tiene acceso.
+    """
+
+    list_display = (
+        'reference',
+        'lead',
+        'amount',
+        'display_status',
+        'valid_until',
+        'created_at',
+        'created_by',
+    )
+    list_filter = ('status', 'created_at', 'valid_until')
+    search_fields = ('reference', 'lead__name', 'lead__email', 'description')
+    readonly_fields = ('reference', 'created_at', 'created_by')
+    date_hierarchy = 'created_at'
+
+    fieldsets = (
+        ('Información del presupuesto', {
+            'fields': (
+                'reference', 'lead', 'description',
+                'amount', 'status', 'valid_until',
+            )
+        }),
+        ('Archivo', {
+            'fields': ('file',)
+        }),
+        ('Auditoría', {
+            'fields': ('created_at', 'created_by'),
+        }),
+    )
+
+    @display(description="Estado", label={
+        "borrador": None,
+        "enviado": "info",
+        "aceptado": "success",
+        "rechazado": "danger",
+    })
+    def display_status(self, obj):
+        return obj.status
+
+    def save_model(self, request, obj, form, change):
+        if not change:
+            obj.created_by = request.user
+        super().save_model(request, obj, form, change)
+
+    # -------------------------------------------------------------------------
+    # PERMISOS (basados en rol, no en permisos Django)
+    # -------------------------------------------------------------------------
+
+    def _is_office_or_admin(self, request):
+        if not request.user.is_active or not request.user.is_authenticated:
+            return False
+        if request.user.is_superuser:
+            return True
+        if hasattr(request.user, 'profile'):
+            return request.user.profile.role in ['office', 'admin']
+        return False
+
+    def has_module_permission(self, request):
+        return self._is_office_or_admin(request)
+
+    def has_view_permission(self, request, obj=None):
+        return self._is_office_or_admin(request)
+
+    def has_add_permission(self, request):
+        return self._is_office_or_admin(request)
+
+    def has_change_permission(self, request, obj=None):
+        return self._is_office_or_admin(request)
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+
+# =============================================================================
+# ADMIN: HISTORIAL DE LEADS EN OFFYNSTAL (READ-ONLY)
+# =============================================================================
+
+class OfficeLeadLogAdmin(UnfoldModelAdmin):
+    """
+    Historial de acciones sobre leads. Completamente read-only.
+    Field solo ve logs de leads asignados a él.
+    """
+
+    list_display = ('lead', 'action', 'user', 'old_value', 'new_value', 'created_at')
+    list_filter = ('action', 'created_at')
+    search_fields = ('lead__name', 'lead__email')
+    readonly_fields = ('lead', 'action', 'user', 'old_value', 'new_value', 'created_at')
+    date_hierarchy = 'created_at'
+    ordering = ('-created_at',)
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def has_module_permission(self, request):
+        if not request.user.is_active or not request.user.is_authenticated:
+            return False
+        if request.user.is_superuser:
+            return True
+        if hasattr(request.user, 'profile'):
+            return request.user.profile.role in ['office', 'admin', 'field']
+        return False
+
+    def has_view_permission(self, request, obj=None):
+        return self.has_module_permission(request)
+
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        if hasattr(request.user, 'profile') and request.user.profile.is_field():
+            queryset = queryset.filter(lead__assigned_to=request.user)
+        return queryset.select_related('lead', 'user')
 
 
 # =============================================================================
@@ -237,3 +445,5 @@ class OfficeLeadAdmin(UnfoldModelAdmin):
 # =============================================================================
 
 office_site.register(Lead, OfficeLeadAdmin)
+office_site.register(Budget, OfficeBudgetAdmin)
+office_site.register(LeadLog, OfficeLeadLogAdmin)

@@ -234,36 +234,6 @@ admin.site.register(User, UserAdmin)
 
 
 # =============================================================================
-# ADMIN: USERPROFILE (OPCIONAL)
-# =============================================================================
-
-@admin.register(UserProfile)
-class UserProfileAdmin(UnfoldModelAdmin):
-    """Panel de administración independiente para perfiles."""
-    list_display = ('user', 'display_role', 'phone')
-    list_filter = ('role',)
-    search_fields = (
-        'user__username',
-        'user__first_name',
-        'user__last_name',
-        'user__email',
-        'phone'
-    )
-    readonly_fields = ('user',)
-
-    @display(description="Rol", label={
-        "admin": "danger",
-        "office": "info",
-        "field": "success",
-    })
-    def display_role(self, obj):
-        return obj.role
-
-    def has_add_permission(self, request):
-        return False
-
-
-# =============================================================================
 # ADMIN: LOGIN ATTEMPT (AUDITORÍA)
 # =============================================================================
 

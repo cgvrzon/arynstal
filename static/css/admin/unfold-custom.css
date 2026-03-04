@@ -130,11 +130,216 @@ p.help {
 }
 
 /* ---------------------------------------------------------------------------
+   ICONO OJO - VER DETALLE LEAD
+   --------------------------------------------------------------------------- */
+
+.office-view-detail {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    background-color: #E8F1FB;
+    color: var(--arynstal-primary);
+    transition: background-color 0.2s ease, transform 0.15s ease;
+}
+
+.office-view-detail:hover {
+    background-color: #d0e2f5;
+    transform: scale(1.1);
+}
+
+.office-view-detail:active {
+    transform: scale(0.95);
+}
+
+.office-view-detail .material-symbols-outlined {
+    font-size: 20px;
+}
+
+/* ---------------------------------------------------------------------------
+   DASHBOARD OFICINA - LAYOUT
+   --------------------------------------------------------------------------- */
+
+.office-dashboard {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+}
+
+.office-dashboard__header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.office-dashboard__title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--arynstal-primary);
+    margin: 0 0 0.25rem;
+}
+
+.office-dashboard__title-icon {
+    font-size: 28px;
+}
+
+.office-dashboard__subtitle {
+    color: #64748b;
+    font-size: 0.95rem;
+    margin: 0;
+}
+
+/* ---------------------------------------------------------------------------
+   DASHBOARD OFICINA - SECCIONES
+   --------------------------------------------------------------------------- */
+
+.office-dashboard__section {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.office-dashboard__section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid #f1f5f9;
+}
+
+.office-dashboard__section-icon {
+    font-size: 24px;
+    color: var(--arynstal-primary);
+}
+
+.office-dashboard__section-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0;
+}
+
+/* ---------------------------------------------------------------------------
+   DASHBOARD OFICINA - BOTONES
+   --------------------------------------------------------------------------- */
+
+.office-dashboard__buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.office-dashboard__buttons--single {
+    grid-template-columns: 1fr;
+}
+
+.office-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1.25rem 1.5rem;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: box-shadow 0.2s ease, transform 0.15s ease, background-color 0.2s ease;
+}
+
+.office-btn:hover {
+    transform: translateY(-2px);
+}
+
+.office-btn:active {
+    transform: translateY(0) scale(0.97);
+}
+
+/* Botón principal (relleno azul) */
+.office-btn--primary {
+    background-color: var(--arynstal-primary);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(14, 77, 146, 0.25);
+}
+
+.office-btn--primary:hover {
+    background-color: var(--arynstal-primary-light);
+    box-shadow: 0 4px 16px rgba(14, 77, 146, 0.35);
+    color: #fff;
+}
+
+/* Botón outline (borde azul) */
+.office-btn--outline {
+    background-color: #fff;
+    color: var(--arynstal-primary);
+    border: 2px solid var(--arynstal-primary);
+    box-shadow: 0 2px 8px rgba(14, 77, 146, 0.1);
+}
+
+.office-btn--outline:hover {
+    background-color: #f0f6fc;
+    box-shadow: 0 4px 16px rgba(14, 77, 146, 0.2);
+    color: var(--arynstal-primary);
+}
+
+/* Botón secundario (gris) */
+.office-btn--secondary {
+    background-color: #f8fafc;
+    color: #475569;
+    border: 1.5px solid #e2e8f0;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+.office-btn--secondary:hover {
+    background-color: #f1f5f9;
+    color: #334155;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.office-btn__icon {
+    font-size: 22px;
+}
+
+.office-btn__text {
+    font-size: 1rem;
+}
+
+/* ---------------------------------------------------------------------------
+   RESPONSIVE - DASHBOARD OFICINA
+   --------------------------------------------------------------------------- */
+
+@media (max-width: 640px) {
+    .office-dashboard__buttons {
+        grid-template-columns: 1fr;
+    }
+
+    .office-btn {
+        padding: 1rem;
+    }
+}
+
+/* ---------------------------------------------------------------------------
    REDUCED MOTION
    --------------------------------------------------------------------------- */
 
 @media (prefers-reduced-motion: reduce) {
-    input, select, textarea, button {
+    input, select, textarea, button,
+    .office-view-detail,
+    .office-btn {
         transition: none !important;
+    }
+
+    .office-view-detail:hover,
+    .office-btn:hover {
+        transform: none !important;
     }
 }
