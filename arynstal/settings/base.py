@@ -398,7 +398,7 @@ UNFOLD = {
     "SHOW_HISTORY": True,
     "SHOW_VIEW_ON_SITE": False,
     "STYLES": [
-        "/static/css/admin/unfold-custom.css",
+        "/static/css/admin/unfold-custom.css?v=2",
     ],
     "THEME": {
         "light": {
@@ -495,7 +495,7 @@ UNFOLD_OFFICE = {
     "SHOW_HISTORY": True,
     "SHOW_VIEW_ON_SITE": False,
     "STYLES": [
-        "/static/css/admin/unfold-custom.css",
+        "/static/css/admin/unfold-custom.css?v=2",
     ],
     "THEME": {
         "light": {
