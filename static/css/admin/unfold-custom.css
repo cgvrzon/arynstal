@@ -106,15 +106,29 @@ fieldset > h2,
    BOTÓN GUARDAR (refuerzo color corporativo)
    --------------------------------------------------------------------------- */
 
+/* Botón guardar, icono sidebar, botón "+" crear */
 .submit-row input[type="submit"],
-button[type="submit"].bg-primary-600 {
+button[type="submit"].bg-primary-600,
+.bg-primary-600 {
     background-color: var(--arynstal-primary) !important;
     transition: background-color 0.2s ease !important;
 }
 
 .submit-row input[type="submit"]:hover,
-button[type="submit"].bg-primary-600:hover {
+button[type="submit"].bg-primary-600:hover,
+a.bg-primary-600:hover {
     background-color: var(--arynstal-primary-light) !important;
+}
+
+/* ---------------------------------------------------------------------------
+   RELATED WIDGET LINKS - OCULTAR BOTONES CRUD EN FK FIELDS
+   --------------------------------------------------------------------------- */
+/* Elimina los botones de editar/añadir/ver/eliminar que aparecen al lado
+   de campos ForeignKey (Service, Assigned to, etc.) para no romper el
+   flujo de edición del formulario actual. */
+
+.related-widget-wrapper-link {
+    display: none !important;
 }
 
 /* ---------------------------------------------------------------------------
