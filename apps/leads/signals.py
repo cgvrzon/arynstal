@@ -190,29 +190,44 @@ def log_lead_changes(sender, instance, created, **kwargs):
     if not created and instance.pk in _lead_previous_state:
         old_state = _lead_previous_state[instance.pk]
 
-        # ---------------------------------------------------------------------
-        # Detectar cambio de estado
-        # ---------------------------------------------------------------------
+        # -----------------------------------------------------------------
+        # Construir changelog consolidado
+        # -----------------------------------------------------------------
+        changes = []
+
         if old_state['status'] != instance.status:
-            LeadLog.objects.create(
-                lead=instance,
-                action='status_changed',
-                old_value=dict(Lead.STATUS_CHOICES).get(old_state['status']),
-                new_value=instance.get_status_display()
+            old_display = dict(Lead.STATUS_CHOICES).get(old_state['status'])
+            changes.append(
+                f"Estado: {old_display} → {instance.get_status_display()}"
             )
 
-        # ---------------------------------------------------------------------
-        # Detectar cambio de asignación
-        # ---------------------------------------------------------------------
         if old_state['assigned_to'] != instance.assigned_to:
+            old_assigned = (
+                str(old_state['assigned_to'])
+                if old_state['assigned_to'] else 'Sin asignar'
+            )
+            new_assigned = (
+                str(instance.assigned_to)
+                if instance.assigned_to else 'Sin asignar'
+            )
+            changes.append(f"Asignado: {old_assigned} → {new_assigned}")
+
+        if changes:
+            # Determinar action type
+            if len(changes) == 1 and changes[0].startswith('Estado:'):
+                action = 'status_changed'
+            elif len(changes) == 1 and changes[0].startswith('Asignado:'):
+                action = 'assigned'
+            else:
+                action = 'edited'
+
             LeadLog.objects.create(
                 lead=instance,
-                action='assigned',
-                old_value=str(old_state['assigned_to']) if old_state['assigned_to'] else 'Sin asignar',
-                new_value=str(instance.assigned_to) if instance.assigned_to else 'Sin asignar'
+                action=action,
+                new_value=' | '.join(changes)
             )
 
-        # ---------------------------------------------------------------------
+        # -----------------------------------------------------------------
         # Limpiar estado almacenado (evitar memory leak)
-        # ---------------------------------------------------------------------
+        # -----------------------------------------------------------------
         del _lead_previous_state[instance.pk]

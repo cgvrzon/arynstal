@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.urls import reverse
 from django.utils.html import format_html
 
 from unfold.admin import ModelAdmin as UnfoldModelAdmin
@@ -28,7 +29,7 @@ class ProjectImageInline(UnfoldTabularInline):
 @admin.register(Project)
 class ProjectAdmin(UnfoldModelAdmin):
     list_display = (
-        'order',
+        'view_detail',
         'title',
         'service',
         'year',
@@ -37,8 +38,7 @@ class ProjectAdmin(UnfoldModelAdmin):
         'images_count',
         'updated_at',
     )
-    list_display_links = ('title',)
-    list_editable = ('order',)
+    list_display_links = None
     list_filter = ('is_active', 'is_featured', 'service', 'year')
     search_fields = ('title', 'description', 'client')
     list_per_page = 25
@@ -68,6 +68,16 @@ class ProjectAdmin(UnfoldModelAdmin):
     )
 
     inlines = [ProjectImageInline]
+
+    def view_detail(self, obj):
+        url = reverse('admin:projects_project_change', args=[obj.pk])
+        return format_html(
+            '<a href="{}" title="Ver detalle" class="office-view-detail">'
+            '<span class="material-symbols-outlined">visibility</span>'
+            '</a>',
+            url
+        )
+    view_detail.short_description = ''
 
     def cover_preview(self, obj):
         if obj.cover_image:

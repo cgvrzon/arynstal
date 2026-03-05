@@ -32,11 +32,15 @@ from unfold.decorators import display
 from unfold.sites import UnfoldAdminSite
 
 from django.contrib import admin
+from django.db.models import Count, Max
 from django.http import HttpResponse
+from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils.html import format_html
 
+from .admin import _build_lead_changelog, _determine_log_action
 from .models import Budget, Lead, LeadImage, LeadLog
+from .notifications import notify_lead_assigned
 
 
 # =============================================================================
@@ -270,6 +274,43 @@ class OfficeLeadAdmin(UnfoldModelAdmin):
         return actions
 
     # -------------------------------------------------------------------------
+    # AUDITORÍA AUTOMÁTICA
+    # -------------------------------------------------------------------------
+
+    def save_model(self, request, obj, form, change):
+        if change:
+            obj._logging_handled_in_admin = True
+            old_obj = Lead.objects.get(pk=obj.pk)
+
+            super().save_model(request, obj, form, change)
+
+            changes = _build_lead_changelog(old_obj, obj, form)
+
+            # Notificación de asignación
+            if old_obj.assigned_to != obj.assigned_to and obj.assigned_to:
+                notify_lead_assigned(obj, obj.assigned_to)
+
+            # Log consolidado
+            if changes:
+                LeadLog.objects.create(
+                    lead=obj,
+                    user=request.user,
+                    action=_determine_log_action(changes),
+                    new_value=' | '.join(changes)
+                )
+
+            if hasattr(obj, '_logging_handled_in_admin'):
+                delattr(obj, '_logging_handled_in_admin')
+        else:
+            super().save_model(request, obj, form, change)
+            LeadLog.objects.create(
+                lead=obj,
+                user=request.user,
+                action='created',
+                new_value='Lead creado desde el admin'
+            )
+
+    # -------------------------------------------------------------------------
     # OPTIMIZACIÓN
     # -------------------------------------------------------------------------
 
@@ -324,6 +365,7 @@ class OfficeBudgetAdmin(UnfoldModelAdmin):
     """
 
     list_display = (
+        'view_detail',
         'reference',
         'lead',
         'amount',
@@ -332,6 +374,7 @@ class OfficeBudgetAdmin(UnfoldModelAdmin):
         'created_at',
         'created_by',
     )
+    list_display_links = None
     list_filter = ('status', 'created_at', 'valid_until')
     search_fields = ('reference', 'lead__name', 'lead__email', 'description')
     readonly_fields = ('reference', 'created_at', 'created_by')
@@ -351,6 +394,16 @@ class OfficeBudgetAdmin(UnfoldModelAdmin):
             'fields': ('created_at', 'created_by'),
         }),
     )
+
+    def view_detail(self, obj):
+        url = reverse('office:leads_budget_change', args=[obj.pk])
+        return format_html(
+            '<a href="{}" title="Ver detalle" class="office-view-detail">'
+            '<span class="material-symbols-outlined">visibility</span>'
+            '</a>',
+            url
+        )
+    view_detail.short_description = ''
 
     @display(description="Estado", label={
         "borrador": None,
@@ -405,12 +458,49 @@ class OfficeLeadLogAdmin(UnfoldModelAdmin):
     Field solo ve logs de leads asignados a él.
     """
 
-    list_display = ('lead', 'action', 'user', 'old_value', 'new_value', 'created_at')
-    list_filter = ('action', 'created_at')
-    search_fields = ('lead__name', 'lead__email')
+    list_display = ('lead', 'display_action', 'user', 'new_value', 'created_at')
+    list_filter = ('action', 'created_at', 'lead')
+    search_fields = ('lead__name', 'lead__email', 'new_value')
     readonly_fields = ('lead', 'action', 'user', 'old_value', 'new_value', 'created_at')
     date_hierarchy = 'created_at'
     ordering = ('-created_at',)
+
+    @display(description="Acción", label={
+        "created": "success",
+        "status_changed": "info",
+        "assigned": "warning",
+        "note_added": None,
+        "edited": "info",
+        "updated": None,
+    })
+    def display_action(self, obj):
+        return obj.action
+
+    def changelist_view(self, request, extra_context=None):
+        """Sin filtro de lead, muestra lista agrupada por lead."""
+        if 'lead__id__exact' in request.GET:
+            return super().changelist_view(request, extra_context)
+
+        leads_with_logs = Lead.objects.filter(
+            logs__isnull=False
+        ).distinct().annotate(
+            logs_count=Count('logs'),
+            last_log=Max('logs__created_at')
+        ).order_by('-last_log')
+
+        # Field solo ve sus leads
+        if hasattr(request.user, 'profile') and request.user.profile.is_field():
+            leads_with_logs = leads_with_logs.filter(assigned_to=request.user)
+
+        context = {
+            **self.admin_site.each_context(request),
+            'leads_with_logs': leads_with_logs,
+            'title': 'Historial de Leads',
+            'opts': self.model._meta,
+        }
+        return TemplateResponse(
+            request, 'admin/leadlog_grouped.html', context
+        )
 
     def has_add_permission(self, request):
         return False

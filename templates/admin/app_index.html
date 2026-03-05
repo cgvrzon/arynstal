@@ -1,0 +1,39 @@
+{% extends "admin/base.html" %}
+
+{% load i18n %}
+
+{% block title %}{{ title }} | {{ site_title|default:"Arynstal CRM" }}{% endblock %}
+
+{% block branding %}
+    {% include "unfold/helpers/site_branding.html" %}
+{% endblock %}
+
+{% block content %}
+<div class="office-dashboard">
+
+    {% for app in app_list %}
+    <div class="office-dashboard__section">
+        <div class="office-dashboard__section-header">
+            <h2 class="office-dashboard__section-title">{{ app.name }}</h2>
+        </div>
+        <div class="office-dashboard__buttons">
+            {% for model in app.models %}
+                {% if model.admin_url %}
+                <a href="{{ model.admin_url }}" class="office-btn office-btn--primary">
+                    <span class="material-symbols-outlined office-btn__icon">list_alt</span>
+                    <span class="office-btn__text">{{ model.name }}</span>
+                </a>
+                {% endif %}
+                {% if model.add_url %}
+                <a href="{{ model.add_url }}" class="office-btn office-btn--outline">
+                    <span class="material-symbols-outlined office-btn__icon">add_circle</span>
+                    <span class="office-btn__text">Crear {{ model.name }}</span>
+                </a>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+
+</div>
+{% endblock %}

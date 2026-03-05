@@ -13,6 +13,7 @@ DESCRIPCIÓN:
 """
 
 from django.contrib import admin
+from django.urls import reverse
 from django.utils.html import format_html
 
 from unfold.admin import ModelAdmin as UnfoldModelAdmin
@@ -34,7 +35,7 @@ class ServiceAdmin(UnfoldModelAdmin):
     # -------------------------------------------------------------------------
 
     list_display = (
-        'order',
+        'view_detail',
         'name',
         'slug',
         'display_is_active',
@@ -42,8 +43,7 @@ class ServiceAdmin(UnfoldModelAdmin):
         'leads_count'
     )
 
-    list_display_links = ('name',)
-    list_editable = ('order',)
+    list_display_links = None
     list_per_page = 25
 
     list_filter = (
@@ -127,6 +127,16 @@ class ServiceAdmin(UnfoldModelAdmin):
             )
         return "Sin imagen"
     image_preview.short_description = 'Vista previa'
+
+    def view_detail(self, obj):
+        url = reverse('admin:services_service_change', args=[obj.pk])
+        return format_html(
+            '<a href="{}" title="Ver detalle" class="office-view-detail">'
+            '<span class="material-symbols-outlined">visibility</span>'
+            '</a>',
+            url
+        )
+    view_detail.short_description = ''
 
     def leads_count(self, obj):
         count = obj.leads.count()

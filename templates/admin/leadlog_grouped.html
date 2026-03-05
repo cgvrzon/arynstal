@@ -1,0 +1,43 @@
+{% extends "admin/base.html" %}
+
+{% load i18n %}
+
+{% block title %}Historial de Leads | {{ site_title|default:"Arynstal CRM" }}{% endblock %}
+
+{% block branding %}
+    {% include "unfold/helpers/site_branding.html" %}
+{% endblock %}
+
+{% block content %}
+<div class="office-dashboard">
+
+    <div class="office-dashboard__header">
+        <h1 class="office-dashboard__title">
+            <span class="material-symbols-outlined office-dashboard__title-icon">history</span>
+            Historial de Leads
+        </h1>
+        <p class="office-dashboard__subtitle">Selecciona un lead para ver su historial de cambios</p>
+    </div>
+
+    {% for lead in leads_with_logs %}
+    <div class="office-dashboard__section">
+        <div class="office-dashboard__section-header">
+            <span class="material-symbols-outlined office-dashboard__section-icon">person</span>
+            <h2 class="office-dashboard__section-title">{{ lead.name }}</h2>
+            <span class="log-count-badge">{{ lead.logs_count }} registro{{ lead.logs_count|pluralize:"s" }}</span>
+        </div>
+        <div class="office-dashboard__buttons office-dashboard__buttons--single">
+            <a href="?lead__id__exact={{ lead.pk }}" class="office-btn office-btn--secondary">
+                <span class="material-symbols-outlined office-btn__icon">manage_search</span>
+                <span class="office-btn__text">Ver historial</span>
+            </a>
+        </div>
+    </div>
+    {% empty %}
+    <div class="office-dashboard__section">
+        <p style="text-align: center; color: #64748b; padding: 1rem 0;">No hay historial registrado.</p>
+    </div>
+    {% endfor %}
+
+</div>
+{% endblock %}

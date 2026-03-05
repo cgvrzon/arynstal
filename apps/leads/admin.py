@@ -21,7 +21,9 @@ FUNCIONES PRINCIPALES:
 import csv
 
 from django.contrib import admin
+from django.db.models import Count, Max
 from django.http import HttpResponse
+from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils.html import format_html
 
@@ -33,6 +35,55 @@ from .models import Lead, LeadImage, Budget, LeadLog
 from .notifications import notify_lead_assigned, notify_note_added
 
 admin.site.index_template = 'admin/admin_index.html'
+
+
+# =============================================================================
+# HELPER: CHANGELOG CONSOLIDADO PARA LEADS
+# =============================================================================
+
+def _build_lead_changelog(old_obj, new_obj, form):
+    """
+    Construye la lista de cambios comparando el lead antes y después del save.
+    Retorna una lista de strings descriptivos para cada cambio detectado.
+    """
+    changes = []
+
+    if old_obj.status != new_obj.status:
+        changes.append(
+            f"Estado: {old_obj.get_status_display()} → {new_obj.get_status_display()}"
+        )
+
+    if old_obj.assigned_to != new_obj.assigned_to:
+        old_assigned = str(old_obj.assigned_to) if old_obj.assigned_to else 'Sin asignar'
+        new_assigned = str(new_obj.assigned_to) if new_obj.assigned_to else 'Sin asignar'
+        changes.append(f"Asignado: {old_assigned} → {new_assigned}")
+
+    if old_obj.notes != new_obj.notes and new_obj.notes:
+        changes.append("Nota interna actualizada")
+
+    tracked = {'status', 'assigned_to', 'notes'}
+    other_fields = {
+        'name', 'email', 'phone', 'location', 'service',
+        'message', 'urgency', 'preferred_contact', 'source',
+    }
+    for field_name in form.changed_data:
+        if field_name in other_fields and field_name not in tracked:
+            verbose = form.fields[field_name].label or field_name
+            changes.append(f"{verbose} modificado")
+
+    return changes
+
+
+def _determine_log_action(changes):
+    """Determina el action type basándose en los cambios detectados."""
+    if len(changes) == 1:
+        if changes[0].startswith('Estado:'):
+            return 'status_changed'
+        if changes[0].startswith('Asignado:'):
+            return 'assigned'
+        if 'Nota' in changes[0]:
+            return 'note_added'
+    return 'edited'
 
 
 # =============================================================================
@@ -318,48 +369,36 @@ class LeadAdmin(UnfoldModelAdmin):
             obj._logging_handled_in_admin = True
             old_obj = Lead.objects.get(pk=obj.pk)
 
-            if old_obj.status != obj.status:
-                LeadLog.objects.create(
-                    lead=obj,
-                    user=request.user,
-                    action='status_changed',
-                    old_value=old_obj.get_status_display(),
-                    new_value=obj.get_status_display()
-                )
+            super().save_model(request, obj, form, change)
 
-            if old_obj.assigned_to != obj.assigned_to:
-                LeadLog.objects.create(
-                    lead=obj,
-                    user=request.user,
-                    action='assigned',
-                    old_value=str(old_obj.assigned_to) if old_obj.assigned_to else 'Sin asignar',
-                    new_value=str(obj.assigned_to) if obj.assigned_to else 'Sin asignar'
-                )
-                if obj.assigned_to:
-                    notify_lead_assigned(obj, obj.assigned_to)
+            changes = _build_lead_changelog(old_obj, obj, form)
 
+            # Notificaciones
+            if old_obj.assigned_to != obj.assigned_to and obj.assigned_to:
+                notify_lead_assigned(obj, obj.assigned_to)
             if old_obj.notes != obj.notes and obj.notes:
-                LeadLog.objects.create(
-                    lead=obj,
-                    user=request.user,
-                    action='note_added',
-                    old_value=old_obj.notes[:100] if old_obj.notes else '',
-                    new_value=obj.notes[:100]
-                )
                 if hasattr(request.user, 'profile') and request.user.profile.is_field():
                     notify_note_added(obj, request.user)
+
+            # Log consolidado
+            if changes:
+                LeadLog.objects.create(
+                    lead=obj,
+                    user=request.user,
+                    action=_determine_log_action(changes),
+                    new_value=' | '.join(changes)
+                )
+
+            if hasattr(obj, '_logging_handled_in_admin'):
+                delattr(obj, '_logging_handled_in_admin')
         else:
+            super().save_model(request, obj, form, change)
             LeadLog.objects.create(
                 lead=obj,
                 user=request.user,
                 action='created',
                 new_value='Lead creado desde el admin'
             )
-
-        super().save_model(request, obj, form, change)
-        if change:
-            if getattr(obj, '_logging_handled_in_admin', False):
-                delattr(obj, '_logging_handled_in_admin')
 
 
 # =============================================================================
@@ -369,10 +408,21 @@ class LeadAdmin(UnfoldModelAdmin):
 @admin.register(LeadImage)
 class LeadImageAdmin(UnfoldModelAdmin):
     """Panel de administración para imágenes de leads."""
-    list_display = ('id', 'lead', 'image_preview', 'uploaded_at')
+    list_display = ('view_detail', 'lead', 'image_preview', 'uploaded_at')
+    list_display_links = None
     list_filter = ('uploaded_at',)
     readonly_fields = ('uploaded_at', 'image_preview')
     search_fields = ('lead__name', 'lead__email')
+
+    def view_detail(self, obj):
+        url = reverse('admin:leads_leadimage_change', args=[obj.pk])
+        return format_html(
+            '<a href="{}" title="Ver detalle" class="office-view-detail">'
+            '<span class="material-symbols-outlined">visibility</span>'
+            '</a>',
+            url
+        )
+    view_detail.short_description = ''
 
     def image_preview(self, obj):
         if obj.image:
@@ -393,6 +443,7 @@ class LeadImageAdmin(UnfoldModelAdmin):
 class BudgetAdmin(UnfoldModelAdmin):
     """Panel de administración para presupuestos."""
     list_display = (
+        'view_detail',
         'reference',
         'lead',
         'amount',
@@ -401,6 +452,7 @@ class BudgetAdmin(UnfoldModelAdmin):
         'created_at',
         'created_by'
     )
+    list_display_links = None
     list_filter = ('status', 'created_at', 'valid_until')
     search_fields = ('reference', 'lead__name', 'lead__email', 'description')
     readonly_fields = ('reference', 'created_at', 'created_by')
@@ -427,6 +479,16 @@ class BudgetAdmin(UnfoldModelAdmin):
         }),
     )
 
+    def view_detail(self, obj):
+        url = reverse('admin:leads_budget_change', args=[obj.pk])
+        return format_html(
+            '<a href="{}" title="Ver detalle" class="office-view-detail">'
+            '<span class="material-symbols-outlined">visibility</span>'
+            '</a>',
+            url
+        )
+    view_detail.short_description = ''
+
     @display(description="Estado", label={
         "borrador": None,
         "enviado": "info",
@@ -451,19 +513,52 @@ class LeadLogAdmin(UnfoldModelAdmin):
     """Panel de administración para logs de auditoría (solo lectura)."""
     list_display = (
         'lead',
-        'action',
+        'display_action',
         'user',
-        'old_value',
         'new_value',
         'created_at'
     )
-    list_filter = ('action', 'created_at', 'user')
-    search_fields = ('lead__name', 'lead__email', 'old_value', 'new_value')
+    list_filter = ('action', 'created_at', 'user', 'lead')
+    search_fields = ('lead__name', 'lead__email', 'new_value')
     readonly_fields = (
         'lead', 'user', 'action',
         'old_value', 'new_value', 'created_at'
     )
     date_hierarchy = 'created_at'
+    ordering = ('-created_at',)
+
+    @display(description="Acción", label={
+        "created": "success",
+        "status_changed": "info",
+        "assigned": "warning",
+        "note_added": None,
+        "edited": "info",
+        "updated": None,
+    })
+    def display_action(self, obj):
+        return obj.action
+
+    def changelist_view(self, request, extra_context=None):
+        """Sin filtro de lead, muestra lista agrupada por lead."""
+        if 'lead__id__exact' in request.GET:
+            return super().changelist_view(request, extra_context)
+
+        leads_with_logs = Lead.objects.filter(
+            logs__isnull=False
+        ).distinct().annotate(
+            logs_count=Count('logs'),
+            last_log=Max('logs__created_at')
+        ).order_by('-last_log')
+
+        context = {
+            **self.admin_site.each_context(request),
+            'leads_with_logs': leads_with_logs,
+            'title': 'Historial de Leads',
+            'opts': self.model._meta,
+        }
+        return TemplateResponse(
+            request, 'admin/leadlog_grouped.html', context
+        )
 
     def has_add_permission(self, request):
         return False

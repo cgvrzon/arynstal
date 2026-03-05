@@ -691,7 +691,8 @@ class LeadLog(models.Model):
         ('created', 'Creado'),
         ('status_changed', 'Estado cambiado'),
         ('assigned', 'Asignado'),
-        ('noted', 'Nota añadida'),
+        ('note_added', 'Nota añadida'),
+        ('edited', 'Editado'),
         ('updated', 'Actualizado'),
     ]
 
@@ -723,13 +724,11 @@ class LeadLog(models.Model):
         choices=ACTION_CHOICES,
         verbose_name='Acción'
     )
-    old_value = models.CharField(
-        max_length=100,
+    old_value = models.TextField(
         blank=True,
         verbose_name='Valor anterior'
     )
-    new_value = models.CharField(
-        max_length=100,
+    new_value = models.TextField(
         blank=True,
         verbose_name='Valor nuevo'
     )
