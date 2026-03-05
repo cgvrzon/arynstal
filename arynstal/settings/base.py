@@ -398,23 +398,23 @@ UNFOLD = {
     "SHOW_HISTORY": True,
     "SHOW_VIEW_ON_SITE": False,
     "STYLES": [
-        "/static/css/admin/unfold-custom.css?v=2",
+        "/static/css/admin/unfold-custom.css?v=3",
     ],
     "THEME": {
         "light": {
             "colors": {
                 "primary": {
-                    "50": "240 249 255",
-                    "100": "224 232 242",
-                    "200": "191 219 254",
-                    "300": "147 197 253",
-                    "400": "96 165 250",
+                    "50": "237 246 255",
+                    "100": "219 236 253",
+                    "200": "183 213 247",
+                    "300": "134 183 238",
+                    "400": "75 143 216",
                     "500": "14 77 146",
-                    "600": "13 59 102",
-                    "700": "11 49 87",
-                    "800": "9 40 72",
-                    "900": "7 33 60",
-                    "950": "5 24 44",
+                    "600": "11 62 120",
+                    "700": "9 50 98",
+                    "800": "8 41 80",
+                    "900": "7 35 68",
+                    "950": "4 22 46",
                 },
             },
         },
@@ -495,7 +495,7 @@ UNFOLD_OFFICE = {
     "SHOW_HISTORY": True,
     "SHOW_VIEW_ON_SITE": False,
     "STYLES": [
-        "/static/css/admin/unfold-custom.css?v=2",
+        "/static/css/admin/unfold-custom.css?v=3",
     ],
     "THEME": {
         "light": {

@@ -1,0 +1,112 @@
+{% extends "admin/base.html" %}
+
+{% load i18n %}
+
+{% block title %}Panel de Administración | {{ site_title|default:"Arynstal CRM" }}{% endblock %}
+
+{% block branding %}
+    {% include "unfold/helpers/site_branding.html" %}
+{% endblock %}
+
+{% block content %}
+<div class="office-dashboard">
+
+    <div class="office-dashboard__header">
+        <h1 class="office-dashboard__title">
+            <span class="material-symbols-outlined office-dashboard__title-icon">admin_panel_settings</span>
+            Panel de Administración
+        </h1>
+        <p class="office-dashboard__subtitle">Gestión completa del CRM de Arynstal</p>
+    </div>
+
+    {# ── CRM ── #}
+    <div class="office-dashboard__section">
+        <div class="office-dashboard__section-header">
+            <span class="material-symbols-outlined office-dashboard__section-icon">contact_mail</span>
+            <h2 class="office-dashboard__section-title">Leads</h2>
+        </div>
+        <div class="office-dashboard__buttons">
+            <a href="{% url 'admin:leads_lead_changelist' %}" class="office-btn office-btn--primary">
+                <span class="material-symbols-outlined office-btn__icon">list_alt</span>
+                <span class="office-btn__text">Ver Leads</span>
+            </a>
+            <a href="{% url 'admin:leads_lead_add' %}" class="office-btn office-btn--outline">
+                <span class="material-symbols-outlined office-btn__icon">add_circle</span>
+                <span class="office-btn__text">Crear Lead</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="office-dashboard__section">
+        <div class="office-dashboard__section-header">
+            <span class="material-symbols-outlined office-dashboard__section-icon">request_quote</span>
+            <h2 class="office-dashboard__section-title">Presupuestos</h2>
+        </div>
+        <div class="office-dashboard__buttons">
+            <a href="{% url 'admin:leads_budget_changelist' %}" class="office-btn office-btn--primary">
+                <span class="material-symbols-outlined office-btn__icon">list_alt</span>
+                <span class="office-btn__text">Ver Presupuestos</span>
+            </a>
+            <a href="{% url 'admin:leads_budget_add' %}" class="office-btn office-btn--outline">
+                <span class="material-symbols-outlined office-btn__icon">add_circle</span>
+                <span class="office-btn__text">Crear Presupuesto</span>
+            </a>
+        </div>
+    </div>
+
+    {# ── CATÁLOGO ── #}
+    <div class="office-dashboard__section">
+        <div class="office-dashboard__section-header">
+            <span class="material-symbols-outlined office-dashboard__section-icon">home_repair_service</span>
+            <h2 class="office-dashboard__section-title">Catálogo</h2>
+        </div>
+        <div class="office-dashboard__buttons">
+            <a href="{% url 'admin:services_service_changelist' %}" class="office-btn office-btn--primary">
+                <span class="material-symbols-outlined office-btn__icon">home_repair_service</span>
+                <span class="office-btn__text">Servicios</span>
+            </a>
+            <a href="{% url 'admin:projects_project_changelist' %}" class="office-btn office-btn--primary">
+                <span class="material-symbols-outlined office-btn__icon">photo_library</span>
+                <span class="office-btn__text">Proyectos</span>
+            </a>
+        </div>
+    </div>
+
+    {# ── SISTEMA ── #}
+    <div class="office-dashboard__section">
+        <div class="office-dashboard__section-header">
+            <span class="material-symbols-outlined office-dashboard__section-icon">settings</span>
+            <h2 class="office-dashboard__section-title">Sistema</h2>
+        </div>
+        <div class="office-dashboard__buttons">
+            <a href="{% url 'admin:auth_user_changelist' %}" class="office-btn office-btn--secondary">
+                <span class="material-symbols-outlined office-btn__icon">group</span>
+                <span class="office-btn__text">Usuarios</span>
+            </a>
+            <a href="{% url 'admin:users_loginattempt_changelist' %}" class="office-btn office-btn--secondary">
+                <span class="material-symbols-outlined office-btn__icon">shield</span>
+                <span class="office-btn__text">Intentos de Login</span>
+            </a>
+        </div>
+    </div>
+
+    {# ── AUDITORÍA ── #}
+    <div class="office-dashboard__section">
+        <div class="office-dashboard__section-header">
+            <span class="material-symbols-outlined office-dashboard__section-icon">history</span>
+            <h2 class="office-dashboard__section-title">Auditoría</h2>
+        </div>
+        <div class="office-dashboard__buttons">
+            <a href="{% url 'admin:leads_leadlog_changelist' %}" class="office-btn office-btn--secondary">
+                <span class="material-symbols-outlined office-btn__icon">manage_search</span>
+                <span class="office-btn__text">Historial de Leads</span>
+            </a>
+            <a href="{% url 'admin:leads_leadimage_changelist' %}" class="office-btn office-btn--secondary">
+                <span class="material-symbols-outlined office-btn__icon">image</span>
+                <span class="office-btn__text">Imágenes</span>
+            </a>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

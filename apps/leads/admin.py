@@ -22,6 +22,7 @@ import csv
 
 from django.contrib import admin
 from django.http import HttpResponse
+from django.urls import reverse
 from django.utils.html import format_html
 
 from unfold.admin import ModelAdmin as UnfoldModelAdmin
@@ -30,6 +31,8 @@ from unfold.decorators import display
 
 from .models import Lead, LeadImage, Budget, LeadLog
 from .notifications import notify_lead_assigned, notify_note_added
+
+admin.site.index_template = 'admin/admin_index.html'
 
 
 # =============================================================================
@@ -98,7 +101,7 @@ class LeadAdmin(UnfoldModelAdmin):
     # -------------------------------------------------------------------------
 
     list_display = (
-        'id',
+        'view_detail',
         'name',
         'phone',
         'email',
@@ -111,6 +114,7 @@ class LeadAdmin(UnfoldModelAdmin):
         'created_at',
         'assigned_to'
     )
+    list_display_links = None
 
     list_filter = (
         'status',
@@ -277,6 +281,16 @@ class LeadAdmin(UnfoldModelAdmin):
             )
         return '-'
     budgets_count.short_description = 'Presupuestos'
+
+    def view_detail(self, obj):
+        url = reverse('admin:leads_lead_change', args=[obj.pk])
+        return format_html(
+            '<a href="{}" title="Ver detalle" class="office-view-detail">'
+            '<span class="material-symbols-outlined">visibility</span>'
+            '</a>',
+            url
+        )
+    view_detail.short_description = ''
 
     # -------------------------------------------------------------------------
     # OPTIMIZACIÓN DE QUERIES
