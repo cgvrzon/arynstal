@@ -1,22 +1,13 @@
 """
-Selector de configuración según el entorno.
+Settings package de Arynstal.
 
-Por defecto usa 'development'. Para producción, establecer:
-    export DJANGO_ENV=production
+NO apuntar DJANGO_SETTINGS_MODULE a 'arynstal.settings' directamente.
+Usar el modulo especifico del entorno:
 
-O en el archivo .env:
-    DJANGO_ENV=production
+    - arynstal.settings.development  (dev local, CI)
+    - arynstal.settings.production   (servidor)
+
+manage.py usa development por defecto.
+wsgi.py/asgi.py usan production por defecto.
+El servidor define DJANGO_SETTINGS_MODULE en .env para sobreescribir defaults.
 """
-
-import os
-
-# Detectar el entorno (por defecto: development)
-environment = os.environ.get('DJANGO_ENV', 'development')
-
-# Cargar la configuración correspondiente
-if environment == 'production':
-    from .production import *  # noqa: F403
-    print('🚀 Django running in PRODUCTION mode')
-else:
-    from .development import *  # noqa: F403
-    print('🔧 Django running in DEVELOPMENT mode')
