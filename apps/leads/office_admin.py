@@ -111,7 +111,7 @@ class OfficeLeadLogInline(UnfoldTabularInline):
 
 
 class OfficeBudgetInline(UnfoldTabularInline):
-    """Inline de presupuestos del lead (office puede crear/editar, no eliminar)."""
+    """Inline de presupuestos del lead (office/admin pueden crear, editar y eliminar)."""
     model = Budget
     extra = 0
     readonly_fields = ('reference', 'created_at', 'created_by')
@@ -119,7 +119,7 @@ class OfficeBudgetInline(UnfoldTabularInline):
         'reference', 'description', 'amount', 'status',
         'valid_until', 'file', 'created_at', 'created_by'
     )
-    can_delete = False
+    can_delete = True
     tab = True
 
     def get_queryset(self, request):
@@ -150,13 +150,12 @@ class OfficeLeadAdmin(UnfoldModelAdmin):
         'email',
         'service',
         'display_status',
-        'display_urgency',
         'images_count',
         'created_at',
     )
     list_display_links = None
 
-    list_filter = ('status', 'urgency', 'service', 'created_at')
+    list_filter = ('status', 'service', 'created_at')
     search_fields = ('name', 'email', 'phone', 'message')
     list_per_page = 20
     date_hierarchy = 'created_at'
@@ -167,7 +166,6 @@ class OfficeLeadAdmin(UnfoldModelAdmin):
     # CONFIGURACIÓN DEL FORMULARIO
     # -------------------------------------------------------------------------
 
-    readonly_fields = ('created_at', 'updated_at')
     inlines = [OfficeLeadImageInline, OfficeBudgetInline, OfficeLeadLogInline]
 
     fieldsets = (
@@ -176,7 +174,7 @@ class OfficeLeadAdmin(UnfoldModelAdmin):
             'description': 'Información de contacto del cliente'
         }),
         ('Solicitud', {
-            'fields': ('service', 'message', 'urgency'),
+            'fields': ('service', 'message'),
             'description': 'Detalles de lo que necesita el cliente'
         }),
         ('Gestión', {
@@ -202,13 +200,6 @@ class OfficeLeadAdmin(UnfoldModelAdmin):
     })
     def display_status(self, obj):
         return obj.status
-
-    @display(description="Urgencia", label={
-        "urgente": "danger",
-        "normal": None,
-    })
-    def display_urgency(self, obj):
-        return obj.urgency
 
     def images_count(self, obj):
         count = obj.images.count()
@@ -244,7 +235,7 @@ class OfficeLeadAdmin(UnfoldModelAdmin):
         writer = csv.writer(response)
         writer.writerow([
             'ID', 'Nombre', 'Email', 'Teléfono', 'Servicio',
-            'Estado', 'Urgencia', 'Origen', 'Fecha creación',
+            'Estado', 'Origen', 'Fecha creación',
             'Asignado a', 'Ubicación', 'Mensaje'
         ])
 
@@ -256,7 +247,6 @@ class OfficeLeadAdmin(UnfoldModelAdmin):
                 lead.phone,
                 lead.service.name if lead.service else '',
                 lead.get_status_display(),
-                lead.get_urgency_display(),
                 lead.get_source_display(),
                 lead.created_at.strftime('%d/%m/%Y %H:%M'),
                 str(lead.assigned_to) if lead.assigned_to else '',
@@ -309,6 +299,23 @@ class OfficeLeadAdmin(UnfoldModelAdmin):
                 action='created',
                 new_value='Lead creado desde el admin'
             )
+
+    # -------------------------------------------------------------------------
+    # CAMPOS READONLY DINÁMICOS POR ROL
+    # -------------------------------------------------------------------------
+
+    def get_readonly_fields(self, request, obj=None):
+        """Field solo puede editar notas. El resto de campos son read-only."""
+        base_readonly = ('created_at', 'updated_at')
+        if hasattr(request.user, 'profile') and request.user.profile.is_field():
+            all_fields = (
+                'name', 'email', 'phone', 'location', 'preferred_contact',
+                'service', 'message',
+                'status', 'assigned_to',
+                'created_at', 'updated_at',
+            )
+            return all_fields
+        return base_readonly
 
     # -------------------------------------------------------------------------
     # OPTIMIZACIÓN
@@ -445,7 +452,7 @@ class OfficeBudgetAdmin(UnfoldModelAdmin):
         return self._is_office_or_admin(request)
 
     def has_delete_permission(self, request, obj=None):
-        return False
+        return self._is_office_or_admin(request)
 
 
 # =============================================================================

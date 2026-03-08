@@ -134,7 +134,7 @@ class Lead(models.Model):
         - Solicitud: service, message
         - Gestión: status, source, assigned_to, notes
         - Seguridad/RGPD: privacy_accepted, ip_address, user_agent
-        - Preferencias: preferred_contact, urgency
+        - Preferencias: preferred_contact
 
     ÍNDICES DE BASE DE DATOS:
         - (status, created_at): Para filtrar leads por estado ordenados por fecha
@@ -160,11 +160,6 @@ class Lead(models.Model):
         ('telefono', 'Llamada telefónica'),  # Recibido por teléfono
         ('recomendacion', 'Recomendación'),  # Cliente referido por otro
         ('otro', 'Otro'),                # Otros canales (ferias, redes sociales, etc.)
-    ]
-
-    URGENCY_CHOICES = [
-        ('normal', 'Normal'),            # Solicitud estándar
-        ('urgente', 'Urgente'),          # Cliente con necesidad inmediata
     ]
 
     CONTACT_CHOICES = [
@@ -295,14 +290,6 @@ class Lead(models.Model):
         default='email',
         verbose_name='Contacto preferido'
     )
-    urgency = models.CharField(
-        max_length=20,
-        choices=URGENCY_CHOICES,
-        default='normal',
-        blank=True,
-        verbose_name='Urgencia'
-    )
-
     # -------------------------------------------------------------------------
     # SECCIÓN 8: TIMESTAMPS
     # -------------------------------------------------------------------------

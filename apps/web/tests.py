@@ -43,6 +43,7 @@ def create_valid_contact_data():
         'name': 'Juan Pérez García',
         'email': 'juan@example.com',
         'phone': '666777888',
+        'location': 'Calle Mayor 1, Barcelona, 08001',
         'message': 'Este es un mensaje de prueba con más de 20 caracteres para el formulario.',
         'privacidad': 'on',
         'website_url': '',  # Honeypot vacío

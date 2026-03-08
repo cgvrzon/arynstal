@@ -43,6 +43,7 @@ def create_valid_lead_data():
         'name': 'Juan Pérez García',
         'email': 'juan@example.com',
         'phone': '666777888',
+        'location': 'Calle Mayor 1, Barcelona, 08001',
         'message': 'Este es un mensaje de prueba con más de 20 caracteres.',
     }
 
@@ -88,7 +89,6 @@ class LeadModelTest(TestCase):
         self.assertEqual(lead.status, 'nuevo')
         self.assertEqual(lead.source, 'web')
         self.assertEqual(lead.preferred_contact, 'email')
-        self.assertEqual(lead.urgency, 'normal')
         self.assertFalse(lead.privacy_accepted)
 
     def test_lead_timestamps(self):

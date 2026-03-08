@@ -326,11 +326,7 @@ def send_customer_confirmation(lead) -> bool:
 
 def notify_note_added(lead, added_by) -> bool:
     """
-    Envía notificación a admins cuando un técnico añade una nota a un lead.
-
-    DESCRIPCIÓN:
-        Cuando un técnico de campo añade o modifica notas en un lead,
-        se notifica al administrador para que esté al tanto del progreso.
+    Envía notificación a admin y office cuando se añade una nota a un lead.
 
     PARÁMETROS:
         lead (Lead): Instancia del lead con la nota añadida.
@@ -342,6 +338,8 @@ def notify_note_added(lead, added_by) -> bool:
     TEMPLATE UTILIZADO:
         templates/emails/lead_note_added.html
     """
+    from apps.users.models import UserProfile
+
     config = get_notification_config()
 
     if not config.get('ENABLED', True):
@@ -350,10 +348,28 @@ def notify_note_added(lead, added_by) -> bool:
         )
         return False
 
-    # Obtener emails de admin desde configuración (múltiples destinatarios)
+    # Obtener emails de admin (config) + office (BD)
     admin_emails = _parse_admin_emails(config)
     if not admin_emails:
         admin_emails = ['info@arynstal.es']
+
+    office_emails = list(
+        UserProfile.objects.filter(
+            role='office',
+            user__is_active=True,
+        ).exclude(
+            user__email='',
+        ).values_list('user__email', flat=True)
+    )
+
+    # Combinar sin duplicados y excluir al autor de la nota
+    all_recipients = list(set(admin_emails + office_emails))
+    if added_by.email in all_recipients:
+        all_recipients.remove(added_by.email)
+
+    if not all_recipients:
+        logger.info(f'Sin destinatarios para notificación de nota en Lead {lead.id}.')
+        return False
 
     # Preparar contexto
     path = reverse('admin:leads_lead_change', args=[lead.id])
@@ -379,13 +395,13 @@ def notify_note_added(lead, added_by) -> bool:
             subject=subject,
             body=text_content,
             from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', None),
-            to=admin_emails,
+            to=all_recipients,
         )
         email.attach_alternative(html_content, 'text/html')
         email.send(fail_silently=False)
 
         logger.info(
-            f'Notificación de nota enviada a {admin_emails} para Lead {lead.id}'
+            f'Notificación de nota enviada a {all_recipients} para Lead {lead.id}'
         )
         return True
 

@@ -45,7 +45,7 @@ RELACIÓN CON OTROS ARCHIVOS:
 
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
-from .models import Lead, LeadLog
+from .models import Budget, Lead, LeadLog
 
 
 # =============================================================================
@@ -144,6 +144,7 @@ def store_lead_previous_state(sender, instance, **kwargs):
             _lead_previous_state[instance.pk] = {
                 'status': old_instance.status,
                 'assigned_to': old_instance.assigned_to,
+                'notes': old_instance.notes,
             }
         except Lead.DoesNotExist:
             # Caso edge: el lead fue eliminado entre la carga y el save
@@ -212,12 +213,17 @@ def log_lead_changes(sender, instance, created, **kwargs):
             )
             changes.append(f"Asignado: {old_assigned} → {new_assigned}")
 
+        if old_state['notes'] != instance.notes:
+            changes.append("Nota: actualizada")
+
         if changes:
             # Determinar action type
             if len(changes) == 1 and changes[0].startswith('Estado:'):
                 action = 'status_changed'
             elif len(changes) == 1 and changes[0].startswith('Asignado:'):
                 action = 'assigned'
+            elif len(changes) == 1 and changes[0].startswith('Nota:'):
+                action = 'note_added'
             else:
                 action = 'edited'
 
@@ -231,3 +237,27 @@ def log_lead_changes(sender, instance, created, **kwargs):
         # Limpiar estado almacenado (evitar memory leak)
         # -----------------------------------------------------------------
         del _lead_previous_state[instance.pk]
+
+
+# =============================================================================
+# SIGNAL: AUTO-PRESUPUESTADO AL CREAR PRIMER BUDGET
+# =============================================================================
+
+@receiver(post_save, sender=Budget)
+def auto_set_lead_presupuestado(sender, instance, created, **kwargs):
+    """
+    Cambia el estado del lead a 'presupuestado' al crear su primer presupuesto.
+
+    Solo actúa si:
+    - El budget es nuevo (created=True)
+    - El lead NO está ya en 'presupuestado', 'cerrado' o 'descartado'
+    """
+    if not created:
+        return
+
+    lead = instance.lead
+    if lead.status in ('presupuestado', 'cerrado', 'descartado'):
+        return
+
+    lead.status = 'presupuestado'
+    lead.save(update_fields=['status', 'updated_at'])

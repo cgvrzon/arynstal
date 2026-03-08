@@ -87,7 +87,7 @@ class LeadForm(forms.ModelForm):
 
     class Meta:
         model = Lead
-        fields = ['name', 'phone', 'email', 'message']
+        fields = ['name', 'phone', 'email', 'location', 'message']
         # NOTE: Solo incluimos los campos que el usuario rellena directamente.
         # Otros campos (status, source, assigned_to) se asignan en la vista.
 
@@ -162,6 +162,19 @@ class LeadForm(forms.ModelForm):
             'placeholder': 'Ej: juan@email.com',
             'id': 'email',
             'type': 'email'
+        })
+
+        # ---------------------------------------------------------------------
+        # Campo: location (Dirección del proyecto)
+        # ---------------------------------------------------------------------
+
+        self.fields['location'].required = True
+        self.fields['location'].widget.attrs.update({
+            'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg '
+                     'focus:ring-2 focus:ring-[#0D3B66] focus:border-transparent '
+                     'transition-all duration-300 text-sm sm:text-base',
+            'placeholder': 'Calle, ciudad, provincia, CP...',
+            'id': 'direccion'
         })
 
         # ---------------------------------------------------------------------

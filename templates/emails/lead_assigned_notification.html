@@ -58,22 +58,6 @@
             margin: 0;
             white-space: pre-wrap;
         }
-        .urgency-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-        .urgency-normal {
-            background-color: #e5e7eb;
-            color: #4b5563;
-        }
-        .urgency-urgente {
-            background-color: #fee2e2;
-            color: #dc2626;
-        }
         .footer {
             margin-top: 30px;
             padding-top: 20px;
@@ -128,13 +112,6 @@
         <div class="label">Servicio solicitado</div>
         <div class="value">{{ lead.service.name }}</div>
         {% endif %}
-
-        <div class="label">Urgencia</div>
-        <div class="value">
-            <span class="urgency-badge urgency-{{ lead.urgency }}">
-                {{ lead.get_urgency_display }}
-            </span>
-        </div>
 
         <div class="label">Mensaje del cliente</div>
         <div class="message-box">

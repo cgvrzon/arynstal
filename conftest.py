@@ -91,7 +91,6 @@ def lead(db, service):
         message='Este es un mensaje de prueba para el lead. Tiene más de 20 caracteres.',
         status='nuevo',
         source='web',
-        urgency='normal',
         privacy_accepted=True
     )
 

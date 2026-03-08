@@ -105,6 +105,21 @@ class UserAdmin(UnfoldModelAdmin, BaseUserAdmin):
 
     add_form = ArynstalUserCreationForm
 
+    # Fieldsets de edición: sin permisos Django, sin grupos, sin is_superuser.
+    # Los permisos operan por rol (UserProfile), no por permisos individuales.
+    fieldsets = (
+        (None, {'fields': ('username', 'password')}),
+        ('Información personal', {'fields': ('first_name', 'last_name', 'email')}),
+        ('Estado', {
+            'fields': ('is_active', 'is_staff'),
+            'description': 'Los permisos se gestionan mediante el rol del perfil de Arynstal.',
+        }),
+        ('Fechas', {
+            'fields': ('last_login', 'date_joined'),
+            'classes': ('collapse',),
+        }),
+    )
+
     add_fieldsets = (
         ('Credenciales', {
             'fields': ('username', 'password1', 'password2'),

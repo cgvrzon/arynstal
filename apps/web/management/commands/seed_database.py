@@ -397,7 +397,6 @@ class Command(BaseCommand):
                 "message": "Buenos días, me gustaría recibir un presupuesto para la instalación de aerotermia en una vivienda unifamiliar de 150m². La casa es de nueva construcción.",
                 "status": "nuevo",
                 "source": "web",
-                "urgency": "normal",
                 "privacy_accepted": True
             },
             {
@@ -410,7 +409,6 @@ class Command(BaseCommand):
                 "status": "contactado",
                 "assigned_to": maria,
                 "source": "web",
-                "urgency": "normal",
                 "privacy_accepted": True
             },
             {
@@ -423,7 +421,6 @@ class Command(BaseCommand):
                 "status": "presupuestado",
                 "assigned_to": maria,
                 "source": "telefono",
-                "urgency": "urgente",
                 "privacy_accepted": True
             },
             {
@@ -434,7 +431,6 @@ class Command(BaseCommand):
                 "message": "Querría información sobre vuestros servicios de instalación eléctrica. Es para una nave industrial de 300m².",
                 "status": "nuevo",
                 "source": "recomendacion",
-                "urgency": "normal",
                 "privacy_accepted": True
             },
             {
@@ -447,7 +443,6 @@ class Command(BaseCommand):
                 "status": "cerrado",
                 "assigned_to": maria,
                 "source": "telefono",
-                "urgency": "urgente",
                 "privacy_accepted": True
             },
         ]

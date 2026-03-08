@@ -58,13 +58,13 @@ def _build_lead_changelog(old_obj, new_obj, form):
         new_assigned = str(new_obj.assigned_to) if new_obj.assigned_to else 'Sin asignar'
         changes.append(f"Asignado: {old_assigned} → {new_assigned}")
 
-    if old_obj.notes != new_obj.notes and new_obj.notes:
-        changes.append("Nota interna actualizada")
+    if old_obj.notes != new_obj.notes:
+        changes.append("Nota: actualizada")
 
     tracked = {'status', 'assigned_to', 'notes'}
     other_fields = {
         'name', 'email', 'phone', 'location', 'service',
-        'message', 'urgency', 'preferred_contact', 'source',
+        'message', 'preferred_contact', 'source',
     }
     for field_name in form.changed_data:
         if field_name in other_fields and field_name not in tracked:
@@ -158,7 +158,6 @@ class LeadAdmin(UnfoldModelAdmin):
         'email',
         'service',
         'display_status',
-        'display_urgency',
         'display_source',
         'images_count',
         'budgets_count',
@@ -170,7 +169,6 @@ class LeadAdmin(UnfoldModelAdmin):
     list_filter = (
         'status',
         'source',
-        'urgency',
         'privacy_accepted',
         'created_at',
         'assigned_to',
@@ -211,7 +209,7 @@ class LeadAdmin(UnfoldModelAdmin):
         writer = csv.writer(response)
         writer.writerow([
             'ID', 'Nombre', 'Email', 'Teléfono', 'Servicio',
-            'Estado', 'Urgencia', 'Origen', 'Fecha creación',
+            'Estado', 'Origen', 'Fecha creación',
             'Asignado a', 'Ubicación', 'Mensaje'
         ])
 
@@ -223,7 +221,6 @@ class LeadAdmin(UnfoldModelAdmin):
                 lead.phone,
                 lead.service.name if lead.service else '',
                 lead.get_status_display(),
-                lead.get_urgency_display(),
                 lead.get_source_display(),
                 lead.created_at.strftime('%d/%m/%Y %H:%M'),
                 str(lead.assigned_to) if lead.assigned_to else '',
@@ -251,7 +248,6 @@ class LeadAdmin(UnfoldModelAdmin):
             'fields': (
                 'service',
                 'message',
-                'urgency',
                 'source'
             ),
             'classes': ('wide',)
@@ -294,13 +290,6 @@ class LeadAdmin(UnfoldModelAdmin):
     })
     def display_status(self, obj):
         return obj.status
-
-    @display(description="Urgencia", label={
-        "urgente": "danger",
-        "normal": None,
-    })
-    def display_urgency(self, obj):
-        return obj.urgency
 
     @display(description="Origen", label={
         "web": "info",
