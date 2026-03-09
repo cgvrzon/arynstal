@@ -202,9 +202,8 @@ jobs:
             git pull origin main && \
             sed -i '/^SENTRY_RELEASE=/d' .env && \
             echo 'SENTRY_RELEASE=${{ github.sha }}' >> .env && \
-            set -a && source .env && set +a && \
-            sudo -E /var/www/arynstal/app/venv/bin/python manage.py migrate && \
-            sudo -E /var/www/arynstal/app/venv/bin/python manage.py collectstatic --noinput && \
+            sudo /var/www/arynstal/app/scripts/manage_prod.sh migrate && \
+            sudo /var/www/arynstal/app/scripts/manage_prod.sh collectstatic --noinput && \
             sudo /bin/systemctl restart arynstal"
 
       - name: ✅ Verificar deploy
