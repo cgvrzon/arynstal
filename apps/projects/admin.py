@@ -18,9 +18,10 @@ class ProjectImageInline(UnfoldTabularInline):
 
     def image_preview(self, obj):
         if obj.image:
+            alt = obj.alt_text or f'Imagen del proyecto {obj.project.title}'
             return format_html(
-                '<img src="{}" style="max-height: 80px; border-radius: 4px;" />',
-                obj.image.url,
+                '<img src="{}" alt="{}" style="max-height: 80px; border-radius: 4px;" />',
+                obj.image.url, alt,
             )
         return '-'
     image_preview.short_description = 'Vista previa'
@@ -44,13 +45,12 @@ class ProjectAdmin(UnfoldModelAdmin):
     list_per_page = 25
     date_hierarchy = 'created_at'
 
-    prepopulated_fields = {'slug': ('title',)}
     autocomplete_fields = ['service']
     readonly_fields = ('created_at', 'updated_at', 'cover_preview')
 
     fieldsets = (
         ('Información básica', {
-            'fields': ('title', 'slug', 'service', 'description'),
+            'fields': ('title', 'service', 'description'),
         }),
         ('Imagen de portada', {
             'fields': ('cover_image', 'cover_preview'),
@@ -82,9 +82,9 @@ class ProjectAdmin(UnfoldModelAdmin):
     def cover_preview(self, obj):
         if obj.cover_image:
             return format_html(
-                '<img src="{}" style="max-width: 300px; max-height: 200px; '
-                'border-radius: 8px;" />',
-                obj.cover_image.url,
+                '<img src="{}" alt="Portada de {}" style="max-width: 300px; '
+                'max-height: 200px; border-radius: 8px;" />',
+                obj.cover_image.url, obj.title,
             )
         return 'Sin imagen'
     cover_preview.short_description = 'Vista previa portada'

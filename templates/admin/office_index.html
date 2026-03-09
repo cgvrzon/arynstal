@@ -43,6 +43,18 @@
             </a>
             {% endif %}
         </div>
+        {% if new_leads_count %}
+        <a href="{% url 'office:leads_lead_changelist' %}?status__exact=nuevo" class="office-badge office-badge--active">
+            <span class="material-symbols-outlined office-badge__icon">notifications_active</span>
+            <span class="office-badge__count">{{ new_leads_count }}</span>
+            <span class="office-badge__text">cliente{{ new_leads_count|pluralize:"s" }} nuevo{{ new_leads_count|pluralize:"s" }} pendiente{{ new_leads_count|pluralize:"s" }}</span>
+        </a>
+        {% else %}
+        <div class="office-badge office-badge--empty">
+            <span class="material-symbols-outlined office-badge__icon">check_circle</span>
+            <span class="office-badge__text">Sin clientes nuevos pendientes</span>
+        </div>
+        {% endif %}
     </div>
 
     {# ── SECCIÓN PRESUPUESTOS (solo office/admin) ── #}

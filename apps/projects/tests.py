@@ -12,7 +12,7 @@ from apps.projects.models import Project, ProjectImage
 from apps.services.models import Service
 
 
-def _create_test_image(name='test.jpg', size=(100, 100), fmt='JPEG'):
+def _create_test_image(name='test.jpg', size=(800, 600), fmt='JPEG'):
     """Crea imagen de prueba en memoria."""
     img = Image.new('RGB', size, color='blue')
     buf = io.BytesIO()
@@ -35,7 +35,7 @@ class ProjectModelTest(TestCase):
     def _create_project(self, **kwargs):
         defaults = {
             'title': 'Proyecto Test',
-            'description': 'Descripción del proyecto',
+            'description': 'Instalación completa de sistema de aerotermia con suelo radiante en chalet adosado de 200m².',
             'service': self.service,
             'cover_image': _create_test_image(),
             'year': 2024,
@@ -70,6 +70,19 @@ class ProjectModelTest(TestCase):
     def test_clean_current_year_valid(self):
         project = self._create_project(year=date.today().year)
         project.clean()  # No debe lanzar excepción
+
+    def test_clean_short_description(self):
+        project = self._create_project()
+        project.description = 'Muy corta'
+        with self.assertRaises(ValidationError) as ctx:
+            project.clean()
+        self.assertIn('description', ctx.exception.message_dict)
+
+    def test_clean_small_cover_image(self):
+        project = self._create_project(cover_image=_create_test_image(size=(200, 200)))
+        with self.assertRaises(ValidationError) as ctx:
+            project.clean()
+        self.assertIn('cover_image', ctx.exception.message_dict)
 
     def test_get_details_list_full(self):
         project = self._create_project(
@@ -124,7 +137,7 @@ class ProjectImageModelTest(TestCase):
         )
         self.project = Project.objects.create(
             title='Proyecto Imgs',
-            description='Desc',
+            description='Instalación de climatización industrial con equipos de alta eficiencia energética.',
             service=self.service,
             cover_image=_create_test_image(),
             year=2024,
@@ -152,6 +165,16 @@ class ProjectImageModelTest(TestCase):
         )
         with self.assertRaises(ValidationError):
             extra.clean()
+
+    def test_small_image_validation(self):
+        img = ProjectImage(
+            project=self.project,
+            image=_create_test_image('small.jpg', size=(200, 200)),
+            order=0,
+        )
+        with self.assertRaises(ValidationError) as ctx:
+            img.clean()
+        self.assertIn('image', ctx.exception.message_dict)
 
 
 class ProjectViewTest(TestCase):

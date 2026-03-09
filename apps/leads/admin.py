@@ -101,10 +101,11 @@ class LeadImageInline(UnfoldTabularInline):
 
     def image_preview(self, obj):
         if obj.image:
+            alt = f'Imagen adjunta del lead {obj.lead.name}' if obj.lead_id else 'Imagen adjunta'
             return format_html(
-                '<img src="{}" style="max-width: 150px; max-height: 150px; '
+                '<img src="{}" alt="{}" style="max-width: 150px; max-height: 150px; '
                 'border-radius: 4px;" />',
-                obj.image.url
+                obj.image.url, alt,
             )
         return "Sin imagen"
     image_preview.short_description = 'Vista previa'
@@ -415,10 +416,11 @@ class LeadImageAdmin(UnfoldModelAdmin):
 
     def image_preview(self, obj):
         if obj.image:
+            alt = f'Imagen adjunta del lead {obj.lead.name}' if obj.lead_id else 'Imagen adjunta'
             return format_html(
-                '<img src="{}" style="max-width: 200px; max-height: 200px; '
+                '<img src="{}" alt="{}" style="max-width: 200px; max-height: 200px; '
                 'border-radius: 4px;" />',
-                obj.image.url
+                obj.image.url, alt,
             )
         return "Sin imagen"
     image_preview.short_description = 'Vista previa'

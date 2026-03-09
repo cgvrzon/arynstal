@@ -37,6 +37,7 @@ from django.http import HttpResponse
 from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils.html import format_html
+from django.utils.translation import gettext_lazy as _
 
 from .admin import _build_lead_changelog, _determine_log_action
 from .models import Budget, Lead, LeadImage, LeadLog
@@ -67,6 +68,14 @@ class OfficeAdminSite(UnfoldAdminSite):
 
         return request.user.is_superuser
 
+    def index(self, request, extra_context=None):
+        """Inyecta conteo de leads nuevos para el badge del dashboard."""
+        extra_context = extra_context or {}
+        extra_context['new_leads_count'] = Lead.objects.filter(
+            status='nuevo'
+        ).count()
+        return super().index(request, extra_context=extra_context)
+
 
 office_site = OfficeAdminSite(name='office')
 
@@ -87,10 +96,11 @@ class OfficeLeadImageInline(UnfoldTabularInline):
 
     def image_preview(self, obj):
         if obj.image:
+            alt = f'Imagen adjunta del lead {obj.lead.name}' if obj.lead_id else 'Imagen adjunta'
             return format_html(
-                '<img src="{}" style="max-width: 150px; max-height: 150px; '
+                '<img src="{}" alt="{}" style="max-width: 150px; max-height: 150px; '
                 'border-radius: 4px;" />',
-                obj.image.url
+                obj.image.url, alt,
             )
         return "Sin imagen"
     image_preview.short_description = 'Vista previa'
@@ -128,6 +138,37 @@ class OfficeBudgetInline(UnfoldTabularInline):
 
 
 # =============================================================================
+# FILTRO RÁPIDO POR GRUPO DE ESTADO
+# =============================================================================
+
+class LeadStatusGroupFilter(admin.SimpleListFilter):
+    """
+    Filtro que agrupa los estados del lead en 3 categorías:
+    - Nuevos: nuevo
+    - En proceso: contactado, presupuestado
+    - Finalizados: cerrado, descartado
+    """
+    title = _('Estado (grupo)')
+    parameter_name = 'status_group'
+
+    def lookups(self, request, model_admin):
+        return [
+            ('nuevos', _('Nuevos')),
+            ('en_proceso', _('En proceso')),
+            ('finalizados', _('Finalizados')),
+        ]
+
+    def queryset(self, request, queryset):
+        if self.value() == 'nuevos':
+            return queryset.filter(status='nuevo')
+        if self.value() == 'en_proceso':
+            return queryset.filter(status__in=['contactado', 'presupuestado'])
+        if self.value() == 'finalizados':
+            return queryset.filter(status__in=['cerrado', 'descartado'])
+        return queryset
+
+
+# =============================================================================
 # ADMIN DE LEADS SIMPLIFICADO
 # =============================================================================
 
@@ -155,7 +196,7 @@ class OfficeLeadAdmin(UnfoldModelAdmin):
     )
     list_display_links = None
 
-    list_filter = ('status', 'service', 'created_at')
+    list_filter = (LeadStatusGroupFilter, 'status', 'service', 'created_at')
     search_fields = ('name', 'email', 'phone', 'message')
     list_per_page = 20
     date_hierarchy = 'created_at'

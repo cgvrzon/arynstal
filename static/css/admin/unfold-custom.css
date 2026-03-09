@@ -341,6 +341,80 @@ p.help {
 }
 
 /* ---------------------------------------------------------------------------
+   BADGE LEADS NUEVOS - DASHBOARD
+   --------------------------------------------------------------------------- */
+
+.office-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    padding: 0.75rem 1.25rem;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: box-shadow 0.2s ease, transform 0.15s ease;
+}
+
+/* Estado activo: hay leads nuevos — acento, elevado, invita a pulsar */
+.office-badge--active {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(245, 158, 11, 0.4);
+    transform: translateY(-2px);
+    cursor: pointer;
+    animation: badge-pulse 2s ease-in-out infinite;
+}
+
+.office-badge--active:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 20px rgba(245, 158, 11, 0.5);
+    color: #fff;
+}
+
+.office-badge--active:active {
+    transform: translateY(0);
+}
+
+.office-badge--active .office-badge__count {
+    background: rgba(255, 255, 255, 0.3);
+    padding: 0.1rem 0.5rem;
+    border-radius: 6px;
+    font-weight: 800;
+    font-size: 1rem;
+}
+
+/* Estado vacío: sin leads nuevos — muted, estable */
+.office-badge--empty {
+    background: #f8fafc;
+    color: #94a3b8;
+    border: 1.5px dashed #cbd5e1;
+}
+
+.office-badge--empty .office-badge__icon {
+    font-size: 20px;
+}
+
+/* Icono del badge */
+.office-badge__icon {
+    font-size: 22px;
+}
+
+/* Animación sutil de pulso para llamar atención */
+@keyframes badge-pulse {
+    0%, 100% { box-shadow: 0 4px 14px rgba(245, 158, 11, 0.4); }
+    50% { box-shadow: 0 4px 20px rgba(245, 158, 11, 0.6); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .office-badge--active {
+        animation: none;
+    }
+}
+
+/* ---------------------------------------------------------------------------
    RESPONSIVE - DASHBOARD OFICINA
    --------------------------------------------------------------------------- */
 
