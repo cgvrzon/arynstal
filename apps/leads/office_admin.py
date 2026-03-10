@@ -11,10 +11,10 @@ DESCRIPCIÓN:
     Usa django-unfold para una interfaz moderna e intuitiva.
 
 CARACTERÍSTICAS:
-    - Solo muestra Lead con inlines de imágenes y logs
+    - Muestra Lead, Presupuestos, Historial y Proyectos
     - Campos simplificados (sin RGPD, metadatos técnicos)
     - No permite eliminar registros
-    - Acceso restringido a roles 'office' y 'admin'
+    - Acceso restringido: leads/historial para todos los roles, presupuestos/proyectos solo office y admin
     - Interfaz moderna con django-unfold
 
 ACCESO:
@@ -42,6 +42,8 @@ from django.utils.translation import gettext_lazy as _
 from .admin import _build_lead_changelog, _determine_log_action
 from .models import Budget, Lead, LeadImage, LeadLog
 from .notifications import notify_lead_assigned
+
+from apps.projects.models import Project, ProjectImage
 
 
 # =============================================================================
@@ -402,6 +404,133 @@ class OfficeLeadAdmin(UnfoldModelAdmin):
 
 
 # =============================================================================
+# ADMIN: PROYECTOS EN OFFYNSTAL
+# =============================================================================
+
+class OfficeProjectImageInline(UnfoldTabularInline):
+    """Inline de imágenes adicionales del proyecto (max 9, con preview)."""
+    model = ProjectImage
+    extra = 1
+    max_num = ProjectImage.MAX_IMAGES_PER_PROJECT
+    fields = ('image', 'image_preview', 'alt_text', 'order')
+    readonly_fields = ('image_preview',)
+
+    def image_preview(self, obj):
+        if obj.image:
+            alt = obj.alt_text or f'Imagen del proyecto {obj.project.title}'
+            return format_html(
+                '<img src="{}" alt="{}" style="max-height: 80px; border-radius: 4px;" />',
+                obj.image.url, alt,
+            )
+        return '-'
+    image_preview.short_description = 'Vista previa'
+
+
+class OfficeProjectAdmin(UnfoldModelAdmin):
+    """
+    Admin simplificado de Proyectos para el panel de oficina.
+    Office puede crear y editar proyectos. No puede eliminar (solo admin en /admynstal/).
+    Field no tiene acceso.
+    """
+
+    list_display = (
+        'view_detail',
+        'title',
+        'service',
+        'year',
+        'display_is_active',
+        'images_count',
+    )
+    list_display_links = None
+    list_filter = ('is_active', 'service', 'year')
+    search_fields = ('title', 'description', 'client')
+    list_per_page = 25
+
+    readonly_fields = ('cover_preview',)
+
+    fieldsets = (
+        ('Información del proyecto', {
+            'fields': ('title', 'service', 'description'),
+        }),
+        ('Imagen de portada', {
+            'fields': ('cover_image', 'cover_preview'),
+        }),
+        ('Detalles', {
+            'fields': ('area', 'duration', 'year', 'client'),
+        }),
+        ('Publicación', {
+            'fields': ('is_active',),
+            'description': 'Desactiva para ocultar el proyecto de la web sin eliminarlo',
+        }),
+    )
+
+    inlines = [OfficeProjectImageInline]
+
+    def view_detail(self, obj):
+        url = reverse('office:projects_project_change', args=[obj.pk])
+        return format_html(
+            '<a href="{}" title="Ver detalle" class="office-view-detail">'
+            '<span class="material-symbols-outlined">visibility</span>'
+            '</a>',
+            url
+        )
+    view_detail.short_description = ''
+
+    def cover_preview(self, obj):
+        if obj.cover_image:
+            return format_html(
+                '<img src="{}" alt="Portada de {}" style="max-width: 300px; '
+                'max-height: 200px; border-radius: 8px;" />',
+                obj.cover_image.url, obj.title,
+            )
+        return 'Sin imagen'
+    cover_preview.short_description = 'Vista previa portada'
+
+    @display(description="Estado", boolean=True)
+    def display_is_active(self, obj):
+        return obj.is_active
+
+    def images_count(self, obj):
+        count = obj.images.count() + 1  # +1 por la portada
+        return format_html(
+            '<span style="background-color: #E0E8F2; padding: 2px 8px; '
+            'border-radius: 3px;">{} img</span>',
+            count,
+        )
+    images_count.short_description = 'Imágenes'
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related(
+            'service'
+        ).prefetch_related('images')
+
+    # Permisos — reutiliza patrón de OfficeBudgetAdmin
+    def _is_office_or_admin(self, request):
+        if not request.user.is_active or not request.user.is_authenticated:
+            return False
+        if request.user.is_superuser:
+            return True
+        if hasattr(request.user, 'profile'):
+            return request.user.profile.role in ['office', 'admin']
+        return False
+
+    def has_module_permission(self, request):
+        return self._is_office_or_admin(request)
+
+    def has_view_permission(self, request, obj=None):
+        return self._is_office_or_admin(request)
+
+    def has_add_permission(self, request):
+        return self._is_office_or_admin(request)
+
+    def has_change_permission(self, request, obj=None):
+        return self._is_office_or_admin(request)
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+
+# =============================================================================
 # ADMIN: PRESUPUESTOS EN OFFYNSTAL
 # =============================================================================
 
@@ -585,3 +714,4 @@ class OfficeLeadLogAdmin(UnfoldModelAdmin):
 office_site.register(Lead, OfficeLeadAdmin)
 office_site.register(Budget, OfficeBudgetAdmin)
 office_site.register(LeadLog, OfficeLeadLogAdmin)
+office_site.register(Project, OfficeProjectAdmin)

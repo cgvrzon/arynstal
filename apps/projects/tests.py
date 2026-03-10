@@ -273,9 +273,190 @@ class ProjectAdminTest(TestCase):
         response = self.client.get('/admynstal/projects/project/add/')
         self.assertEqual(response.status_code, 200)
 
-    def test_office_admin_no_projects(self):
-        # Projects ya no está registrado en el panel de oficina
+    def test_office_admin_project_accessible_to_admin(self):
+        """Superusuario puede acceder al listado de proyectos en offynstal."""
+        response = self.client.get('/offynstal/projects/project/')
+        self.assertEqual(response.status_code, 200)
+
+
+# =============================================================================
+# TESTS DE PERMISOS: OfficeProjectAdmin
+# =============================================================================
+
+class OfficeProjectAdminPermissionsTest(TestCase):
+    """
+    Tests de permisos para OfficeProjectAdmin en el panel /offynstal/.
+
+    Matriz de permisos (definida en OfficeProjectAdmin._is_office_or_admin):
+        - office: listado, creación y edición. Sin eliminación.
+        - admin: listado, creación y edición. Sin eliminación.
+        - field: sin acceso a proyectos (redirige al login del site).
+    """
+
+    def setUp(self):
+        from django.contrib.auth.models import User
+        from apps.users.models import UserProfile
+        from apps.services.models import Service
+
+        self.client = Client()
+
+        # Usuario con rol admin (is_staff para acceder al site)
+        self.admin_user = User.objects.create_user(
+            username='admin_office',
+            email='admin@test.com',
+            password='pass123',
+            is_staff=True,
+        )
         self.admin_user.profile.role = 'admin'
         self.admin_user.profile.save()
+
+        # Usuario con rol office (is_staff para acceder al site)
+        self.office_user = User.objects.create_user(
+            username='office_user',
+            email='office@test.com',
+            password='pass123',
+            is_staff=True,
+        )
+        self.office_user.profile.role = 'office'
+        self.office_user.profile.save()
+
+        # Usuario con rol field (is_staff para intentar acceder al site)
+        self.field_user = User.objects.create_user(
+            username='field_user',
+            email='field@test.com',
+            password='pass123',
+            is_staff=True,
+        )
+        self.field_user.profile.role = 'field'
+        self.field_user.profile.save()
+
+        # Servicio para el proyecto de prueba
+        self.service = Service.objects.create(
+            name='Aerotermia',
+            description='Instalación de aerotermia',
+            is_active=True,
+        )
+
+        # Proyecto de prueba con datos que superan todas las validaciones
+        self.project = Project.objects.create(
+            title='Proyecto Permisos Test',
+            description=(
+                'Instalación completa de aerotermia con suelo radiante '
+                'en vivienda unifamiliar de 180m² en Barcelona.'
+            ),
+            service=self.service,
+            cover_image=_create_test_image(size=(800, 400)),
+            year=date.today().year,
+        )
+
+    # -------------------------------------------------------------------------
+    # ACCESO AL LISTADO — /offynstal/projects/project/
+    # -------------------------------------------------------------------------
+
+    def test_office_can_access_changelist(self):
+        """Rol office puede ver el listado de proyectos en offynstal."""
+        self.client.force_login(self.office_user)
         response = self.client.get('/offynstal/projects/project/')
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 200)
+
+    def test_admin_can_access_changelist(self):
+        """Rol admin puede ver el listado de proyectos en offynstal."""
+        self.client.force_login(self.admin_user)
+        response = self.client.get('/offynstal/projects/project/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_field_cannot_access_changelist(self):
+        """Rol field no tiene acceso al módulo de proyectos en offynstal."""
+        self.client.force_login(self.field_user)
+        response = self.client.get('/offynstal/projects/project/')
+        # Django redirige al login del site cuando has_module_permission=False
+        self.assertIn(response.status_code, [302, 403])
+
+    # -------------------------------------------------------------------------
+    # ACCESO AL FORMULARIO DE CREACIÓN — /offynstal/projects/project/add/
+    # -------------------------------------------------------------------------
+
+    def test_office_can_access_add_form(self):
+        """Rol office puede acceder al formulario de creación de proyectos."""
+        self.client.force_login(self.office_user)
+        response = self.client.get('/offynstal/projects/project/add/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_admin_can_access_add_form(self):
+        """Rol admin puede acceder al formulario de creación de proyectos."""
+        self.client.force_login(self.admin_user)
+        response = self.client.get('/offynstal/projects/project/add/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_field_cannot_access_add_form(self):
+        """Rol field no puede acceder al formulario de creación de proyectos."""
+        self.client.force_login(self.field_user)
+        response = self.client.get('/offynstal/projects/project/add/')
+        self.assertIn(response.status_code, [302, 403])
+
+    # -------------------------------------------------------------------------
+    # ACCESO AL FORMULARIO DE EDICIÓN — /offynstal/projects/project/{id}/change/
+    # -------------------------------------------------------------------------
+
+    def test_office_can_access_change_form(self):
+        """Rol office puede acceder al formulario de edición de un proyecto."""
+        self.client.force_login(self.office_user)
+        response = self.client.get(
+            f'/offynstal/projects/project/{self.project.pk}/change/'
+        )
+        self.assertEqual(response.status_code, 200)
+
+    def test_admin_can_access_change_form(self):
+        """Rol admin puede acceder al formulario de edición de un proyecto."""
+        self.client.force_login(self.admin_user)
+        response = self.client.get(
+            f'/offynstal/projects/project/{self.project.pk}/change/'
+        )
+        self.assertEqual(response.status_code, 200)
+
+    def test_field_cannot_access_change_form(self):
+        """Rol field no puede acceder al formulario de edición de proyectos."""
+        self.client.force_login(self.field_user)
+        response = self.client.get(
+            f'/offynstal/projects/project/{self.project.pk}/change/'
+        )
+        self.assertIn(response.status_code, [302, 403])
+
+    # -------------------------------------------------------------------------
+    # PERMISOS DE ELIMINACIÓN — has_delete_permission = False siempre
+    # -------------------------------------------------------------------------
+
+    def test_office_has_no_delete_permission(self):
+        """Rol office no puede eliminar proyectos (has_delete_permission=False)."""
+        from apps.leads.office_admin import OfficeProjectAdmin, office_site
+        from django.test import RequestFactory
+
+        factory = RequestFactory()
+        request = factory.get('/')
+        request.user = self.office_user
+
+        admin_instance = OfficeProjectAdmin(Project, office_site)
+        self.assertFalse(admin_instance.has_delete_permission(request))
+        self.assertFalse(admin_instance.has_delete_permission(request, self.project))
+
+    def test_admin_has_no_delete_permission_in_offynstal(self):
+        """Rol admin tampoco puede eliminar proyectos desde offynstal."""
+        from apps.leads.office_admin import OfficeProjectAdmin, office_site
+        from django.test import RequestFactory
+
+        factory = RequestFactory()
+        request = factory.get('/')
+        request.user = self.admin_user
+
+        admin_instance = OfficeProjectAdmin(Project, office_site)
+        self.assertFalse(admin_instance.has_delete_permission(request))
+        self.assertFalse(admin_instance.has_delete_permission(request, self.project))
+
+    def test_delete_url_returns_no_access_for_office(self):
+        """La URL de confirmación de borrado no es accesible para rol office."""
+        self.client.force_login(self.office_user)
+        response = self.client.get(
+            f'/offynstal/projects/project/{self.project.pk}/delete/'
+        )
+        # Django devuelve 403 cuando has_delete_permission=False
+        self.assertIn(response.status_code, [302, 403])

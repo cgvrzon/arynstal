@@ -537,6 +537,11 @@ UNFOLD_OFFICE = {
                         "icon": "history",
                         "link": reverse_lazy("office:leads_leadlog_changelist"),
                     },
+                    {
+                        "title": "Proyectos",
+                        "icon": "photo_library",
+                        "link": reverse_lazy("office:projects_project_changelist"),
+                    },
                 ],
             },
         ],

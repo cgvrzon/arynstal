@@ -77,6 +77,26 @@
     </div>
     {% endif %}
 
+    {# ── SECCIÓN PROYECTOS (solo office/admin) ── #}
+    {% if user.is_superuser or user.profile.role == 'office' or user.profile.role == 'admin' %}
+    <div class="office-dashboard__section">
+        <div class="office-dashboard__section-header">
+            <span class="material-symbols-outlined office-dashboard__section-icon">photo_library</span>
+            <h2 class="office-dashboard__section-title">Proyectos</h2>
+        </div>
+        <div class="office-dashboard__buttons">
+            <a href="{% url 'office:projects_project_changelist' %}" class="office-btn office-btn--primary">
+                <span class="material-symbols-outlined office-btn__icon">list_alt</span>
+                <span class="office-btn__text">Ver Proyectos</span>
+            </a>
+            <a href="{% url 'office:projects_project_add' %}" class="office-btn office-btn--outline">
+                <span class="material-symbols-outlined office-btn__icon">add_circle</span>
+                <span class="office-btn__text">Crear Proyecto</span>
+            </a>
+        </div>
+    </div>
+    {% endif %}
+
     {# ── SECCIÓN HISTORIAL (read-only para todos) ── #}
     <div class="office-dashboard__section">
         <div class="office-dashboard__section-header">
