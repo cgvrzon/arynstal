@@ -503,7 +503,6 @@ loglevel = "info"
 
 # Proceso
 daemon = False
-pidfile = "/var/www/arynstal/gunicorn.pid"
 
 # Seguridad
 limit_request_line = 4094
@@ -752,7 +751,7 @@ send_mail(
 1. Verificar credenciales en `.env`: `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`
 2. Verificar que el puerto 587 está abierto: `telnet smtp-relay.brevo.com 587`
 3. Verificar en Brevo que la API key está activa
-4. Comprobar logs: `tail -20 /var/www/arynstal/logs/django_errors.log`
+4. Comprobar logs: `tail -20 /var/www/arynstal/logs/django-errors.log`
 
 ---
 
@@ -837,13 +836,25 @@ ls -la /var/www/arynstal/backups/
 ### 13.2 Verificar logs
 
 ```bash
-# Logs de aplicación
+# Errores Django (excepciones, BD, templates)
+tail -f /var/www/arynstal/logs/django-errors.log
+
+# Seguridad Django (CSRF, DisallowedHost)
+tail -f /var/www/arynstal/logs/django-security.log
+
+# Requests 4xx/5xx (escaneos, probing)
+tail -f /var/www/arynstal/logs/django-requests.log
+
+# App (notificaciones, signals, login)
+tail -f /var/www/arynstal/logs/django-app.log
+
+# Gunicorn
 tail -f /var/www/arynstal/logs/gunicorn-error.log
 
-# Logs de Nginx
+# Nginx
 tail -f /var/www/arynstal/logs/nginx-error.log
 
-# Logs del sistema
+# Servicio systemd
 sudo journalctl -u arynstal -f
 ```
 

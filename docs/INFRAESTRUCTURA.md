@@ -194,10 +194,16 @@ Se evaluaron tres categorías de hosting:
 │   └── manage.py
 ├── staticfiles/             # Archivos estáticos recolectados
 ├── media/                   # Archivos subidos por usuarios
-├── logs/                    # Logs de la aplicación
-│   ├── gunicorn.log
-│   ├── django.log
-│   └── nginx-access.log
+├── logs/                    # Logs centralizados
+│   ├── django-errors.log       # Errores Django (ERROR)
+│   ├── django-security.log     # CSRF, DisallowedHost (WARNING)
+│   ├── django-requests.log     # Requests 4xx/5xx (WARNING)
+│   ├── django-app.log          # App: emails, signals (INFO)
+│   ├── gunicorn-access.log
+│   ├── gunicorn-error.log
+│   ├── nginx-access.log
+│   ├── nginx-error.log
+│   └── backup.log
 ├── backups/                 # Backups locales temporales
 ├── .env                     # Variables de entorno
 └── gunicorn.conf.py         # Configuración Gunicorn
@@ -216,6 +222,7 @@ Se evaluaron tres categorías de hosting:
 | Backup | - | Backup diario | cron |
 | Logrotate | - | Rotación de logs | cron |
 | Alertas disco | - | Monitorización espacio | cron (cada 6h) |
+| Journald | - | Retención logs systemd (200M/2 sem) | systemd |
 
 ### 3.4 Seguridad
 
@@ -492,6 +499,8 @@ Para empezar, configurar alertas de:
 - Certificado SSL próximo a expirar
 - Disco >80%
 - Errores 500 en Django
+- Ataques de seguridad (django-security.log: CSRF, Host injection)
+- Probing/escaneos web (django-requests.log: 4xx masivos)
 
 ---
 
@@ -599,6 +608,7 @@ La arquitectura seleccionada (Hetzner + Cloudflare + Brevo) ofrece:
 | 1.3 | 2026-02-16 | Seguridad: WAF Cloudflare (5 reglas), SSH puerto XXXXX, root deshabilitado, logrotate, alertas disco |
 | 1.4 | 2026-02-26 | Celery + Redis: sección 4b (entorno Docker dev), actualización escalabilidad |
 | 1.5 | 2026-03-09 | Celery revertido: actualizar sección 4b y escalabilidad para reflejar decisión |
+| 1.6 | 2026-03-15 | Logging: 4 handlers Django categorizados, journald retención, estructura logs actualizada |
 
 ---
 
