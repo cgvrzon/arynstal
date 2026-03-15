@@ -240,40 +240,75 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 
 # =============================================================================
-# LOGGING - Registro de errores
+# LOGGING - Registro estructurado por categoría
 # =============================================================================
+# 4 archivos de log separados por tipo de evento.
+# Rotación gestionada por logrotate (copytruncate), no por Django.
+# Path absoluto — production.py no se ejecuta en desarrollo.
+
+_LOG_DIR = '/var/www/arynstal/logs'
 
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
-    # No deshabilitar loggers existentes de Django
+
+    'formatters': {
+        'verbose': {
+            'format': '{asctime} [{levelname}] {name} {module}.{funcName}:{lineno} — {message}',
+            'style': '{',
+        },
+    },
 
     'handlers': {
-        'file': {
+        'django_errors': {
             'level': 'ERROR',
-            # Solo registrar errores (no warnings ni info)
-
             'class': 'logging.FileHandler',
-            # Escribir a archivo
-
-            'filename': BASE_DIR / 'logs' / 'django_errors.log',
-            # Ubicación del archivo de log
-            # IMPORTANTE: Crear el directorio 'logs/' antes de desplegar
+            'filename': f'{_LOG_DIR}/django-errors.log',
+            'formatter': 'verbose',
+        },
+        'security': {
+            'level': 'WARNING',
+            'class': 'logging.FileHandler',
+            'filename': f'{_LOG_DIR}/django-security.log',
+            'formatter': 'verbose',
+        },
+        'requests': {
+            'level': 'WARNING',
+            'class': 'logging.FileHandler',
+            'filename': f'{_LOG_DIR}/django-requests.log',
+            'formatter': 'verbose',
+        },
+        'app': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': f'{_LOG_DIR}/django-app.log',
+            'formatter': 'verbose',
         },
     },
 
     'loggers': {
         'django': {
-            'handlers': ['file'],
+            'handlers': ['django_errors'],
             'level': 'ERROR',
             'propagate': True,
-            # Registrar todos los errores de Django
+        },
+        'django.security': {
+            'handlers': ['security'],
+            'level': 'WARNING',
+            'propagate': False,
+        },
+        'django.request': {
+            'handlers': ['requests', 'django_errors'],
+            'level': 'WARNING',
+            'propagate': False,
+        },
+        'apps': {
+            'handlers': ['app'],
+            'level': 'INFO',
+            'propagate': False,
         },
     },
 }
-# NOTA: Crear directorio logs/ con:
-#   mkdir -p /ruta/al/proyecto/logs
-#   chown www-data:www-data /ruta/al/proyecto/logs
 
 
 # =============================================================================

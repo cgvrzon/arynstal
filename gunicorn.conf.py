@@ -15,7 +15,6 @@ loglevel = "info"
 
 # Proceso
 daemon = False
-pidfile = "/var/www/arynstal/gunicorn.pid"
 
 # Seguridad
 limit_request_line = 4094
