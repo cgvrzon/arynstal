@@ -34,7 +34,7 @@ jobs:
 
     steps:
       - name: 📥 Checkout código
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: 🐍 Configurar Python ${{ env.PYTHON_VERSION }}
         uses: actions/setup-python@v5
@@ -42,7 +42,7 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
 
       - name: 📦 Cache de dependencias
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-lint-${{ hashFiles('requirements/development.txt') }}
@@ -71,7 +71,7 @@ jobs:
 
     steps:
       - name: 📥 Checkout código
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: 🐍 Configurar Python ${{ env.PYTHON_VERSION }}
         uses: actions/setup-python@v5
@@ -79,7 +79,7 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
 
       - name: 📦 Cache de dependencias
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-test-${{ hashFiles('requirements/development.txt') }}
@@ -104,7 +104,7 @@ jobs:
           SECRET_KEY: 'test-secret-key-for-ci-only'
 
       - name: 📊 Upload coverage a Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           files: ./coverage.xml
           fail_ci_if_error: false  # No fallar si Codecov no está configurado
@@ -120,7 +120,7 @@ jobs:
 
     steps:
       - name: 📥 Checkout código
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: 🐍 Configurar Python ${{ env.PYTHON_VERSION }}
         uses: actions/setup-python@v5
@@ -151,7 +151,7 @@ jobs:
 
     steps:
       - name: 📥 Checkout código
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: 🐍 Configurar Python ${{ env.PYTHON_VERSION }}
         uses: actions/setup-python@v5
